@@ -44,6 +44,7 @@ export default function Auth() {
   const [busy, setBusy] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading } = useAuth();
@@ -465,12 +466,23 @@ export default function Auth() {
                       Forgot password?
                     </button>
                   </div>
-                  <Input
-                    id="loginPassword"
-                    type="password"
-                    autoComplete="current-password"
-                    {...loginForm.register("password")}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="loginPassword"
+                      type={showLoginPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      className="pr-10"
+                      {...loginForm.register("password")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginPassword((v) => !v)}
+                      aria-label={showLoginPassword ? "Hide password" : "Show password"}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                   {loginForm.formState.errors.password && (
                     <p className="text-xs text-destructive">{loginForm.formState.errors.password.message}</p>
                   )}
