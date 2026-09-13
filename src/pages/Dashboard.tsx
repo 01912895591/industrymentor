@@ -3,6 +3,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { SEOHead } from "@/components/seo/SEOHead";
 import { useQueryClient } from "@tanstack/react-query";
 import { downloadDemoFile } from "@/features/library/download";
 import { usePurchases } from "@/features/library/usePurchases";
@@ -327,6 +328,7 @@ export default function Dashboard() {
 
   return (
     <AmbientSpotlight>
+      <SEOHead title="Student Dashboard | IndustryMentor" noindex={true} />
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
           <aside className="h-fit rounded-3xl border border-border/60 bg-card/25 p-6 backdrop-blur-xl shadow-elev sticky top-10">
@@ -423,6 +425,59 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
                 </div>
+
+                {enrollments.length > 0 && (
+                  <div className="rounded-3xl border border-border/60 bg-card/25 p-6 sm:p-8 backdrop-blur-xl shadow-elev space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-lg font-extrabold text-foreground">
+                        <BookOpen className="h-5 w-5 text-primary" /> Resume Learning
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-primary font-bold hover:bg-primary/10"
+                        onClick={() => setActive("courses")}
+                      >
+                        View All Courses
+                      </Button>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {enrollments.slice(0, 2).map((enr: any) => (
+                        <div
+                          key={enr.id}
+                          className="p-5 rounded-2xl border border-border/60 bg-background/25 flex flex-col justify-between gap-4 hover:border-primary/40 transition-all hover:bg-background/35"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Classroom</span>
+                              {enr.completed && (
+                                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                  <ShieldCheck className="h-3 w-3" /> Completed
+                                </span>
+                              )}
+                            </div>
+                            <div className="font-bold text-base text-foreground mt-2 line-clamp-1">
+                              {enr.courses?.title || "Enrolled Course"}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-0.5">
+                              Enrolled {new Date(enr.created_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant={enr.completed ? "outline" : "hero"}
+                            className="w-full text-xs font-bold h-9 gap-1.5"
+                            onClick={() => navigate(`/learn/${enr.courses?.slug || enr.course_id}`)}
+                          >
+                            <BookOpen className="h-3.5 w-3.5" />
+                            {enr.completed ? "Review Material" : "Continue Learning"}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -540,31 +595,53 @@ export default function Dashboard() {
             )}
 
             {active === "courses" && (
-              <div className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
-                <div className="flex items-center gap-2 text-lg font-extrabold">
-                  <BookOpen className="h-5 w-5 text-primary" /> My Courses
+              <div className="rounded-3xl border border-border/60 bg-card/25 p-6 sm:p-8 backdrop-blur-xl shadow-elev">
+                <div className="flex items-center gap-2 text-xl font-extrabold text-foreground">
+                  <BookOpen className="h-6 w-6 text-primary" /> My Courses
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">Your active course enrollments.</p>
-                <div className="mt-4 space-y-3">
+                <p className="mt-1 text-sm text-muted-foreground">Your active course enrollments and learning progress.</p>
+                <div className="mt-6 space-y-4">
                   {enrollments.length === 0 ? (
-                    <div className="text-sm text-muted-foreground">You have not enrolled in any courses yet.</div>
+                    <div className="text-sm text-muted-foreground p-8 text-center border border-dashed border-border/60 rounded-2xl">
+                      You have not enrolled in any courses yet.
+                    </div>
                   ) : (
                     enrollments.map((enr: any) => (
-                      <div key={enr.id} className="rounded-2xl border border-border/70 bg-background/15 p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-semibold">{enr.courses?.title || "Unknown Course"}</div>
-                            <div className="mt-1 text-xs text-muted-foreground">
-                              Enrolled: {new Date(enr.created_at).toLocaleDateString()}
+                      <div key={enr.id} className="rounded-2xl border border-border/70 bg-background/25 p-5 transition-all hover:bg-background/35 hover:border-primary/40">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="space-y-1.5 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <div className="font-bold text-base text-foreground truncate">{enr.courses?.title || "Enrolled Course"}</div>
+                              {enr.completed ? (
+                                <span className="text-[10px] bg-emerald-500/15 text-emerald-500 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 border border-emerald-500/20 shrink-0">
+                                  <ShieldCheck className="h-3 w-3" /> Completed
+                                </span>
+                              ) : (
+                                <span className="text-[10px] bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-bold border border-primary/20 shrink-0">
+                                  Active
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Enrolled on {new Date(enr.created_at).toLocaleDateString()}
                             </div>
                           </div>
-                          {enr.completed ? (
-                            <div className="flex flex-col items-end gap-2">
-                              <div className="text-[10px] sm:text-xs bg-green-500/15 text-green-500 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 border border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.1)] animate-in fade-in zoom-in duration-500">
-                                <ShieldCheck className="h-3 w-3" /> Course Completed
-                              </div>
-                              {(() => {
-                                const cert = certificates.find(c => c.course_id === enr.course_id);
+
+                          <div className="flex items-center flex-wrap gap-2.5 sm:self-center">
+                            {/* Primary CTA: Enter Classroom */}
+                            <Button
+                              size="sm"
+                              variant={enr.completed ? "outline" : "hero"}
+                              className="h-8 text-xs font-bold gap-1.5"
+                              onClick={() => navigate(`/learn/${enr.courses?.slug || enr.course_id}`)}
+                            >
+                              <BookOpen className="h-3.5 w-3.5" />
+                              {enr.completed ? "Review Material" : "Continue Learning"}
+                            </Button>
+
+                            {enr.completed ? (
+                              (() => {
+                                const cert = certificates.find((c: any) => c.course_id === enr.course_id);
                                 const isRequesting = actionLoading === `cert-${enr.course_id}`;
 
                                 if (!cert && !isRequesting) {
@@ -572,17 +649,17 @@ export default function Dashboard() {
                                     <Button
                                       size="sm"
                                       variant="cta"
-                                      className="h-7 text-[10px] px-3 font-bold"
+                                      className="h-8 text-xs px-3 font-bold"
                                       onClick={() => handleRequestCertificate(enr.course_id)}
                                       disabled={isRequesting}
                                     >
-                                      Request for Certificate
+                                      Request Certificate
                                     </Button>
                                   );
                                 } else if (isRequesting || (cert && cert.status === 'pending')) {
                                   return (
-                                    <Badge variant="outline" className="bg-yellow-500/15 text-yellow-500 border-yellow-500/30 px-2.5 py-1 text-[10px] font-bold shadow-[0_0_10px_rgba(234,179,8,0.1)] animate-pulse">
-                                      Certificate Request Pending
+                                    <Badge variant="outline" className="bg-yellow-500/15 text-yellow-500 border-yellow-500/30 px-3 py-1.5 text-xs font-bold shadow-[0_0_10px_rgba(234,179,8,0.1)] animate-pulse">
+                                      Certificate Pending
                                     </Badge>
                                   );
                                 } else if (cert && cert.status === 'rejected') {
@@ -590,7 +667,7 @@ export default function Dashboard() {
                                     <Button
                                       size="sm"
                                       variant="cta"
-                                      className="h-7 text-[10px] px-3 font-bold"
+                                      className="h-8 text-xs px-3 font-bold"
                                       onClick={() => handleRequestCertificate(enr.course_id)}
                                       disabled={isRequesting}
                                     >
@@ -599,18 +676,19 @@ export default function Dashboard() {
                                   );
                                 }
                                 return null;
-                              })()}
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-end gap-2">
-                              <div className="text-[10px] sm:text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-bold border border-primary/20">
-                                Active
-                              </div>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs font-semibold hover:bg-primary/5 hover:text-primary transition-colors" onClick={() => markAsComplete(enr.id, enr.course_id)} disabled={actionLoading === enr.id}>
+                              })()
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 text-xs font-semibold hover:bg-primary/10 hover:text-primary transition-colors"
+                                onClick={() => markAsComplete(enr.id, enr.course_id)}
+                                disabled={actionLoading === enr.id}
+                              >
                                 {actionLoading === enr.id ? "Updating..." : "Mark Complete"}
                               </Button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))

@@ -6,9 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Loader2, CheckCircle2, ShieldCheck, ArrowLeft, CreditCard } from "lucide-react";
+import { Loader2, CheckCircle2, ShieldCheck, ArrowLeft, CreditCard, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Course = {
     id: string;
@@ -25,6 +30,26 @@ type Module = {
     price_cents: number;
 };
 
+const paymentFormSchema = z.object({
+    paymentMethod: z.enum(["bkash", "nagad", "bank"], {
+        required_error: "Please select a payment method",
+    }),
+    senderPhone: z
+        .string()
+        .trim()
+        .min(11, "Sender mobile number must be at least 11 digits")
+        .max(16, "Sender mobile number is too long")
+        .regex(/^[0-9+\s-]+$/, "Please enter a valid phone number"),
+    transactionId: z
+        .string()
+        .trim()
+        .min(4, "Transaction ID must be at least 4 characters")
+        .max(40, "Transaction ID is too long")
+        .regex(/^[a-zA-Z0-9_-]+$/, "Transaction ID contains invalid characters"),
+});
+
+type PaymentFormValues = z.infer<typeof paymentFormSchema>;
+
 export default function CourseEnrollment() {
     const { courseId } = useParams();
     const { user } = useAuth();
@@ -35,6 +60,15 @@ export default function CourseEnrollment() {
     const [enrollStep, setEnrollStep] = useState<"review" | "payment" | "confirm">("payment");
     const [processing, setProcessing] = useState(false);
     const checkoutRef = useRef<HTMLDivElement>(null);
+
+    const form = useForm<PaymentFormValues>({
+        resolver: zodResolver(paymentFormSchema),
+        defaultValues: {
+            paymentMethod: "bkash",
+            senderPhone: "",
+            transactionId: "",
+        },
+    });
 
     useEffect(() => {
         if (!loading && course && enrollStep === "payment") {
@@ -93,28 +127,47 @@ export default function CourseEnrollment() {
         setEnrollStep("review");
     };
 
-    const handleConfirmPayment = async () => {
-        console.log("Starting payment confirmation...");
+    const onSubmitPayment = async (values: PaymentFormValues) => {
+        if (processing) return;
+
         if (!user) {
-            console.error("User not found");
             toast.error("Please sign in to continue");
+            navigate("/auth", { state: { from: `/enroll/${courseId}` } });
             return;
         }
         if (!course) {
-            console.error("Course not found");
             toast.error("Course data missing");
             return;
         }
 
         setProcessing(true);
         try {
-            console.log("Creating purchase record...", {
-                user_id: user.id,
-                title: course.title,
-                amount_cents: course.price_cents
-            });
+            const trimmedTxId = values.transactionId.trim().toUpperCase();
+            const trimmedPhone = values.senderPhone.trim();
 
-            // 1. Create Purchase Record
+            // 1. Duplicate enrollment check:
+            const { data: existingEnrollment } = await (supabase as any)
+                .from("course_enrollments")
+                .select("id, status")
+                .eq("user_id", user.id)
+                .eq("course_id", course.id)
+                .maybeSingle();
+
+            if (existingEnrollment) {
+                if (existingEnrollment.status === "active") {
+                    toast.info("You are already enrolled in this course!");
+                    navigate("/dashboard");
+                    return;
+                }
+                if (existingEnrollment.status === "pending") {
+                    toast.warning("You already have a pending verification for this course.");
+                    setEnrollStep("confirm");
+                    return;
+                }
+            }
+
+            // 2. Create or verify Purchase Record
+            let purchaseId: string | null = null;
             const { data: purchase, error: purchaseError } = await (supabase as any)
                 .from("purchases")
                 .insert({
@@ -122,34 +175,58 @@ export default function CourseEnrollment() {
                     title: course.title,
                     item_type: "course",
                     item_key: course.id,
-                    amount_cents: course.price_cents
+                    amount_cents: course.price_cents,
+                    payment_method: values.paymentMethod,
+                    transaction_id: trimmedTxId,
+                    status: "pending",
                 })
                 .select()
-                .single();
+                .maybeSingle();
 
             if (purchaseError) {
-                console.error("Purchase creation failed:", purchaseError);
-                throw new Error(`Purchase Error: ${purchaseError.message} (${purchaseError.code})`);
+                // If unique constraint hit, fetch existing purchase
+                if (purchaseError.code === "23505") {
+                    const { data: existingPurchase } = await (supabase as any)
+                        .from("purchases")
+                        .select("id")
+                        .eq("user_id", user.id)
+                        .eq("item_type", "course")
+                        .eq("item_key", course.id)
+                        .maybeSingle();
+                    purchaseId = existingPurchase?.id || null;
+                } else {
+                    console.error("Purchase creation error:", purchaseError);
+                    throw new Error("Unable to log payment record. Please try again.");
+                }
+            } else if (purchase) {
+                purchaseId = purchase.id;
             }
 
-            console.log("Purchase created:", purchase);
-
-            // 2. Create Enrollment Record
+            // 3. Create Enrollment Record
             const { error: enrollmentError } = await (supabase as any)
                 .from("course_enrollments")
                 .insert({
                     user_id: user.id,
                     course_id: course.id,
-                    purchase_id: purchase.id
+                    purchase_id: purchaseId,
+                    payment_method: values.paymentMethod,
+                    transaction_id: trimmedTxId,
+                    sender_phone: trimmedPhone,
+                    status: "pending",
+                    completed: false,
                 });
 
             if (enrollmentError) {
-                console.error("Enrollment creation failed:", enrollmentError);
-                throw new Error(`Enrollment Error: ${enrollmentError.message} (${enrollmentError.code})`);
+                if (enrollmentError.code === "23505") {
+                    toast.info("Your enrollment request was already logged.");
+                    setEnrollStep("confirm");
+                    return;
+                }
+                console.error("Enrollment error:", enrollmentError);
+                throw new Error("Failed to process enrollment submission.");
             }
 
-            console.log("Enrollment success!");
-            toast.success("Enrollment successful!");
+            toast.success("Enrollment request submitted! Verification in progress.");
             setEnrollStep("confirm");
         } catch (error: any) {
             console.error("Transaction failed:", error);
@@ -301,27 +378,95 @@ export default function CourseEnrollment() {
                                         )}
 
                                         {enrollStep === "payment" && (
-                                            <div className="space-y-4 animate-fade-in">
-                                                <div className="rounded-lg border bg-muted/50 p-3 text-sm">
-                                                    <p className="font-medium mb-1">Payment Instructions:</p>
-                                                    <p className="text-muted-foreground mb-2">Please send <strong>৳{(course.price_cents / 100).toLocaleString()}</strong> to the following number via Bkash/Nagad.</p>
-                                                    <div className="space-y-1 font-mono text-xs">
-                                                        <div className="flex justify-between">
-                                                            <span>Bkash (Personal):</span>
-                                                            <span className="font-bold select-all">01912895591</span>
-                                                        </div>
-                                                        <div className="flex justify-between">
-                                                            <span>Nagad (Personal):</span>
-                                                            <span className="font-bold select-all">01912895591</span>
-                                                        </div>
+                                            <form onSubmit={form.handleSubmit(onSubmitPayment)} className="space-y-4 animate-fade-in" id="payment-form">
+                                                {/* Payment Method Selector */}
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Select Payment Method</Label>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => form.setValue("paymentMethod", "bkash")}
+                                                            className={`flex items-center justify-center p-2.5 rounded-lg border text-xs font-bold transition-all ${
+                                                                form.watch("paymentMethod") === "bkash"
+                                                                    ? "border-primary bg-primary/10 text-primary shadow-sm"
+                                                                    : "border-border bg-card/50 text-muted-foreground hover:bg-muted/50"
+                                                            }`}
+                                                        >
+                                                            bKash Personal
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => form.setValue("paymentMethod", "nagad")}
+                                                            className={`flex items-center justify-center p-2.5 rounded-lg border text-xs font-bold transition-all ${
+                                                                form.watch("paymentMethod") === "nagad"
+                                                                    ? "border-primary bg-primary/10 text-primary shadow-sm"
+                                                                    : "border-border bg-card/50 text-muted-foreground hover:bg-muted/50"
+                                                            }`}
+                                                        >
+                                                            Nagad Personal
+                                                        </button>
                                                     </div>
                                                 </div>
 
-                                                <div className="space-y-2">
-                                                    <label className="text-sm font-medium">Transaction ID / Note</label>
-                                                    <input type="text" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="e.g. 8N7X..." />
+                                                {/* Payment Instructions Card */}
+                                                <div className="rounded-lg border bg-muted/50 p-3 text-sm space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="font-medium text-xs">Send Money To:</span>
+                                                        <span className="font-bold text-xs font-mono select-all bg-background/80 px-2 py-0.5 rounded border">
+                                                            01912895591
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                                                        <span>Payable Amount:</span>
+                                                        <span className="font-bold text-foreground">৳{(course.price_cents / 100).toLocaleString()}</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-muted-foreground leading-tight pt-1 border-t border-border/40">
+                                                        Send the exact amount via "Send Money" to the personal number above, then enter your details below.
+                                                    </p>
                                                 </div>
-                                            </div>
+
+                                                {/* Sender Mobile Number */}
+                                                <div className="space-y-1.5 text-left">
+                                                    <Label htmlFor="senderPhone" className="text-xs font-semibold">
+                                                        Sender Mobile Number <span className="text-destructive">*</span>
+                                                    </Label>
+                                                    <Input
+                                                        id="senderPhone"
+                                                        type="text"
+                                                        placeholder="e.g. 01712345678"
+                                                        className={form.formState.errors.senderPhone ? "border-destructive focus-visible:ring-destructive" : ""}
+                                                        {...form.register("senderPhone")}
+                                                        disabled={processing}
+                                                    />
+                                                    {form.formState.errors.senderPhone && (
+                                                        <p className="text-xs text-destructive flex items-center gap-1 pt-0.5">
+                                                            <AlertCircle className="h-3 w-3" />
+                                                            {form.formState.errors.senderPhone.message}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                {/* Transaction ID */}
+                                                <div className="space-y-1.5 text-left">
+                                                    <Label htmlFor="transactionId" className="text-xs font-semibold">
+                                                        Transaction ID (TrxID) <span className="text-destructive">*</span>
+                                                    </Label>
+                                                    <Input
+                                                        id="transactionId"
+                                                        type="text"
+                                                        placeholder="e.g. 8N7X29MA"
+                                                        className={form.formState.errors.transactionId ? "border-destructive focus-visible:ring-destructive font-mono uppercase" : "font-mono uppercase"}
+                                                        {...form.register("transactionId")}
+                                                        disabled={processing}
+                                                    />
+                                                    {form.formState.errors.transactionId && (
+                                                        <p className="text-xs text-destructive flex items-center gap-1 pt-0.5">
+                                                            <AlertCircle className="h-3 w-3" />
+                                                            {form.formState.errors.transactionId.message}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </form>
                                         )}
                                     </CardContent>
                                     <CardFooter className="flex flex-col gap-3">
@@ -331,17 +476,32 @@ export default function CourseEnrollment() {
                                             </Button>
                                         ) : (
                                             <div className="w-full space-y-2">
-                                                <Button size="lg" className="w-full font-bold" onClick={handleConfirmPayment} disabled={processing}>
-                                                    {processing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
-                                                    Confirm Payment
+                                                <Button
+                                                    size="lg"
+                                                    className="w-full font-bold"
+                                                    type="submit"
+                                                    form="payment-form"
+                                                    disabled={processing}
+                                                >
+                                                    {processing ? (
+                                                        <>
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Submitting Payment...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <CreditCard className="mr-2 h-4 w-4" />
+                                                            Submit Payment
+                                                        </>
+                                                    )}
                                                 </Button>
-                                                <Button variant="ghost" className="w-full" onClick={handleBackToReview} disabled={processing}>
+                                                <Button variant="ghost" className="w-full" onClick={handleBackToReview} disabled={processing} type="button">
                                                     Back to Review
                                                 </Button>
                                             </div>
                                         )}
                                         <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
-                                            <ShieldCheck className="h-3 w-3" /> Secure Payment
+                                            <ShieldCheck className="h-3 w-3" /> Manual Verification within 1–2 hours
                                         </p>
                                     </CardFooter>
                                 </Card>

@@ -50,6 +50,87 @@ export type Database = {
         }
         Relationships: []
       }
+      career_paths: {
+        Row: {
+          created_at: string
+          description: string
+          domain: string
+          icon_name: string | null
+          id: string
+          is_published: boolean
+          order_index: number
+          practical_scope: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          domain: string
+          icon_name?: string | null
+          id?: string
+          is_published?: boolean
+          order_index?: number
+          practical_scope?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          domain?: string
+          icon_name?: string | null
+          id?: string
+          is_published?: boolean
+          order_index?: number
+          practical_scope?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      career_path_skills: {
+        Row: {
+          career_path_id: string
+          is_core: boolean
+          order_index: number
+          skill_id: string
+          stage_tier: number | null
+        }
+        Insert: {
+          career_path_id: string
+          is_core?: boolean
+          order_index?: number
+          skill_id: string
+          stage_tier?: number | null
+        }
+        Update: {
+          career_path_id?: string
+          is_core?: boolean
+          order_index?: number
+          skill_id?: string
+          stage_tier?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_path_skills_career_path_id_fkey"
+            columns: ["career_path_id"]
+            isOneToOne: false
+            referencedRelation: "career_paths"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "career_path_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certificates: {
         Row: {
           certificate_path: string | null
@@ -427,6 +508,156 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_courses: {
+        Row: {
+          course_id: string
+          is_primary: boolean
+          order_index: number
+          skill_id: string
+        }
+        Insert: {
+          course_id: string
+          is_primary?: boolean
+          order_index?: number
+          skill_id: string
+        }
+        Update: {
+          course_id?: string
+          is_primary?: boolean
+          order_index?: number
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_courses_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skill_library_items: {
+        Row: {
+          library_item_id: string
+          order_index: number
+          resource_role: string | null
+          skill_id: string
+        }
+        Insert: {
+          library_item_id: string
+          order_index?: number
+          resource_role?: string | null
+          skill_id: string
+        }
+        Update: {
+          library_item_id?: string
+          order_index?: number
+          resource_role?: string | null
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_library_items_library_item_id_fkey"
+            columns: ["library_item_id"]
+            isOneToOne: false
+            referencedRelation: "library_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_library_items_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skill_mentors: {
+        Row: {
+          is_lead: boolean
+          mentor_id: string
+          order_index: number
+          skill_id: string
+          specialization_note: string | null
+        }
+        Insert: {
+          is_lead?: boolean
+          mentor_id: string
+          order_index?: number
+          skill_id: string
+          specialization_note?: string | null
+        }
+        Update: {
+          is_lead?: boolean
+          mentor_id?: string
+          order_index?: number
+          skill_id?: string
+          specialization_note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_mentors_mentor_id_fkey"
+            columns: ["mentor_id"]
+            isOneToOne: false
+            referencedRelation: "mentors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_mentors_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skills: {
+        Row: {
+          created_at: string
+          description: string
+          difficulty: string | null
+          domain: string
+          id: string
+          is_published: boolean
+          practical_application: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          difficulty?: string | null
+          domain: string
+          id?: string
+          is_published?: boolean
+          practical_application?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          difficulty?: string | null
+          domain?: string
+          id?: string
+          is_published?: boolean
+          practical_application?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -447,6 +678,282 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      projects: {
+        Row: {
+          id: string
+          slug: string
+          title: string
+          short_description: string
+          detailed_brief: string | null
+          domain: string | null
+          difficulty: string | null
+          estimated_hours: number | null
+          learning_objectives: Json | null
+          deliverables: Json | null
+          evaluation_criteria: Json | null
+          instructions: string | null
+          resources: Json | null
+          mentor_guidance: string | null
+          is_published: boolean
+          order_index: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          slug: string
+          title: string
+          short_description: string
+          detailed_brief?: string | null
+          domain?: string | null
+          difficulty?: string | null
+          estimated_hours?: number | null
+          learning_objectives?: Json | null
+          deliverables?: Json | null
+          evaluation_criteria?: Json | null
+          instructions?: string | null
+          resources?: Json | null
+          mentor_guidance?: string | null
+          is_published?: boolean
+          order_index?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          slug?: string
+          title?: string
+          short_description?: string
+          detailed_brief?: string | null
+          domain?: string | null
+          difficulty?: string | null
+          estimated_hours?: number | null
+          learning_objectives?: Json | null
+          deliverables?: Json | null
+          evaluation_criteria?: Json | null
+          instructions?: string | null
+          resources?: Json | null
+          mentor_guidance?: string | null
+          is_published?: boolean
+          order_index?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      project_career_paths: {
+        Row: {
+          career_path_id: string
+          order_index: number
+          project_id: string
+        }
+        Insert: {
+          career_path_id: string
+          order_index?: number
+          project_id: string
+        }
+        Update: {
+          career_path_id?: string
+          order_index?: number
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_career_paths_career_path_id_fkey"
+            columns: ["career_path_id"]
+            isOneToOne: false
+            referencedRelation: "career_paths"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_career_paths_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      project_skills: {
+        Row: {
+          is_primary: boolean
+          order_index: number
+          project_id: string
+          skill_id: string
+        }
+        Insert: {
+          is_primary?: boolean
+          order_index?: number
+          project_id: string
+          skill_id: string
+        }
+        Update: {
+          is_primary?: boolean
+          order_index?: number
+          project_id?: string
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      project_submissions: {
+        Row: {
+          admin_feedback: string | null
+          created_at: string
+          deliverable_url: string | null
+          id: string
+          project_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submission_notes: string | null
+          submitted_at: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_feedback?: string | null
+          created_at?: string
+          deliverable_url?: string | null
+          id?: string
+          project_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_notes?: string | null
+          submitted_at?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_feedback?: string | null
+          created_at?: string
+          deliverable_url?: string | null
+          id?: string
+          project_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_notes?: string | null
+          submitted_at?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_submissions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      portfolios: {
+        Row: {
+          bio: string | null
+          career_path_id: string | null
+          created_at: string
+          headline: string | null
+          id: string
+          is_public: boolean
+          linkedin_url: string | null
+          location: string | null
+          slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          career_path_id?: string | null
+          created_at?: string
+          headline?: string | null
+          id?: string
+          is_public?: boolean
+          linkedin_url?: string | null
+          location?: string | null
+          slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          career_path_id?: string | null
+          created_at?: string
+          headline?: string | null
+          id?: string
+          is_public?: boolean
+          linkedin_url?: string | null
+          location?: string | null
+          slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolios_career_path_id_fkey"
+            columns: ["career_path_id"]
+            isOneToOne: false
+            referencedRelation: "career_paths"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      portfolio_items: {
+        Row: {
+          certificate_id: string | null
+          created_at: string
+          id: string
+          is_featured: boolean
+          order_index: number
+          portfolio_id: string
+          project_submission_id: string | null
+        }
+        Insert: {
+          certificate_id?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          order_index?: number
+          portfolio_id: string
+          project_submission_id?: string | null
+        }
+        Update: {
+          certificate_id?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          order_index?: number
+          portfolio_id?: string
+          project_submission_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { SEOHead } from "@/components/seo/SEOHead";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -83,6 +84,7 @@ export default function ResetPassword() {
 
   return (
     <AmbientSpotlight>
+      <SEOHead title="Set New Password | IndustryMentor" noindex={true} />
       <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="mx-auto max-w-md rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev sm:p-8">
           <div className="flex items-center justify-center gap-3 min-h-[96px]">

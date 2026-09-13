@@ -6,19 +6,27 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export function AdminLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <div className="min-h-screen bg-background">
+            <SEOHead title="Admin Portal | IndustryMentor" noindex={true} />
             {/* Mobile Header */}
             <div className="lg:hidden flex h-16 items-center justify-between px-4 border-b bg-background/50 backdrop-blur-xl sticky top-0 z-50">
                 <div className="font-bold text-lg">
                     <span className="text-primary">Industry</span>Mentor
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    aria-label="Toggle navigation menu"
+                >
                     {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    <span className="sr-only">Toggle navigation menu</span>
                 </Button>
             </div>
 
@@ -31,10 +39,10 @@ export function AdminLayout() {
             </div>
 
             <div className={cn(
-                "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-auto",
+                "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 lg:translate-x-0",
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}>
-                <AdminSidebar />
+                <AdminSidebar onClose={() => setSidebarOpen(false)} />
             </div>
 
             <main className="lg:pl-0 min-h-screen">

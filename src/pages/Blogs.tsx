@@ -1,10 +1,10 @@
-// Imports removed
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, ChevronRight } from "lucide-react";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function Blogs() {
     const [blogs, setBlogs] = useState<any[]>([]);
@@ -40,6 +40,11 @@ export default function Blogs() {
 
     return (
         <main className="flex-1 py-16 px-4 sm:px-6">
+            <SEOHead
+                title="Industry Insights & Articles | IndustryMentor Blog"
+                description="Stay updated with the latest insights, trends, and tutorials from industry mentors."
+                canonicalUrl="https://industrymentor.net/blog"
+            />
             <div className="mx-auto max-w-7xl">
                 <div className="text-center mb-8 sm:mb-16">
                     <h1 className="text-2xl xs:text-3xl font-black tracking-tight sm:text-5xl lg:text-6xl">

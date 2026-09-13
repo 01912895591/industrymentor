@@ -1,128 +1,320 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { CourseCard, type CourseData } from "@/components/courses/CourseCard";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Star } from "lucide-react";
-import { CourseModulesViewer } from "@/components/ui/CourseModulesViewer";
-import courseReact from "@/assets/course-react.jpg";
+import { Badge } from "@/components/ui/badge";
+import {
+  Search,
+  Filter,
+  X,
+  BookOpen,
+  AlertCircle,
+  SlidersHorizontal,
+  ArrowUpDown,
+  Sparkles,
+} from "lucide-react";
 
 export default function Courses() {
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<CourseData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMode, setSelectedMode] = useState<string>("all");
+  const [selectedLevel, setSelectedLevel] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
+
+  const loadCourses = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error: err } = await supabase
+        .from("courses")
+        .select(
+          "id, title, slug, description, price_cents, old_price_cents, cover_image_path, mode, rating, reviews, badge_text, instructor_heading, instructor_subheading, published, created_at"
+        )
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+
+      if (err) throw err;
+      setCourses((data || []) as CourseData[]);
+    } catch (err: any) {
+      console.error("Failed to load courses:", err);
+      setError("Failed to load course catalog. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadCourses = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("courses")
-          .select("*")
-          .eq("published", true)
-          .order("created_at", { ascending: false });
-        if (error) throw error;
-        setCourses(data || []);
-      } catch (err) {
-        console.error("Failed to load courses:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     void loadCourses();
   }, []);
 
+  // Compute unique filter options from actual data
+  const availableModes = useMemo(() => {
+    const modes = new Set<string>();
+    courses.forEach((c) => {
+      if (c.mode) modes.add(c.mode);
+    });
+    return Array.from(modes);
+  }, [courses]);
+
+  const availableLevels = useMemo(() => {
+    const levels = new Set<string>();
+    courses.forEach((c) => {
+      if (c.badge_text) levels.add(c.badge_text);
+    });
+    return Array.from(levels);
+  }, [courses]);
+
+  // Filtered & Sorted courses
+  const filteredCourses = useMemo(() => {
+    return courses
+      .filter((c) => {
+        // Search query check
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          const matchesTitle = c.title.toLowerCase().includes(q);
+          const matchesDesc = c.description?.toLowerCase().includes(q) ?? false;
+          const matchesInstructor =
+            (c.instructor_heading?.toLowerCase().includes(q) ?? false) ||
+            (c.instructor_subheading?.toLowerCase().includes(q) ?? false);
+          const matchesBadge = c.badge_text?.toLowerCase().includes(q) ?? false;
+          if (!matchesTitle && !matchesDesc && !matchesInstructor && !matchesBadge) {
+            return false;
+          }
+        }
+
+        // Mode filter
+        if (selectedMode !== "all" && c.mode?.toLowerCase() !== selectedMode.toLowerCase()) {
+          return false;
+        }
+
+        // Level filter
+        if (selectedLevel !== "all" && c.badge_text?.toLowerCase() !== selectedLevel.toLowerCase()) {
+          return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === "price-asc") {
+          return a.price_cents - b.price_cents;
+        }
+        if (sortBy === "price-desc") {
+          return b.price_cents - a.price_cents;
+        }
+        return 0; // Default creation order preserved
+      });
+  }, [courses, searchQuery, selectedMode, selectedLevel, sortBy]);
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedMode("all");
+    setSelectedLevel("all");
+    setSortBy("default");
+  };
+
+  const isFiltered = searchQuery !== "" || selectedMode !== "all" || selectedLevel !== "all" || sortBy !== "default";
+
   return (
-    <div className="min-h-screen pt-16 pb-12 sm:pt-24 sm:pb-16">
+    <div className="min-h-screen py-12 sm:py-16">
+      <SEOHead
+        title="IndustryMentor Courses | Practical Industry Learning"
+        description="Outcome-driven training programs focused on apparel merchandising, industrial engineering, and factory quality standards."
+        canonicalUrl="https://industrymentor.net/courses"
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-8 text-center sm:mb-12">
-          <h1 className="text-2xl xs:text-3xl font-black tracking-tight sm:text-5xl lg:text-6xl">
-            All <span className="text-primary">Courses</span>
+        
+        {/* Page Header */}
+        <header className="mb-10 sm:mb-14 text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider mb-3">
+            PRACTICAL INDUSTRY CURRICULUM
+          </div>
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            Build Skills That Work in the <span className="text-primary">Real Industry</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-sm xs:text-base sm:text-lg text-muted-foreground">
-            Explore our comprehensive catalog of industry-focused courses.
+          <p className="mt-4 text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed">
+            Direct training from factory heads, industrial engineers, and quality specialists. Master garment merchandising, production efficiency, and floor execution with verified credentials.
           </p>
+        </header>
+
+        {/* Discovery Control Bar: Search & Filters */}
+        <div className="mb-8 space-y-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-12">
+            
+            {/* Search Input */}
+            <div className="relative sm:col-span-6 lg:col-span-5">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search courses by topic, mentor, or skill..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-9 bg-card/60 border-border/70 text-foreground placeholder:text-muted-foreground/60 h-10 rounded-lg focus-visible:ring-primary"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Mode Filter */}
+            {availableModes.length > 0 && (
+              <div className="sm:col-span-3 lg:col-span-3">
+                <select
+                  value={selectedMode}
+                  onChange={(e) => setSelectedMode(e.target.value)}
+                  className="h-10 w-full rounded-lg border border-border/70 bg-card/60 px-3 text-xs sm:text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  aria-label="Filter by delivery mode"
+                >
+                  <option value="all">All Delivery Modes</option>
+                  {availableModes.map((m) => (
+                    <option key={m} value={m}>
+                      {m.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Price Sort Filter */}
+            <div className="sm:col-span-3 lg:col-span-4">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="h-10 w-full rounded-lg border border-border/70 bg-card/60 px-3 text-xs sm:text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                aria-label="Sort courses"
+              >
+                <option value="default">Sort: Recommended</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Level Filter Chips */}
+          {availableLevels.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-xs text-muted-foreground mr-1 flex items-center gap-1">
+                <SlidersHorizontal className="h-3 w-3" />
+                Level:
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedLevel("all")}
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  selectedLevel === "all"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-surface-2 text-muted-foreground hover:text-foreground border border-border/60"
+                }`}
+              >
+                All Levels
+              </button>
+              {availableLevels.map((lvl) => (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => setSelectedLevel(lvl)}
+                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                    selectedLevel === lvl
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-surface-2 text-muted-foreground hover:text-foreground border border-border/60"
+                  }`}
+                >
+                  {lvl}
+                </button>
+              ))}
+
+              {isFiltered && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="h-7 px-2 text-xs text-destructive hover:bg-destructive/10 ml-auto"
+                >
+                  <X className="mr-1 h-3 w-3" />
+                  Reset Filters
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
-        {loading ? (
+        {/* Results Counter */}
+        {!loading && !error && (
+          <div className="mb-6 flex items-center justify-between text-xs text-muted-foreground border-b border-border/40 pb-3">
+            <span>
+              Showing <strong className="text-foreground">{filteredCourses.length}</strong> {filteredCourses.length === 1 ? "course" : "courses"}
+            </span>
+            {isFiltered && (
+              <span className="text-primary font-medium">Filtered results active</span>
+            )}
+          </div>
+        )}
+
+        {/* Loading Skeletons */}
+        {loading && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[400px] animate-pulse rounded-3xl bg-muted/20" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {courses.map((c) => (
-              <article
-                key={c.title}
-                className="group relative overflow-hidden rounded-3xl border border-border/60 bg-card/25 shadow-elev transition-transform duration-300 hover:-translate-y-1"
+              <div
+                key={i}
+                className="h-[440px] animate-pulse rounded-lg bg-card/40 border border-border/60 p-6 space-y-4"
               >
-                <div className="relative">
-                  <img
-                    src={c.cover_image_path || courseReact}
-                    alt={`Course cover image for ${c.title}`}
-                    className="aspect-[3/2] w-full object-cover"
-                    loading="lazy"
-                  />
-                  <div className="absolute left-4 top-4 flex gap-2">
-                    <div className="rounded-full bg-background/55 px-3 py-1 text-xs font-semibold text-foreground backdrop-blur">
-                      COURSE
-                    </div>
-                    {c.mode && (
-                      <div className="rounded-full bg-primary/20 px-3 py-1 text-[10px] font-bold text-primary backdrop-blur uppercase">
-                        {c.mode}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-4 p-6">
-                  <div className="flex items-center justify-between text-[10px] sm:text-sm">
-                    <div className="flex items-center gap-1.5 text-muted-foreground sm:gap-2">
-                      <Star className="h-3 w-3 text-primary sm:h-4 sm:w-4" />
-                      <span className="font-medium text-foreground">{(c.rating || 5.0).toFixed(1)}</span>
-                      <span>({c.reviews || 0})</span>
-                    </div>
-                    <div className="text-primary/90">{c.badge_text || "Professional"}</div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-extrabold tracking-tight line-clamp-2 sm:text-xl">{c.title}</h3>
-                    <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">{c.description}</p>
-                  </div>
-
-                  <div className="h-px bg-border/60" />
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-semibold sm:text-sm">{c.instructor_heading || "Taught by Experts"}</div>
-                      <div className="text-[10px] text-muted-foreground sm:text-xs">{c.instructor_subheading || "Industry Professionals"}</div>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      {c.old_price_cents && (
-                        <div className="text-[12px] font-semibold text-red-500/80 line-through decoration-red-500/50 sm:text-sm">
-                          ৳{(c.old_price_cents / 100).toFixed(0)}
-                        </div>
-                      )}
-                      <div className="text-xl font-black tabular-nums sm:text-2xl">৳{(c.price_cents / 100).toFixed(0)}</div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex flex-col xs:grid xs:grid-cols-2 gap-3">
-                    <div className="w-full">
-                      <CourseModulesViewer courseId={c.id} courseTitle={c.title} />
-                    </div>
-                    <Button variant="hero" className="w-full px-2 text-[10px] sm:px-4 sm:text-sm" asChild>
-                      <Link to={`/enroll/${c.id}`}>Enroll Now</Link>
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  <div className="absolute -inset-10 bg-gradient-brand opacity-15 blur-2xl" />
-                </div>
-              </article>
+                <div className="aspect-[16/10] w-full rounded bg-muted/30" />
+                <div className="h-4 w-1/3 rounded bg-muted/40" />
+                <div className="h-6 w-3/4 rounded bg-muted/40" />
+                <div className="h-12 w-full rounded bg-muted/20" />
+                <div className="h-8 w-full rounded bg-muted/30 mt-6" />
+              </div>
             ))}
           </div>
         )}
+
+        {/* Error State */}
+        {error && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-8 text-center max-w-md mx-auto my-12">
+            <AlertCircle className="mx-auto h-8 w-8 text-destructive mb-3" />
+            <h3 className="text-base font-bold text-foreground">Catalog Unavailable</h3>
+            <p className="mt-1 text-xs text-muted-foreground">{error}</p>
+            <Button variant="hero" size="sm" onClick={() => void loadCourses()} className="mt-4 text-xs">
+              Try Again
+            </Button>
+          </div>
+        )}
+
+        {/* Empty State (No Matches) */}
+        {!loading && !error && filteredCourses.length === 0 && (
+          <div className="rounded-lg border border-border/70 bg-card/40 p-12 text-center max-w-md mx-auto my-12">
+            <BookOpen className="mx-auto h-10 w-10 text-muted-foreground/60 mb-3" />
+            <h3 className="text-lg font-bold text-foreground">No Courses Found</h3>
+            <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+              We couldn't find any courses matching your specific search or filter criteria.
+            </p>
+            <Button variant="outline" size="sm" onClick={resetFilters} className="mt-5 text-xs">
+              Clear All Filters
+            </Button>
+          </div>
+        )}
+
+        {/* Course Grid */}
+        {!loading && !error && filteredCourses.length > 0 && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredCourses.map((course) => (
+              <CourseCard key={course.id} course={course} showEnrollButton={true} />
+            ))}
+          </div>
+        )}
+
       </div>
     </div>
   );

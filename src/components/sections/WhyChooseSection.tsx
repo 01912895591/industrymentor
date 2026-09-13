@@ -46,22 +46,20 @@ export function WhyChooseSection() {
             success.
           </p>
         </div>
-        Line 49:
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {items.map((it) => (
             <div
               key={it.title}
-              className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/25 p-7 shadow-elev"
+              className="relative overflow-hidden rounded-lg border border-border/70 bg-card/50 p-6 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md"
             >
               <div className="flex items-center gap-4">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-brand shadow-glow">
-                  <it.icon className="h-6 w-6 text-primary-foreground" />
+                <div className="grid h-11 w-11 place-items-center rounded-md border border-primary/25 bg-primary/10 text-primary">
+                  <it.icon className="h-5 w-5" />
                 </div>
-                <div className="text-lg font-extrabold">{it.title}</div>
+                <div className="text-base font-bold text-foreground">{it.title}</div>
               </div>
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
-              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-brand opacity-15 blur-2xl" />
+              <p className="mt-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
             </div>
           ))}
         </div>

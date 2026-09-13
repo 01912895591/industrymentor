@@ -2,22 +2,59 @@ import { Button } from "@/components/ui/button";
 import defaultHeroImage from "@/assets/hero-garment.jpg";
 import courseReact from "@/assets/course-react.jpg";
 import courseDesign from "@/assets/course-design.jpg";
-import { LibraryBig, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, Users, FileText, ShieldCheck, MessageSquare, BookOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { AnimatedHeroTitle } from "@/components/ui/AnimatedHeroTitle";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
-
 export function HeroSection() {
-  const [heroImages, setHeroImages] = useState<string[]>([]);
-  const [loadingHero, setLoadingHero] = useState(true);
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
+  const [heroImages, setHeroImages] = useState<string[]>([
+    defaultHeroImage,
+    courseReact,
+    courseDesign,
+  ]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const autoplay = useRef(
+    Autoplay({
+      delay: 3500,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+    })
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      duration: 30,
+    },
+    [autoplay.current]
+  );
+
+  const scrollPrev = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollPrev();
+    autoplay.current.reset();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollNext();
+    autoplay.current.reset();
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+    emblaApi.on("select", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
+  }, [emblaApi]);
 
   useEffect(() => {
     const fetchHeroImages = async () => {
@@ -29,119 +66,192 @@ export function HeroSection() {
           .single()) as any;
 
         if (data?.value) {
+          let imgs: string[] = [];
           if (Array.isArray(data.value) && data.value.length > 0) {
-            setHeroImages(data.value);
-          } else if (typeof data.value === 'string') {
-            setHeroImages([data.value]);
+            imgs = data.value;
+          } else if (typeof data.value === "string") {
+            imgs = [data.value];
           }
-        } else {
-          // No data in DB, use defaults
-          setHeroImages([defaultHeroImage, courseReact, courseDesign]);
+
+          // Prioritize the Garment Quality Inspector banner (matching the user's primary choice) as the first slide
+          const sorted = [...imgs].sort((a, b) => {
+            if (a.includes("1772869711635")) return -1;
+            if (b.includes("1772869711635")) return 1;
+            return 0;
+          });
+
+          setHeroImages(sorted);
         }
       } catch (error) {
         console.error("Error fetching hero images:", error);
-        setHeroImages([defaultHeroImage, courseReact, courseDesign]);
-      } finally {
-        setLoadingHero(false);
       }
     };
 
     fetchHeroImages();
   }, []);
 
+  // Re-initialize Embla & reset autoplay whenever heroImages are fetched/updated
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit();
+    autoplay.current.reset();
+  }, [emblaApi, heroImages]);
+
   return (
-    <section className="relative overflow-hidden pt-6 xs:pt-8 sm:pt-20 lg:pt-24">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
+    <section className="relative overflow-hidden py-4 sm:py-6 lg:py-8 min-h-[calc(100vh-4rem)] flex flex-col justify-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 sm:gap-8 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:px-8 w-full">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/30 px-4 py-2 text-sm text-muted-foreground shadow-sm">
-            <span className="inline-block h-2 w-2 rounded-full bg-primary shadow-glow" />
-            Launching future leaders in Industry
+          <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
+            <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
+            INDUSTRY-LED LEARNING
           </div>
 
-          <AnimatedHeroTitle />
-          <p className="mt-4 max-w-xl text-pretty text-base xs:text-lg leading-relaxed text-muted-foreground sm:mt-5">
-            IndustryMentor bridges the gap between academic theory and real-world application. Enroll in expert-led courses
-            designed for the modern professional.
+          <div className="relative">
+            {/* Ambient soft glow aura behind headline */}
+            <div
+              className="pointer-events-none absolute -top-8 -left-6 -z-10 h-44 w-72 sm:w-96 rounded-full bg-primary/15 blur-3xl opacity-60"
+              aria-hidden="true"
+            />
+
+            <h1 className="mt-3 text-3xl xs:text-4xl sm:text-4xl lg:text-[2.6rem] xl:text-5xl font-black tracking-tight leading-[1.15]">
+              <span className="bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent inline-block">
+                Learn From Industry.
+              </span>{" "}
+              <span className="hero-gradient-text inline-block">
+                Build Real Skills.
+              </span>{" "}
+              <span className="hero-shimmer-text inline-block">
+                Move Your Career Forward.
+              </span>
+            </h1>
+          </div>
+
+          <p className="mt-3 max-w-xl text-pretty text-xs xs:text-sm sm:text-base leading-relaxed text-muted-foreground">
+            IndustryMentor bridges the gap between academic theory and real-world industrial execution. Master garment merchandising, industrial engineering, and factory operations with practitioner-led training, 1:1 expert mentorship, and verifiable credentials.
           </p>
 
-          <div className="mt-6 flex flex-row gap-2 sm:mt-8 sm:gap-3">
-            <Button variant="hero" size="lg" asChild className="flex-1 whitespace-nowrap px-3 text-[10px] sm:px-8 sm:text-base md:flex-none">
-              <NavLink to="/courses">Browse Courses</NavLink>
+          <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:gap-3 sm:mt-6">
+            <Button
+              variant="hero"
+              size="default"
+              asChild
+              className="group px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold shadow-md"
+            >
+              <NavLink to="/courses">
+                Explore Courses
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+              </NavLink>
             </Button>
-            <Button variant="outline" size="lg" asChild className="flex-1 whitespace-nowrap px-3 text-[10px] sm:px-8 sm:text-base md:flex-none">
+
+            <Button
+              variant="outline"
+              size="default"
+              asChild
+              className="group px-4.5 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold border-border/80 bg-card/40 backdrop-blur-md transition-all duration-200 hover:border-primary/50 hover:bg-card/70 hover:shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)]"
+            >
               <NavLink to="/#library">
-                <LibraryBig className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span className="hidden xs:inline">Explore Library</span>
-                <span className="xs:hidden">Library</span>
+                <BookOpen className="mr-2 h-4 w-4 text-primary transition-transform duration-200 group-hover:scale-110" />
+                Explore Library
+              </NavLink>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="default"
+              asChild
+              className="group px-4 sm:px-4.5 py-2.5 text-xs sm:text-sm font-semibold border-border/70 bg-card/25 backdrop-blur-md transition-all duration-200 hover:border-border-active hover:bg-card/60 hover:text-foreground hover:shadow-sm"
+            >
+              <NavLink to="/contact-us">
+                <MessageSquare className="mr-2 h-4 w-4 text-primary/90 transition-transform duration-200 group-hover:scale-110" />
+                Contact Us
               </NavLink>
             </Button>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-2 text-[10px] sm:grid-cols-3 sm:gap-4 sm:text-xs">
-            <div className="rounded-xl border border-border/60 bg-card/25 p-2 transition-colors hover:bg-card/40 sm:rounded-2xl sm:p-3">
-              <div className="text-base font-extrabold sm:text-xl">120+</div>
-              <div className="text-muted-foreground">Lessons</div>
+          {/* Practical Highlights */}
+          <div className="mt-5 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted-foreground border-t border-border/40 pt-4">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <span>Practitioner-Led</span>
             </div>
-            <div className="rounded-xl border border-border/60 bg-card/25 p-2 transition-colors hover:bg-card/40 sm:rounded-2xl sm:p-3">
-              <div className="text-base font-extrabold sm:text-xl">30+</div>
-              <div className="text-muted-foreground">Mentors</div>
+            <span className="text-border">•</span>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <span>Real Production SOPs</span>
             </div>
-            <div className="rounded-xl border border-border/60 bg-card/25 p-2 transition-colors hover:bg-card/40 sm:rounded-2xl sm:p-3">
-              <div className="text-base font-extrabold sm:text-xl">4.8</div>
-              <div className="text-muted-foreground">Avg rating</div>
+            <span className="text-border">•</span>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <span>Verifiable Certificates</span>
             </div>
           </div>
         </div>
 
-        <div className="relative group/slider">
-          <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/20 shadow-elev sm:rounded-[2rem]">
-            {loadingHero ? (
-              <div className="aspect-[16/10] w-full animate-pulse bg-muted/20" />
-            ) : (
-              <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex">
-                  {heroImages.map((src, index) => (
-                    <div className="flex-[0_0_100%] min-w-0" key={index}>
-                      <img
-                        src={src}
-                        alt={`Hero slide ${index + 1}`}
-                        className="aspect-[16/10] w-full object-cover object-center"
-                        loading={index === 0 ? "eager" : "lazy"}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+        <div className="relative group/slider w-full max-w-lg lg:max-w-none mx-auto">
+          <div className="relative overflow-hidden rounded-xl border border-border/75 bg-card/40 shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-primary/40">
+            {/* Top technical badge */}
+            <div className="absolute top-3 left-3 z-20 rounded-md border border-border/60 bg-background/85 px-2.5 py-1 text-[11px] font-semibold text-foreground backdrop-blur-md shadow-sm">
+              Practical Training &amp; Floor Execution
+            </div>
 
-            {/* Slider Navigation & Dots (only if more than 1 image and not loading) */}
-            {!loadingHero && heroImages.length > 1 && (
+            <div className="overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
+              <div className="flex">
+                {heroImages.map((src, index) => (
+                  <div className="flex-[0_0_100%] min-w-0" key={index}>
+                    <img
+                      src={src}
+                      alt={`Course banner ad slide ${index + 1}`}
+                      className="aspect-[3/2] w-full object-cover object-center select-none"
+                      loading={index === 0 ? "eager" : "lazy"}
+                      draggable={false}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Slider Navigation & Dots */}
+            {heroImages.length > 1 && (
               <>
-                <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover/slider:opacity-100 transition-opacity">
+                <div className="absolute inset-0 flex items-center justify-between p-3 opacity-0 group-hover/slider:opacity-100 transition-opacity pointer-events-none z-20">
                   <Button
                     variant="soft"
                     size="icon"
-                    className="h-9 w-9 rounded-full bg-background/50 backdrop-blur-sm border-none hover:bg-primary/20"
+                    className="pointer-events-auto h-9 w-9 rounded-full bg-background/70 backdrop-blur-md border border-border/60 hover:bg-primary/20 text-foreground shadow-md transition-transform hover:scale-105"
                     onClick={(e) => { e.preventDefault(); scrollPrev(); }}
+                    aria-label="Previous slide"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </Button>
                   <Button
                     variant="soft"
                     size="icon"
-                    className="h-9 w-9 rounded-full bg-background/50 backdrop-blur-sm border-none hover:bg-primary/20"
+                    className="pointer-events-auto h-9 w-9 rounded-full bg-background/70 backdrop-blur-md border border-border/60 hover:bg-primary/20 text-foreground shadow-md transition-transform hover:scale-105"
                     onClick={(e) => { e.preventDefault(); scrollNext(); }}
+                    aria-label="Next slide"
                   >
                     <ChevronRight className="h-5 w-5" />
                   </Button>
                 </div>
 
                 {/* Dots Indicator */}
-                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
+                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5 z-20">
                   {heroImages.map((_, i) => (
-                    <div
+                    <button
                       key={i}
-                      className="h-1.5 w-1.5 rounded-full bg-background/50 transition-all"
+                      type="button"
+                      onClick={() => {
+                        if (emblaApi) {
+                          emblaApi.scrollTo(i);
+                          autoplay.current.reset();
+                        }
+                      }}
+                      aria-label={`Go to slide ${i + 1}`}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        selectedIndex === i
+                          ? "w-6 bg-primary shadow-[0_0_8px_rgba(56,189,248,0.6)]"
+                          : "w-2 bg-white/50 hover:bg-white/90"
+                      }`}
                     />
                   ))}
                 </div>

@@ -10,6 +10,9 @@ import {
   LogOut,
   MessageSquare,
   Image,
+  Compass,
+  FolderKanban,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -22,6 +25,9 @@ const sidebarItems = [
   { icon: Users, label: "Users", href: "/admin/users" },
   { icon: LayoutDashboard, label: "Mentors", href: "/admin/mentors" },
   { icon: BookOpen, label: "Courses", href: "/admin/courses" },
+  { icon: Compass, label: "Career & Skills", href: "/admin/career-skills" },
+  { icon: FolderKanban, label: "Projects", href: "/admin/projects" },
+  { icon: ClipboardCheck, label: "Submissions", href: "/admin/project-submissions" },
   { icon: FileText, label: "Blogs", href: "/admin/blogs" },
   { icon: FileText, label: "Content", href: "/admin/content" },
   { icon: FileText, label: "Certificates", href: "/admin/certificates" },
@@ -31,7 +37,12 @@ const sidebarItems = [
   { icon: Settings, label: "Settings", href: "/admin/settings" },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  onClose?: () => void;
+  className?: string;
+}
+
+export function AdminSidebar({ onClose, className }: AdminSidebarProps = {}) {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
@@ -44,7 +55,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="hidden h-screen w-64 flex-col border-r bg-card/50 backdrop-blur-xl lg:flex fixed left-0 top-0 overflow-y-auto">
+    <aside className={cn("h-screen w-64 flex-col border-r bg-card/95 backdrop-blur-xl flex overflow-y-auto", className)}>
       <div className="flex h-16 items-center border-b px-6 bg-gradient-to-r from-primary/10 to-transparent">
         <Link to="/" className="flex items-center gap-2 font-black text-xl tracking-tight">
           {isLoading ? (
@@ -71,6 +82,7 @@ export function AdminSidebar() {
               <Link
                 key={item.href}
                 to={item.href}
+                onClick={onClose}
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300",
                   isActive
@@ -87,6 +99,7 @@ export function AdminSidebar() {
           <div className="mt-4 pt-4 border-t border-border/40">
             <Link
               to="/"
+              onClick={onClose}
               className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-300"
             >
               <ExternalLink className="h-4 w-4" />

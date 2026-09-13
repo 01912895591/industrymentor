@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useLogo } from "@/hooks/useLogo";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const loginSchema = z.object({
   identifier: z.string().trim().min(1).max(255),
@@ -51,10 +52,13 @@ export default function Auth() {
   const { logoUrl, isLoading: isLogoLoading } = useLogo();
 
   const redirectTo = useMemo(() => {
-    const from = (location.state as any)?.from as string | undefined;
+    const rawFrom = (location.state as any)?.from as string | undefined;
+    // Security hardening: ensure internal relative path only; reject protocol-relative (//) and backslash (\\)
+    const from = (rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//") && !rawFrom.includes("\\"))
+      ? rawFrom
+      : "/";
     const search = location.search.replace(/^\?mode=[^&]*&?/, "?");
-    const path = from || "/";
-    return search && search !== "?" ? `${path}${search}` : path;
+    return search && search !== "?" ? `${from}${search}` : from;
   }, [location.state, location.search]);
 
   const loginForm = useForm<LoginValues>({
@@ -100,21 +104,6 @@ export default function Auth() {
     }
   }, [location.search, loading, user, navigate, redirectTo]);
 
-  const maybeBootstrapAdmin = async (email: string) => {
-    const BOOTSTRAP_ADMIN_EMAIL: string = "maqaiyumtalukder@gmail.com";
-    if (!BOOTSTRAP_ADMIN_EMAIL) return;
-    if (email.trim().toLowerCase() !== BOOTSTRAP_ADMIN_EMAIL.trim().toLowerCase()) return;
-
-    const { data } = await supabase.auth.getUser();
-    const userId = data.user?.id;
-    if (!userId) return;
-
-    const { error } = await (supabase as any).from("user_roles").insert({ user_id: userId, role: "admin" });
-    if (!error) {
-      toast({ title: "Admin access granted", description: "You are now the first admin." });
-    }
-  };
-
   const onLogin = async (values: LoginValues) => {
     setBusy(true);
     try {
@@ -137,11 +126,6 @@ export default function Auth() {
           return;
         }
 
-        // We need the email to sign in with password. Since we only have user_id, 
-        // we might need to fetch the email from auth.users (which we can't do client-side easily)
-        // OR we store the email in the profiles table too.
-        // Let's check if profiles has email. If not, we should probably add it or join.
-        // For now, let's assume we can get it from profiles if we add it there during signup.
         const { data: profileWithEmail, error: emailError } = await (supabase as any)
           .from("profiles")
           .select("email")
@@ -166,9 +150,6 @@ export default function Auth() {
       if (error) {
         toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
         return;
-      }
-      if (data.session) {
-        await maybeBootstrapAdmin(email);
       }
       const { data: adminFlag } = await (supabase as any).rpc("has_role", {
         _user_id: data.user?.id,
@@ -236,8 +217,6 @@ export default function Auth() {
           );
       }
 
-      await maybeBootstrapAdmin(values.email);
-
       const { data: adminFlag } = await (supabase as any).rpc("has_role", {
         _user_id: data.user?.id,
         _role: "admin",
@@ -252,6 +231,7 @@ export default function Auth() {
 
   return (
     <AmbientSpotlight>
+      <SEOHead title="Sign In & Register | IndustryMentor" noindex={true} />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14">
         <div className="mx-auto max-w-md overflow-hidden rounded-2xl border border-border/60 bg-card/25 shadow-elev sm:rounded-3xl">
           <div className="p-5 sm:p-8">

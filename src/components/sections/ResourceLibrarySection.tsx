@@ -183,10 +183,10 @@ export function ResourceLibrarySection() {
                 <button
                   key={ind}
                   onClick={() => setSelectedIndustry(ind)}
-                  className="group flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-border/60 bg-card/25 p-6 sm:p-8 text-center shadow-elev transition-all hover:bg-card/50"
+                  className="group flex flex-col items-center justify-center rounded-lg border border-border/70 bg-card/40 p-6 sm:p-8 text-center shadow-sm transition-all hover:border-border-active hover:bg-card/60"
                   type="button"
                 >
-                  <div className="mb-4 rounded-full bg-primary/10 p-3 sm:p-4 text-primary group-hover:bg-primary/20">
+                  <div className="mb-4 rounded-md bg-primary/10 p-3 sm:p-4 text-primary group-hover:bg-primary/20">
                     <Folder className="h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold">{ind} Industry</h3>
@@ -203,10 +203,10 @@ export function ResourceLibrarySection() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className="group flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-border/60 bg-card/25 p-6 sm:p-8 text-center shadow-elev transition-all hover:bg-card/50"
+                  className="group flex flex-col items-center justify-center rounded-lg border border-border/70 bg-card/40 p-6 sm:p-8 text-center shadow-sm transition-all hover:border-border-active hover:bg-card/60"
                   type="button"
                 >
-                  <div className="mb-4 rounded-full bg-primary/10 p-3 sm:p-4 text-primary group-hover:bg-primary/20">
+                  <div className="mb-4 rounded-md bg-primary/10 p-3 sm:p-4 text-primary group-hover:bg-primary/20">
                     <Folder className="h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold">{cat} Dept</h3>
@@ -222,7 +222,7 @@ export function ResourceLibrarySection() {
               {filteredItems.map((it) => (
                 <div
                   key={it.id}
-                  className="group flex flex-col overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-border/60 bg-card/25 shadow-elev transition-all hover:bg-card/40 hover:shadow-glow"
+                  className="group flex flex-col overflow-hidden rounded-lg border border-border/70 bg-card/50 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md hover:-translate-y-0.5"
                 >
                   {/* Item Image / Cover */}
                   <div className="relative aspect-[16/10] overflow-hidden bg-muted/20">

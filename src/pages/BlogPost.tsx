@@ -1,9 +1,9 @@
-// Imports removed
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Calendar, ChevronLeft, User } from "lucide-react";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function BlogPost() {
     const { slug } = useParams();
@@ -42,6 +42,10 @@ export default function BlogPost() {
     if (!blog) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center p-4 text-center py-20">
+                <SEOHead
+                    title="Post Not Found — IndustryMentor"
+                    noindex={true}
+                />
                 <h1 className="text-4xl font-black mb-4">Post Not Found</h1>
                 <p className="text-muted-foreground mb-8 text-lg">The blog post you're looking for doesn't exist or has been removed.</p>
                 <Button variant="hero" asChild>
@@ -53,6 +57,29 @@ export default function BlogPost() {
 
     return (
         <main className="flex-1 py-12 px-4 sm:px-6">
+            <SEOHead
+                title={`${blog.title} | IndustryMentor`}
+                description={blog.content?.slice(0, 160) || "Technical article by IndustryMentor practitioners."}
+                canonicalUrl={`https://industrymentor.net/blog/${blog.slug}`}
+                ogType="article"
+                ogImage={blog.cover_image_url || undefined}
+                jsonLd={{
+                    "@context": "https://schema.org",
+                    "@type": "BlogPosting",
+                    headline: blog.title,
+                    datePublished: blog.created_at,
+                    image: blog.cover_image_url || undefined,
+                    author: {
+                        "@type": "Organization",
+                        name: "IndustryMentor",
+                    },
+                    publisher: {
+                        "@type": "Organization",
+                        name: "IndustryMentor",
+                        url: "https://industrymentor.net",
+                    },
+                }}
+            />
             <article className="mx-auto max-w-4xl">
                 <Button variant="ghost" className="mb-8 p-0 hover:bg-transparent hover:text-primary transition-colors" asChild>
                     <Link to="/blog">

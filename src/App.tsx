@@ -17,8 +17,12 @@ import { Loader2 } from "lucide-react";
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Courses = lazy(() => import("@/pages/Courses"));
+const CourseDetail = lazy(() => import("@/pages/CourseDetail"));
+const CourseLearning = lazy(() => import("@/pages/CourseLearning"));
 const Library = lazy(() => import("@/pages/Library"));
 const Mentors = lazy(() => import("@/pages/Mentors"));
+const MentorProfile = lazy(() => import("@/pages/MentorProfile"));
+const Career = lazy(() => import("@/pages/Career"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Auth = lazy(() => import("@/pages/Auth"));
@@ -28,6 +32,11 @@ const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const CourseEnrollment = lazy(() => import("@/pages/CourseEnrollment"));
 const Stopwatch = lazy(() => import("@/pages/Stopwatch"));
 const VerifyCertificate = lazy(() => import("@/pages/VerifyCertificate"));
+const Projects = lazy(() => import("@/pages/Projects"));
+const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
+const ProjectWorkspace = lazy(() => import("@/pages/ProjectWorkspace"));
+const PortfolioDashboard = lazy(() => import("@/pages/PortfolioDashboard"));
+const PublicPortfolio = lazy(() => import("@/pages/PublicPortfolio"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
@@ -41,6 +50,9 @@ const BlogsAdmin = lazy(() => import("@/features/admin/BlogsAdmin").then(module 
 const MentorsAdmin = lazy(() => import("@/features/admin/MentorsAdmin").then(module => ({ default: module.MentorsAdmin })));
 const MessagesAdmin = lazy(() => import("@/features/admin/MessagesAdmin").then(module => ({ default: module.MessagesAdmin })));
 const FaviconAdmin = lazy(() => import("@/features/admin/FaviconAdmin").then(module => ({ default: module.FaviconAdmin })));
+const CareerSkillsAdmin = lazy(() => import("@/features/admin/career-skills/CareerSkillsAdmin").then(module => ({ default: module.CareerSkillsAdmin })));
+const ProjectsAdmin = lazy(() => import("@/features/admin/projects/ProjectsAdmin").then(module => ({ default: module.ProjectsAdmin })));
+const ProjectSubmissionsAdmin = lazy(() => import("@/features/admin/project-submissions/ProjectSubmissionsAdmin").then(module => ({ default: module.ProjectSubmissionsAdmin })));
 
 const queryClient = new QueryClient();
 
@@ -67,8 +79,21 @@ const App = () => {
                   <Route element={<SiteLayout />}>
                     <Route path="/" element={<Index />} />
                     <Route path="/courses" element={<Courses />} />
+                    <Route path="/courses/:courseId" element={<CourseDetail />} />
                     <Route path="/library" element={<Library />} />
                     <Route path="/mentors" element={<Mentors />} />
+                    <Route path="/mentors/:mentorId" element={<MentorProfile />} />
+                    <Route path="/career" element={<Career />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/projects/:slug" element={<ProjectDetail />} />
+                    <Route
+                      path="/projects/:slug/workspace"
+                      element={
+                        <RequireAuth>
+                          <ProjectWorkspace />
+                        </RequireAuth>
+                      }
+                    />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/contact-us" element={<Contact />} />
                     <Route path="/auth" element={<Auth />} />
@@ -77,6 +102,7 @@ const App = () => {
                     <Route path="/blog/:slug" element={<BlogPost />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/stopwatch" element={<Stopwatch />} />
+                    <Route path="/verify" element={<VerifyCertificate />} />
                     <Route path="/verify/:id" element={<VerifyCertificate />} />
                     <Route
                       path="/dashboard"
@@ -87,6 +113,15 @@ const App = () => {
                       }
                     />
                     <Route
+                      path="/portfolio"
+                      element={
+                        <RequireAuth>
+                          <PortfolioDashboard />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route path="/portfolio/:slug" element={<PublicPortfolio />} />
+                    <Route
                       path="/enroll/:courseId"
                       element={
                         <RequireAuth>
@@ -95,6 +130,16 @@ const App = () => {
                       }
                     />
                   </Route>
+
+                  {/* Dedicated Enrolled Student Classroom (Distraction-Free LMS) */}
+                  <Route
+                    path="/learn/:courseId"
+                    element={
+                      <RequireAuth>
+                        <CourseLearning />
+                      </RequireAuth>
+                    }
+                  />
 
                   {/* Admin Routes */}
                   <Route
@@ -116,6 +161,9 @@ const App = () => {
                     <Route path="finance" element={<FinanceAdmin />} />
                     <Route path="favicon" element={<FaviconAdmin />} />
                     <Route path="settings" element={<SettingsAdmin />} />
+                    <Route path="career-skills" element={<CareerSkillsAdmin />} />
+                    <Route path="projects" element={<ProjectsAdmin />} />
+                    <Route path="project-submissions" element={<ProjectSubmissionsAdmin />} />
                   </Route>
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

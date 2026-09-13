@@ -85,16 +85,50 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3 md:grid-cols-4">
-            <div className="space-y-2">
-              <div className="font-semibold flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-primary" />
+          <div className="grid grid-cols-2 gap-8 text-xs sm:text-sm sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
+            {/* 1. Platform */}
+            <div className="space-y-2.5">
+              <div className="font-semibold text-foreground tracking-tight">Platform</div>
+              <div className="flex flex-col gap-1.5 text-muted-foreground">
+                <NavLink to="/courses" className="hover:text-foreground transition-colors">Courses</NavLink>
+                <NavLink to="/mentors" className="hover:text-foreground transition-colors">Mentors</NavLink>
+                <NavLink to="/#library" className="hover:text-foreground transition-colors">Resources &amp; SOPs</NavLink>
+                <NavLink to="/projects" className="hover:text-foreground transition-colors">Projects</NavLink>
+                <NavLink to="/career" className="hover:text-foreground transition-colors">Career Pathway</NavLink>
+              </div>
+            </div>
+
+            {/* 2. Company */}
+            <div className="space-y-2.5">
+              <div className="font-semibold text-foreground tracking-tight">Company</div>
+              <div className="flex flex-col gap-1.5 text-muted-foreground">
+                <NavLink to="/contact-us" className="hover:text-foreground transition-colors">About Us</NavLink>
+                <NavLink to="/contact-us" className="hover:text-foreground transition-colors">Contact Us</NavLink>
+                <NavLink to="/blog" className="hover:text-foreground transition-colors">Blog &amp; Insights</NavLink>
+              </div>
+            </div>
+
+            {/* 3. Account & Verification */}
+            <div className="space-y-2.5">
+              <div className="font-semibold text-foreground tracking-tight">Account &amp; Security</div>
+              <div className="flex flex-col gap-1.5 text-muted-foreground">
+                <NavLink to="/auth?mode=login" className="hover:text-foreground transition-colors">Student Login</NavLink>
+                <NavLink to="/auth?mode=signup" className="hover:text-foreground transition-colors">Register Account</NavLink>
+                <NavLink to="/dashboard" className="hover:text-foreground transition-colors">Student Dashboard</NavLink>
+                <NavLink to="/verify" className="hover:text-foreground transition-colors">Verify Certificate</NavLink>
+              </div>
+            </div>
+
+            {/* 4. Office & Location */}
+            <div className="space-y-2.5">
+              <div className="font-semibold text-foreground flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-primary" />
                 Office Location
               </div>
-              <div className="text-muted-foreground leading-relaxed">
-                {location.address || "Add address in admin settings"}
+              <div className="text-muted-foreground leading-relaxed text-xs">
+                {location.address || "Contact support for office appointments"}
                 {location.mapUrl && (
-                  <div className="mt-4">
+                  <div className="mt-3">
                     {location.mapUrl.includes("google.com/maps/embed") ? (
                       <div className="overflow-hidden rounded-lg border border-border/60 shadow-sm aspect-video">
                         <iframe
@@ -113,37 +147,14 @@ export function SiteFooter() {
                         href={location.mapUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-2 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-md bg-card/60 border border-border/60 px-2.5 py-1.5 text-xs text-primary hover:text-foreground transition-colors"
                       >
                         <Globe className="h-3.5 w-3.5" />
-                        View on Google Maps
+                        View Map
                       </a>
                     )}
                   </div>
                 )}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="font-semibold">Explore</div>
-              <div className="flex flex-col gap-1 text-muted-foreground">
-                <NavLink to="/courses" className="hover:text-foreground">Courses</NavLink>
-                <NavLink to="/blog" className="hover:text-foreground">Blog</NavLink>
-                <NavLink to="/#library" className="hover:text-foreground">Library</NavLink>
-                <NavLink to="/#mentors" className="hover:text-foreground">Mentors</NavLink>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="font-semibold">Company</div>
-              <div className="flex flex-col gap-1 text-muted-foreground">
-                <NavLink to="/contact-us" className="hover:text-foreground">Contact</NavLink>
-                <NavLink to="/dashboard" className="hover:text-foreground">Dashboard</NavLink>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="font-semibold">Legal</div>
-              <div className="flex flex-col gap-1 text-muted-foreground">
-                <a href="#" className="hover:text-foreground">Privacy</a>
-                <a href="#" className="hover:text-foreground">Terms</a>
               </div>
             </div>
           </div>
