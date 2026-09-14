@@ -217,6 +217,16 @@ export default function Auth() {
           );
       }
 
+      // If email confirmation is required by Supabase, data.session is null
+      if (!data.session) {
+        toast({
+          title: "Verify your email",
+          description: `We've sent a verification link to ${values.email}. Please check your inbox (and spam folder) to activate your account.`,
+        });
+        setMode("login");
+        return;
+      }
+
       const { data: adminFlag } = await (supabase as any).rpc("has_role", {
         _user_id: data.user?.id,
         _role: "admin",
