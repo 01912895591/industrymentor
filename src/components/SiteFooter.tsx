@@ -118,6 +118,9 @@ export function SiteFooter() {
                 <NavLink to="/contact-us" className="hover:text-foreground transition-colors">About Us</NavLink>
                 <NavLink to="/contact-us" className="hover:text-foreground transition-colors">Contact Us</NavLink>
                 <NavLink to="/blog" className="hover:text-foreground transition-colors">Blog &amp; Insights</NavLink>
+                <NavLink to="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</NavLink>
+                <NavLink to="/terms-of-service" className="hover:text-foreground transition-colors">Terms of Service</NavLink>
+                <NavLink to="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</NavLink>
               </div>
             </div>
 
@@ -173,8 +176,15 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
           <div>© {new Date().getFullYear()} IndustryMentor. All rights reserved.</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <NavLink to="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</NavLink>
+            <span>•</span>
+            <NavLink to="/terms-of-service" className="hover:text-foreground transition-colors">Terms of Service</NavLink>
+            <span>•</span>
+            <NavLink to="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</NavLink>
+          </div>
           <div className="tabular-nums">Support: {contactPhone}</div>
         </div>
       </div>

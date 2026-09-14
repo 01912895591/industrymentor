@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SiteLayout } from "@/components/SiteLayout";
 import { AuthProvider } from "@/components/auth/AuthProvider";
@@ -37,6 +37,9 @@ const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 const ProjectWorkspace = lazy(() => import("@/pages/ProjectWorkspace"));
 const PortfolioDashboard = lazy(() => import("@/pages/PortfolioDashboard"));
 const PublicPortfolio = lazy(() => import("@/pages/PublicPortfolio"));
+const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("@/pages/TermsOfService"));
+const RefundPolicy = lazy(() => import("@/pages/RefundPolicy"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
@@ -129,6 +132,11 @@ const App = () => {
                         </RequireAuth>
                       }
                     />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
+                    <Route path="/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/terms" element={<Navigate to="/terms-of-service" replace />} />
+                    <Route path="/refund-policy" element={<RefundPolicy />} />
                   </Route>
 
                   {/* Dedicated Enrolled Student Classroom (Distraction-Free LMS) */}

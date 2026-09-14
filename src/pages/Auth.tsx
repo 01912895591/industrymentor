@@ -388,6 +388,17 @@ export default function Auth() {
                   {busy ? "Creating…" : "Create Account"}
                 </Button>
 
+                <p className="text-center text-xs text-muted-foreground leading-relaxed">
+                  By registering, you agree to our{" "}
+                  <Link to="/terms-of-service" className="text-primary underline-offset-4 hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy-policy" className="text-primary underline-offset-4 hover:underline">
+                    Privacy Policy
+                  </Link>.
+                </p>
+
                 <p className="text-center text-sm text-muted-foreground">
                   Already have an account?{" "}
                   <button

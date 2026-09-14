@@ -506,6 +506,12 @@ export default function CourseEnrollment() {
                                         <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
                                             <ShieldCheck className="h-3 w-3" /> Manual Verification within 1–2 hours
                                         </p>
+                                        <p className="text-xs text-center text-muted-foreground leading-relaxed px-2">
+                                            By submitting payment, you agree to our{" "}
+                                            <Link to="/terms-of-service" className="text-primary hover:underline">Terms of Service</Link>,{" "}
+                                            <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>, and{" "}
+                                            <Link to="/refund-policy" className="text-primary hover:underline">Refund Policy</Link>.
+                                        </p>
                                     </CardFooter>
                                 </Card>
                             )}

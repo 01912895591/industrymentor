@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import defaultHeroImage from "@/assets/hero-garment.jpg";
 import courseReact from "@/assets/course-react.jpg";
 import courseDesign from "@/assets/course-design.jpg";
-import { ChevronLeft, ChevronRight, ArrowRight, Users, FileText, ShieldCheck, MessageSquare, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, Users, FileText, ShieldCheck, MessageSquare, BookOpen, GraduationCap, Factory } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+
+const DYNAMIC_WORDS = ["Lead", "Succeed", "Innovate", "Scale"];
 
 export function HeroSection() {
   const [heroImages, setHeroImages] = useState<string[]>([
@@ -16,6 +18,20 @@ export function HeroSection() {
     courseDesign,
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [wordPhase, setWordPhase] = useState<"enter" | "exit">("enter");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordPhase("exit");
+      setTimeout(() => {
+        setWordIndex((prev) => (prev + 1) % DYNAMIC_WORDS.length);
+        setWordPhase("enter");
+      }, 350);
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const autoplay = useRef(
     Autoplay({
@@ -113,21 +129,39 @@ export function HeroSection() {
               aria-hidden="true"
             />
 
-            <h1 className="mt-3 text-3xl xs:text-4xl sm:text-4xl lg:text-[2.6rem] xl:text-5xl font-black tracking-tight leading-[1.15]">
-              <span className="bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent inline-block">
-                Learn From Industry.
-              </span>{" "}
-              <span className="hero-gradient-text inline-block">
-                Build Real Skills.
-              </span>{" "}
-              <span className="hero-shimmer-text inline-block">
-                Move Your Career Forward.
+            <h1
+              className="mt-3 text-3xl xs:text-4xl sm:text-4xl lg:text-[2.6rem] xl:text-5xl font-black leading-[1.2]"
+              aria-label={`Guiding You To ${DYNAMIC_WORDS[wordIndex]}`}
+            >
+              <span className="block text-foreground pb-1 tracking-normal sm:tracking-tight">
+                Guiding You To
+              </span>
+              <span className="block mt-1 sm:mt-2 h-[1.25em] overflow-visible">
+                <span
+                  key={DYNAMIC_WORDS[wordIndex]}
+                  className={`hero-dynamic-word inline-block ${
+                    wordPhase === "enter" ? "hero-word-enter" : "hero-word-exit"
+                  }`}
+                >
+                  {DYNAMIC_WORDS[wordIndex]}
+                </span>
               </span>
             </h1>
           </div>
 
+          {/* Progression Pathway Strip */}
+          <div className="mt-3.5 flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-medium text-slate-200 tracking-normal">
+            <span>Learn</span>
+            <span className="text-border/70 select-none">|</span>
+            <span>Apply</span>
+            <span className="text-border/70 select-none">|</span>
+            <span>Get Mentored</span>
+            <span className="text-border/70 select-none">|</span>
+            <span>Build Your Career</span>
+          </div>
+
           <p className="mt-3 max-w-xl text-pretty text-xs xs:text-sm sm:text-base leading-relaxed text-muted-foreground">
-            IndustryMentor bridges the gap between academic theory and real-world industrial execution. Master garment merchandising, industrial engineering, and factory operations with practitioner-led training, 1:1 expert mentorship, and verifiable credentials.
+            Practical, industry-focused training for the garments and other manufacturing industries — so you can gain real skills, confidence, and a better future.
           </p>
 
           <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:gap-3 sm:mt-6">
@@ -168,21 +202,34 @@ export function HeroSection() {
             </Button>
           </div>
 
-          {/* Practical Highlights */}
-          <div className="mt-5 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted-foreground border-t border-border/40 pt-4">
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>Practitioner-Led</span>
+          {/* Key Value Pillars / Trust Highlights */}
+          <div className="mt-6 flex flex-wrap items-center gap-4 sm:gap-6 border-t border-border/40 pt-5">
+            <div className="flex items-center gap-2.5">
+              <GraduationCap className="h-6 w-6 text-emerald-400 flex-shrink-0" strokeWidth={2} />
+              <div className="text-xs sm:text-[13px] font-medium leading-tight text-slate-200">
+                <div>Practitioner-Led</div>
+                <div>Learning</div>
+              </div>
             </div>
-            <span className="text-border">•</span>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>Real Production SOPs</span>
+
+            <div className="hidden sm:block h-7 w-px bg-border/60" aria-hidden="true" />
+
+            <div className="flex items-center gap-2.5">
+              <Factory className="h-6 w-6 text-emerald-400 flex-shrink-0" strokeWidth={2} />
+              <div className="text-xs sm:text-[13px] font-medium leading-tight text-slate-200">
+                <div>Real Industry</div>
+                <div>Knowledge</div>
+              </div>
             </div>
-            <span className="text-border">•</span>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>Verifiable Certificates</span>
+
+            <div className="hidden sm:block h-7 w-px bg-border/60" aria-hidden="true" />
+
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="h-6 w-6 text-emerald-400 flex-shrink-0" strokeWidth={2} />
+              <div className="text-xs sm:text-[13px] font-medium leading-tight text-slate-200">
+                <div>Verifiable</div>
+                <div>Certificates</div>
+              </div>
             </div>
           </div>
         </div>
@@ -257,6 +304,41 @@ export function HeroSection() {
                 </div>
               </>
             )}
+          </div>
+
+          {/* Signature Brand Motto Handwriting Effect (Sleek & Thin) */}
+          <div className="mt-3 sm:mt-4 flex justify-center sm:justify-end items-center px-4 sm:px-0 sm:pr-8 select-none">
+            <div className="relative inline-block transform -rotate-[10deg] sm:-rotate-[11deg] transition-all duration-300 hover:rotate-0 hover:scale-105 group/motto cursor-default">
+              <div className="font-handwriting text-[17px] xs:text-[19px] sm:text-[22px] text-slate-200/95 font-light tracking-wide leading-[1.05] drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                <div className="whitespace-nowrap">Skills Today</div>
+                <div className="whitespace-nowrap pl-2 sm:pl-2.5">A Better Tomorrow</div>
+              </div>
+              <svg
+                className="w-36 xs:w-40 sm:w-44 h-3 sm:h-3.5 -mt-0.5 ml-1 transition-transform duration-300 group-hover/motto:scale-105"
+                viewBox="0 0 200 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="signatureSwooshGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="35%" stopColor="#06b6d4" />
+                    <stop offset="70%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="#378ADD" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M4 13 C 45 14.5, 110 13.5, 196 4 C 135 10.5, 75 12, 4 13 Z"
+                  fill="url(#signatureSwooshGrad)"
+                />
+                <path
+                  d="M6 13.2 C 50 14.5, 120 13, 194 4.5"
+                  stroke="url(#signatureSwooshGrad)"
+                  strokeWidth="1.1"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>

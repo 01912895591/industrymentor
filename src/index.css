@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -527,10 +528,64 @@ All colors MUST be HSL.
     animation: hero-shimmer-sweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
+  @keyframes hero-multicolor-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .hero-dynamic-word {
+    background: linear-gradient(
+      120deg,
+      #1D9E75 0%,
+      #10B981 18%,
+      #06B6D4 38%,
+      #38BDF8 58%,
+      #378ADD 78%,
+      #6366F1 100%
+    );
+    background-size: 260% 260%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: hero-multicolor-flow 5s ease infinite;
+    filter: drop-shadow(0 0 24px rgba(29, 158, 117, 0.4));
+    transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity, filter;
+    padding-bottom: 0.1em;
+  }
+
+  .hero-word-enter {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 24px rgba(29, 158, 117, 0.45)) blur(0px);
+  }
+
+  .hero-word-exit {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.96);
+    filter: drop-shadow(0 0 10px rgba(55, 138, 221, 0.2)) blur(4px);
+  }
+
+  .font-handwriting {
+    font-family: 'Alex Brush', cursive, 'Brush Script MT', 'Segoe Script', sans-serif;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero-gradient-text,
-    .hero-shimmer-text {
+    .hero-shimmer-text,
+    .hero-dynamic-word {
       animation: none;
+      transition: none;
     }
   }
 }
