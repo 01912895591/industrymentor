@@ -11,7 +11,7 @@ export function useCertificates() {
             if (!user) return [];
             const { data, error } = await (supabase as any)
                 .from("certificates")
-                .select("id, course_id, status, issued_at")
+                .select("id, course_id, status, issued_at, certificate_path, courses:course_id(id, title, slug)")
                 .eq("user_id", user.id);
 
             if (error) throw error;

@@ -13,6 +13,7 @@ import {
   Compass,
   FolderKanban,
   ClipboardCheck,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -25,6 +26,7 @@ const sidebarItems = [
   { icon: Users, label: "Users", href: "/admin/users" },
   { icon: LayoutDashboard, label: "Mentors", href: "/admin/mentors" },
   { icon: BookOpen, label: "Courses", href: "/admin/courses" },
+  { icon: CreditCard, label: "Enrollments", href: "/admin/enrollments" },
   { icon: Compass, label: "Career & Skills", href: "/admin/career-skills" },
   { icon: FolderKanban, label: "Projects", href: "/admin/projects" },
   { icon: ClipboardCheck, label: "Submissions", href: "/admin/project-submissions" },

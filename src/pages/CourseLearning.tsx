@@ -28,6 +28,8 @@ import {
   ShieldCheck,
   Sparkles,
   AlertCircle,
+  Clock,
+  XCircle,
   FileCheck2,
   HelpCircle,
   RefreshCw,
@@ -61,6 +63,9 @@ interface CourseEnrollment {
   user_id: string;
   completed: boolean;
   status: string | null;
+  transaction_id?: string | null;
+  payment_method?: string | null;
+  sender_phone?: string | null;
   created_at: string;
 }
 
@@ -71,6 +76,7 @@ export default function CourseLearning() {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [enrollment, setEnrollment] = useState<CourseEnrollment | null>(null);
+  const [enrollmentStatus, setEnrollmentStatus] = useState<"active" | "pending" | "rejected" | "none">("none");
   const [modules, setModules] = useState<CourseModule[]>([]);
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -96,6 +102,7 @@ export default function CourseLearning() {
       setLoading(true);
       setCourseNotFound(false);
       setNotEnrolled(false);
+      setEnrollmentStatus("none");
 
       try {
         // 1. Fetch course details by ID or Slug safely
@@ -123,6 +130,7 @@ export default function CourseLearning() {
 
         // 2. Verify enrollment for current user (or allow admin bypass)
         if (!user) {
+          setEnrollmentStatus("none");
           setNotEnrolled(true);
           setLoading(false);
           return;
@@ -130,7 +138,7 @@ export default function CourseLearning() {
 
         const { data: enrollData, error: enrollError } = await (supabase as any)
           .from("course_enrollments")
-          .select("id, course_id, user_id, completed, status, created_at")
+          .select("id, course_id, user_id, completed, status, transaction_id, payment_method, sender_phone, created_at")
           .eq("course_id", courseData.id)
           .eq("user_id", user.id)
           .maybeSingle();
@@ -139,26 +147,41 @@ export default function CourseLearning() {
           console.error("Enrollment check error:", enrollError);
         }
 
-        // If not enrolled, check if user has admin role
-        let hasAccess = Boolean(enrollData);
-        if (!hasAccess && user) {
-          const { data: adminFlag } = await (supabase as any).rpc("has_role", {
-            _user_id: user.id,
-            _role: "admin",
-          });
-          if (adminFlag) {
-            hasAccess = true;
-          }
+        // Check if user has admin role
+        let isAdmin = false;
+        const { data: adminFlag } = await (supabase as any).rpc("has_role", {
+          _user_id: user.id,
+          _role: "admin",
+        });
+        if (adminFlag) {
+          isAdmin = true;
         }
 
-        // If not enrolled and not admin, forbid access to module content
-        if (!hasAccess) {
+        // Strict Access Control:
+        if (isAdmin) {
+          setEnrollment(enrollData || null);
+          setEnrollmentStatus("active");
+        } else if (!enrollData) {
+          setEnrollment(null);
+          setEnrollmentStatus("none");
           setNotEnrolled(true);
           setLoading(false);
           return;
+        } else if (enrollData.status === "pending") {
+          setEnrollment(enrollData);
+          setEnrollmentStatus("pending");
+          setLoading(false);
+          return;
+        } else if (enrollData.status === "rejected") {
+          setEnrollment(enrollData);
+          setEnrollmentStatus("rejected");
+          setLoading(false);
+          return;
+        } else {
+          // 'active' or legacy approved enrollment
+          setEnrollment(enrollData);
+          setEnrollmentStatus("active");
         }
-
-        setEnrollment(enrollData || null);
 
         // 3. Fetch modules for the verified enrolled course
         const { data: modulesData, error: modulesError } = await (supabase as any)
@@ -230,6 +253,18 @@ export default function CourseLearning() {
       return;
     }
 
+    // Require all curriculum modules to be finished before course completion
+    const allModulesDone =
+      modules.length > 0 &&
+      (sessionCompletedModules.size >= modules.length || progressPercent === 100);
+
+    if (!allModulesDone) {
+      toast.error("Course Incomplete", {
+        description: `You have completed ${sessionCompletedModules.size} of ${modules.length} modules (${progressPercent}%). Please finish all chapters and practical exercises before claiming your certificate.`,
+      });
+      return;
+    }
+
     setCompletingCourse(true);
     try {
       const { error } = await (supabase as any)
@@ -240,9 +275,8 @@ export default function CourseLearning() {
       if (error) throw error;
 
       setEnrollment((prev) => (prev ? { ...prev, completed: true } : null));
-      setSessionCompletedModules(new Set(modules.map((m) => m.id)));
 
-      toast.success("Congratulations! Course marked as completed.", {
+      toast.success("Congratulations! Course 100% Completed.", {
         description: "You are now eligible to request your verified completion certificate.",
       });
     } catch (err: any) {
@@ -344,8 +378,98 @@ export default function CourseLearning() {
     );
   }
 
+  // Payment Verification in Progress Holding Screen
+  if (enrollmentStatus === "pending" && course) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-lg w-full p-8 sm:p-10 rounded-3xl border border-amber-500/30 bg-card/60 backdrop-blur-xl shadow-elev space-y-6">
+          <div className="h-16 w-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto border border-amber-500/20 shadow-[0_0_24px_rgba(245,158,11,0.15)]">
+            <Clock className="h-8 w-8 animate-pulse" />
+          </div>
+
+          <div className="space-y-2">
+            <Badge variant="outline" className="bg-amber-500/15 text-amber-500 border-amber-500/30 text-xs font-bold py-1 px-3">
+              Payment Verification in Progress
+            </Badge>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">{course.title}</h1>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+              We received your enrollment request. Our admissions team is manually verifying your payment transaction ID before unlocking full classroom access.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-border/60 bg-background/50 p-4 text-left text-xs space-y-2.5 text-muted-foreground">
+            <div className="flex justify-between items-center pb-2 border-b border-border/40">
+              <span className="font-semibold text-foreground">Transaction ID (TrxID)</span>
+              <span className="font-mono font-bold text-primary">{enrollment?.transaction_id || "Submitted"}</span>
+            </div>
+            {enrollment?.payment_method && (
+              <div className="flex justify-between items-center pb-2 border-b border-border/40">
+                <span className="font-semibold text-foreground">Payment Method</span>
+                <span className="font-medium capitalize text-foreground">{enrollment.payment_method}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-foreground">Verification Window</span>
+              <span className="font-medium text-emerald-400">Typically within 1–2 hours</span>
+            </div>
+          </div>
+
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Need urgent access or have a question? Contact our verification support desk on WhatsApp at{" "}
+            <a href="https://wa.me/8801912895591" target="_blank" rel="noreferrer" className="text-primary font-bold hover:underline">
+              +8801912895591
+            </a>.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button variant="outline" asChild className="flex-1">
+              <Link to="/dashboard">Return to Dashboard</Link>
+            </Button>
+            <Button variant="hero" asChild className="flex-1">
+              <a href="https://wa.me/8801912895591?text=Hi%20IndustryMentor%20Support,%20I%20enrolled%20in%20course%20and%20waiting%20for%20verification." target="_blank" rel="noreferrer">
+                Chat on WhatsApp
+              </a>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Payment Verification Rejected Screen
+  if (enrollmentStatus === "rejected" && course) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-lg w-full p-8 sm:p-10 rounded-3xl border border-destructive/30 bg-card/60 backdrop-blur-xl shadow-elev space-y-6">
+          <div className="h-16 w-16 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto border border-destructive/20 shadow-[0_0_24px_rgba(239,68,68,0.15)]">
+            <XCircle className="h-8 w-8" />
+          </div>
+
+          <div className="space-y-2">
+            <Badge variant="outline" className="bg-destructive/15 text-destructive border-destructive/30 text-xs font-bold py-1 px-3">
+              Verification Failed
+            </Badge>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">{course.title}</h1>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+              We could not verify the transaction ID submitted for this enrollment. Please verify your payment details and re-submit.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button variant="hero" asChild className="flex-1">
+              <Link to={`/enroll/${course.id}`}>Re-Submit Payment Details</Link>
+            </Button>
+            <Button variant="outline" asChild className="flex-1">
+              <Link to="/dashboard">Return to Dashboard</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Access Denied / Not Enrolled State (Ensures protected curriculum is NEVER leaked)
-  if (notEnrolled) {
+  if (notEnrolled || enrollmentStatus === "none") {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
         <div className="max-w-lg w-full p-8 sm:p-10 rounded-3xl border border-border/60 bg-card/40 shadow-elev space-y-6">
@@ -617,9 +741,9 @@ export default function CourseLearning() {
                   <Link to="/dashboard">Claim Certificate</Link>
                 </Button>
               </div>
-            ) : (
+            ) : sessionCompletedModules.size >= modules.length && modules.length > 0 ? (
               <Button
-                variant="outline"
+                variant="hero"
                 size="sm"
                 className="w-full text-xs h-9 font-bold"
                 onClick={handleMarkCourseComplete}
@@ -628,10 +752,19 @@ export default function CourseLearning() {
                 {completingCourse ? (
                   <RefreshCw className="h-3.5 w-3.5 animate-spin mr-1.5" />
                 ) : (
-                  <GraduationCap className="h-3.5 w-3.5 mr-1.5 text-primary" />
+                  <GraduationCap className="h-3.5 w-3.5 mr-1.5" />
                 )}
-                Mark Entire Course Complete
+                Complete Course & Get Certificate
               </Button>
+            ) : (
+              <div className="p-3 rounded-xl bg-muted/20 border border-border/40 text-center space-y-1">
+                <div className="text-[11px] font-semibold text-muted-foreground">
+                  Curriculum Progress: {sessionCompletedModules.size} / {modules.length}
+                </div>
+                <div className="text-[10px] text-muted-foreground/80">
+                  Complete all modules to unlock your certificate
+                </div>
+              </div>
             )}
           </div>
         </aside>
@@ -770,7 +903,9 @@ export default function CourseLearning() {
                       <div className="space-y-1">
                         <h3 className="text-base font-bold text-foreground">Ready to Finish the Course?</h3>
                         <p className="text-xs text-muted-foreground">
-                          You are on the final module. When you have completed all practical exercises, mark the course as complete to unlock your certificate.
+                          {sessionCompletedModules.size >= modules.length - 1
+                            ? "You have completed your coursework. Mark the final module complete to unlock your verified certificate."
+                            : `You still have ${modules.length - sessionCompletedModules.size} unfinished modules. Please complete all preceding chapters to unlock your certificate.`}
                         </p>
                       </div>
                     </div>
@@ -778,10 +913,20 @@ export default function CourseLearning() {
                       variant="hero"
                       size="sm"
                       className="shrink-0 font-bold"
-                      onClick={handleMarkCourseComplete}
-                      disabled={completingCourse}
+                      onClick={() => {
+                        // Mark active module complete too
+                        if (activeModule) {
+                          setSessionCompletedModules((prev) => new Set(prev).add(activeModule.id));
+                        }
+                        handleMarkCourseComplete();
+                      }}
+                      disabled={completingCourse || sessionCompletedModules.size < modules.length - 1}
                     >
-                      {completingCourse ? "Updating..." : "Complete Course & Get Certificate"}
+                      {completingCourse
+                        ? "Updating..."
+                        : sessionCompletedModules.size >= modules.length - 1
+                        ? "Complete Course & Get Certificate"
+                        : `Complete All Modules First (${sessionCompletedModules.size}/${modules.length})`}
                     </Button>
                   </section>
                 ) : null}

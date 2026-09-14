@@ -46,6 +46,7 @@ const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const UsersAdmin = lazy(() => import("@/features/admin/UsersAdmin").then(module => ({ default: module.UsersAdmin })));
 const CertificatesAdmin = lazy(() => import("@/features/admin/CertificatesAdmin").then(module => ({ default: module.CertificatesAdmin })));
 const CoursesAdmin = lazy(() => import("@/features/admin/CoursesAdmin").then(module => ({ default: module.CoursesAdmin })));
+const EnrollmentsAdmin = lazy(() => import("@/features/admin/EnrollmentsAdmin").then(module => ({ default: module.EnrollmentsAdmin })));
 const LibraryAdmin = lazy(() => import("@/features/admin/LibraryAdmin").then(module => ({ default: module.LibraryAdmin })));
 const FinanceAdmin = lazy(() => import("@/features/admin/FinanceAdmin").then(module => ({ default: module.FinanceAdmin })));
 const SettingsAdmin = lazy(() => import("@/features/admin/SettingsAdmin").then(module => ({ default: module.SettingsAdmin })));
@@ -161,6 +162,7 @@ const App = () => {
                     <Route index element={<AdminDashboard />} />
                     <Route path="users" element={<UsersAdmin />} />
                     <Route path="courses" element={<CoursesAdmin />} />
+                    <Route path="enrollments" element={<EnrollmentsAdmin />} />
                     <Route path="blogs" element={<BlogsAdmin />} />
                     <Route path="mentors" element={<MentorsAdmin />} />
                     <Route path="content" element={<LibraryAdmin />} />
