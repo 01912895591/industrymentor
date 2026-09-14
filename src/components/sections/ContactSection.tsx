@@ -39,7 +39,7 @@ export function ContactSection() {
   const [contactInfo, setContactInfo] = useState({
     email: "support@industrymentor.example",
     phone: "+8801912895591",
-    address: "123 Learning Street, Education City",
+    address: "25/2, Salimuddin Market Road, Mirpur-1, Dhaka, Bangladesh",
     hours: "Mon – Fri: 9:00 AM – 6:00 PM",
   });
 
@@ -55,7 +55,14 @@ export function ContactSection() {
         data.forEach((s: any) => {
           if (s.key === "contact_email") newInfo.email = s.value;
           if (s.key === "contact_phone") newInfo.phone = s.value;
-          if (s.key === "contact_address") newInfo.address = s.value;
+          if (s.key === "contact_address") {
+            let addr = s.value;
+            if (addr) {
+              addr = addr.replace(/Bandladesh/gi, "Bangladesh")
+                         .replace(/^25\/2\s*\.?\s*salimuddin market road,\s*mirpur-1,\s*dhaka,\s*bangladesh/i, "25/2, Salimuddin Market Road, Mirpur-1, Dhaka, Bangladesh");
+            }
+            newInfo.address = addr || "25/2, Salimuddin Market Road, Mirpur-1, Dhaka, Bangladesh";
+          }
           if (s.key === "contact_hours") newInfo.hours = s.value;
         });
         setContactInfo(newInfo);

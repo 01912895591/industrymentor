@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import courseReact from "@/assets/course-react.jpg";
+import { formatCourseTitle } from "@/lib/formatTitle";
 
 export interface CourseData {
   id: string;
@@ -27,6 +28,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({ course, showEnrollButton = true }: CourseCardProps) {
+  const displayTitle = formatCourseTitle(course.title);
   const courseUrl = `/courses/${course.slug || course.id}`;
   const enrollUrl = `/enroll/${course.id}`;
   const coverImage = course.cover_image_path || courseReact;
@@ -49,7 +51,7 @@ export function CourseCard({ course, showEnrollButton = true }: CourseCardProps)
           <Link to={courseUrl} className="block relative aspect-[16/10] w-full overflow-hidden bg-surface-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset">
             <img
               src={coverImage}
-              alt={`Cover image for ${course.title}`}
+              alt={`Cover image for ${displayTitle}`}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-102"
               loading="lazy"
             />
@@ -80,7 +82,7 @@ export function CourseCard({ course, showEnrollButton = true }: CourseCardProps)
             {/* Title */}
             <h3 className="text-lg font-bold tracking-tight text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
               <Link to={courseUrl} className="focus:outline-none focus:underline">
-                {course.title}
+                {displayTitle}
               </Link>
             </h3>
 

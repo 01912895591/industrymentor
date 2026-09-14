@@ -26,11 +26,10 @@ export function CheckoutDialog(props: {
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Demo checkout</AlertDialogTitle>
+          <AlertDialogTitle>Resource Checkout</AlertDialogTitle>
           <AlertDialogDescription>
-            You are purchasing <span className="font-semibold">{item.title}</span> ({itemType.toUpperCase()}) for a demo
-            price of <span className="font-semibold">${(item.priceCents / 100).toFixed(2)}</span>. No real money is
-            charged.
+            You are purchasing <span className="font-semibold">{item.title}</span> ({itemType.toUpperCase()}) for{" "}
+            <span className="font-semibold">${(item.priceCents / 100).toFixed(2)}</span>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

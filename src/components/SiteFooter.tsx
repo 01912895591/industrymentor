@@ -34,6 +34,19 @@ export function SiteFooter() {
         .eq("key", "office_location")
         .single()) as any;
 
+      const { data: contactAddrData } = await (supabase
+        .from("site_settings" as any)
+        .select("value")
+        .eq("key", "contact_address")
+        .single()) as any;
+
+      const rawAddr = locData?.value || contactAddrData?.value || "25/2, Salimuddin Market Road, Mirpur-1, Dhaka, Bangladesh";
+      const cleanAddr = rawAddr
+        ? rawAddr
+            .replace(/Bandladesh/gi, "Bangladesh")
+            .replace(/^25\/2\s*\.?\s*salimuddin market road,\s*mirpur-1,\s*dhaka,\s*bangladesh/i, "25/2, Salimuddin Market Road, Mirpur-1, Dhaka, Bangladesh")
+        : "25/2, Salimuddin Market Road, Mirpur-1, Dhaka, Bangladesh";
+
       const { data: mapData } = await (supabase
         .from("site_settings" as any)
         .select("value")
@@ -41,7 +54,7 @@ export function SiteFooter() {
         .single()) as any;
 
       setLocation({
-        address: locData?.value || "",
+        address: cleanAddr,
         mapUrl: mapData?.value || ""
       });
     };

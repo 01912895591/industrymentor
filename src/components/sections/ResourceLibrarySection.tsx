@@ -129,7 +129,7 @@ export function ResourceLibrarySection() {
             Resource <span className="text-primary">Library</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm xs:text-base sm:text-lg text-muted-foreground">
-            E-books and SOPs — demo content with demo payment + demo downloads.
+            E-books and SOPs — curated resources for garment industry professionals.
           </p>
         </div>
 

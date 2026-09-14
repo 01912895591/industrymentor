@@ -11,6 +11,7 @@ import { useEnrollments } from "@/features/library/useEnrollments";
 import { useCertificates } from "@/hooks/useCertificates";
 import { useProfile } from "@/hooks/useProfile";
 import { useNotifications } from "@/hooks/useNotifications";
+import { formatCourseTitle } from "@/lib/formatTitle";
 import { BookOpen, Download, User as UserIcon, Bell, LayoutDashboard, MapPin, Info, Settings, LogOut, ChevronRight, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -611,7 +612,9 @@ export default function Dashboard() {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="space-y-1.5 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <div className="font-bold text-base text-foreground truncate">{enr.courses?.title || "Enrolled Course"}</div>
+                              <div className="font-bold text-base text-foreground truncate">
+                                {formatCourseTitle(enr.courses?.title) || "Enrolled Course"}
+                              </div>
                               {enr.completed ? (
                                 <span className="text-[10px] bg-emerald-500/15 text-emerald-500 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 border border-emerald-500/20 shrink-0">
                                   <ShieldCheck className="h-3 w-3" /> Completed
@@ -702,12 +705,12 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2 text-lg font-extrabold">
                   <Download className="h-5 w-5 text-primary" /> My Downloads
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">Your purchased demo E-books and SOPs.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Your purchased E-books and SOPs.</p>
 
                 <div className="mt-4 space-y-3">
                   {filteredPurchases.length === 0 ? (
                     <div className="text-sm text-muted-foreground">
-                      No downloads yet. Go to the Library and complete a demo payment.
+                      No downloads yet. Explore the Resource Library to access E-books and SOPs.
                     </div>
                   ) : (
                     filteredPurchases.map((p) => (
@@ -715,7 +718,7 @@ export default function Dashboard() {
                         <div className="min-w-0">
                           <div className="truncate font-semibold">{p.title}</div>
                           <div className="mt-1 text-xs text-muted-foreground">
-                            {p.item_type.toUpperCase()} • ৳{(p.amount_cents / 100).toFixed(2)} (demo)
+                            {p.item_type.toUpperCase()} • ৳{(p.amount_cents / 100).toFixed(2)}
                           </div>
                         </div>
                         <Button
@@ -724,7 +727,7 @@ export default function Dashboard() {
                           onClick={() =>
                             downloadDemoFile(
                               `${p.item_key}.txt`,
-                              `DEMO DOWNLOAD\n\n${p.title}\n\nThis is demo content. Replace with real files later.\n`,
+                              `RESOURCE DOCUMENT\n\n${p.title}\n\nIndustryMentor Verified Resource Document.\n`,
                             )
                           }
                         >

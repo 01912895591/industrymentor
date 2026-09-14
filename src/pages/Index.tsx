@@ -27,6 +27,12 @@ const Index = () => {
           logo: "https://industrymentor.net/logo.png",
           description:
             "Empowering emerging professionals with practitioner-led training, 1:1 expert mentorship, production-ready resources, and verified credentials in Garment Merchandising and Industrial Engineering.",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "25/2, Salimuddin Market Road, Mirpur-1",
+            addressLocality: "Dhaka",
+            addressCountry: "Bangladesh",
+          },
           sameAs: ["https://www.linkedin.com/company/industrymentor"],
         }}
       />

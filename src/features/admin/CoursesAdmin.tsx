@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
 import { CourseModulesDialog } from "./CourseModulesDialog";
 import { sanitizers, validators } from "@/lib/validation";
+import { formatCourseTitle } from "@/lib/formatTitle";
 
 type CourseRow = {
   id: string;
@@ -442,14 +443,14 @@ export function CoursesAdmin() {
                       />
                     )}
                     <div className="min-w-0">
-                      <div className="truncate font-semibold">{c.title}</div>
+                      <div className="truncate font-semibold">{formatCourseTitle(c.title)}</div>
                       <div className="mt-1 text-xs text-muted-foreground line-clamp-1">
                         /{c.slug} • ৳{(c.price_cents / 100).toFixed(0)} • {c.published ? "Published" : "Draft"}
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <CourseModulesDialog courseId={c.id} courseTitle={c.title} />
+                    <CourseModulesDialog courseId={c.id} courseTitle={formatCourseTitle(c.title)} />
                     <Button variant="soft" size="sm" disabled={busy} onClick={() => onEdit(c)}>Edit</Button>
                     <Button variant="outline" size="sm" disabled={busy} onClick={() => void onDelete(c.id)}>Delete</Button>
                   </div>

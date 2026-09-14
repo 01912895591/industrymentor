@@ -61,8 +61,8 @@ All colors MUST be HSL.
     --shadow-glow: 0 4px 20px -4px hsl(var(--primary) / 0.35);
 
     --gradient-brand: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-cta: linear-gradient(135deg, #F59E0B, #D97706);
-    --gradient-cta-hover: linear-gradient(135deg, #FBBF24, #F59E0B);
+    --gradient-cta: linear-gradient(90deg, #1D9E75, #378ADD);
+    --gradient-cta-hover: linear-gradient(90deg, #0F6E56, #185FA5);
 
     --sidebar-background: 222 34% 10%;
     --sidebar-foreground: 210 40% 96%;
@@ -124,8 +124,8 @@ All colors MUST be HSL.
     --shadow-glow: 0 4px 20px -4px hsl(var(--primary) / 0.35);
 
     --gradient-brand: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-cta: linear-gradient(135deg, #F59E0B, #D97706);
-    --gradient-cta-hover: linear-gradient(135deg, #FBBF24, #F59E0B);
+    --gradient-cta: linear-gradient(90deg, #1D9E75, #378ADD);
+    --gradient-cta-hover: linear-gradient(90deg, #0F6E56, #185FA5);
 
     --sidebar-background: 222 34% 10%;
     --sidebar-foreground: 210 40% 96%;
@@ -190,13 +190,38 @@ All colors MUST be HSL.
     }
   }
 
+  /* ==========================================================================
+     Primary CTA Buttons (User-specified Teal-to-Blue Gradient)
+     ========================================================================== */
+  .btn-primary,
+  .cta-button,
+  button.btn-primary,
+  a.btn-primary,
+  button[class*="btn-primary"],
+  a[class*="btn-primary"] {
+    background: linear-gradient(90deg, #1D9E75, #378ADD) !important;
+    color: #ffffff !important;
+    border: none !important;
+  }
+
+  .btn-primary:hover,
+  .cta-button:hover,
+  button.btn-primary:hover,
+  a.btn-primary:hover,
+  button[class*="btn-primary"]:hover,
+  a[class*="btn-primary"]:hover {
+    background: linear-gradient(90deg, #0F6E56, #185FA5) !important;
+    color: #ffffff !important;
+  }
+
   .border-beam-cta {
     position: relative;
     overflow: hidden;
     isolation: isolate;
     background: transparent !important;
-    border: none;
-    box-shadow: 0 0 16px -3px rgba(56, 189, 248, 0.45) !important;
+    border: none !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px -3px rgba(29, 158, 117, 0.45) !important;
     transition: box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s ease;
   }
 
@@ -211,14 +236,14 @@ All colors MUST be HSL.
       from 0deg,
       transparent 0deg,
       transparent 80deg,
-      rgba(56, 189, 248, 0.2) 110deg,
-      #38bdf8 140deg,
-      #818cf8 175deg,
-      #c084fc 205deg,
-      #38bdf8 235deg,
+      rgba(29, 158, 117, 0.25) 110deg,
+      #1D9E75 140deg,
+      #378ADD 175deg,
+      #2dd4bf 205deg,
+      #1D9E75 235deg,
       #ffffff 245deg,
-      #38bdf8 255deg,
-      rgba(56, 189, 248, 0.2) 285deg,
+      #378ADD 255deg,
+      rgba(55, 138, 221, 0.25) 285deg,
       transparent 310deg,
       transparent 360deg
     );
@@ -233,7 +258,7 @@ All colors MUST be HSL.
     position: absolute;
     inset: 1.5px;
     border-radius: inherit;
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    background: linear-gradient(90deg, #1D9E75, #378ADD) !important;
     z-index: -1;
     pointer-events: none;
     transition: background 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
@@ -246,12 +271,12 @@ All colors MUST be HSL.
 
   .border-beam-cta:hover {
     box-shadow:
-      0 0 24px 0px rgba(56, 189, 248, 0.65),
-      0 0 36px -4px rgba(192, 132, 252, 0.35) !important;
+      0 0 24px 0px rgba(29, 158, 117, 0.65),
+      0 0 36px -4px rgba(55, 138, 221, 0.4) !important;
   }
 
   .border-beam-cta:hover::after {
-    background: linear-gradient(135deg, hsl(var(--primary-hover)), hsl(var(--primary-glow)));
+    background: linear-gradient(90deg, #0F6E56, #185FA5) !important;
   }
 
   .border-beam-cta:active::after {

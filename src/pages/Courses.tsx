@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseCard, type CourseData } from "@/components/courses/CourseCard";
+import { formatCourseTitle } from "@/lib/formatTitle";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,7 @@ export default function Courses() {
         // Search query check
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
-          const matchesTitle = c.title.toLowerCase().includes(q);
+          const matchesTitle = c.title.toLowerCase().includes(q) || formatCourseTitle(c.title).toLowerCase().includes(q);
           const matchesDesc = c.description?.toLowerCase().includes(q) ?? false;
           const matchesInstructor =
             (c.instructor_heading?.toLowerCase().includes(q) ?? false) ||

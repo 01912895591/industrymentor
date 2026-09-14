@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formatCourseTitle } from "@/lib/formatTitle";
 
 type Course = {
     id: string;
@@ -255,6 +256,8 @@ export default function CourseEnrollment() {
         );
     }
 
+    const displayTitle = formatCourseTitle(course.title);
+
     return (
         <div className="min-h-screen bg-background/50 pb-20 pt-24">
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -265,7 +268,7 @@ export default function CourseEnrollment() {
                     <span>/</span>
                     <Link to="/#courses" className="hover:text-foreground">Courses</Link>
                     <span>/</span>
-                    <span className="text-foreground font-medium truncate max-w-[200px]">{course.title}</span>
+                    <span className="text-foreground font-medium truncate max-w-[200px]">{displayTitle}</span>
                 </div>
 
                 <div className="grid gap-8 lg:grid-cols-3">
@@ -274,7 +277,7 @@ export default function CourseEnrollment() {
 
                         {/* Course Overview */}
                         <div>
-                            <h1 className="text-2xl xs:text-3xl font-black tracking-tight sm:text-4xl mb-4 leading-tight">{course.title}</h1>
+                            <h1 className="text-2xl xs:text-3xl font-black tracking-tight sm:text-4xl mb-4 leading-tight">{displayTitle}</h1>
                             <p className="text-base xs:text-lg text-muted-foreground leading-relaxed">
                                 {course.description || "No description available for this course."}
                             </p>
@@ -364,7 +367,7 @@ export default function CourseEnrollment() {
                                             <>
                                                 <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted">
                                                     {course.cover_image_path ? (
-                                                        <img src={course.cover_image_path} alt={course.title} className="h-full w-full object-cover" />
+                                                        <img src={course.cover_image_path} alt={displayTitle} className="h-full w-full object-cover" />
                                                     ) : (
                                                         <div className="h-full w-full flex items-center justify-center text-muted-foreground text-xs">No Cover Image</div>
                                                     )}

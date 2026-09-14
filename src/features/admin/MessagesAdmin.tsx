@@ -160,7 +160,14 @@ export function MessagesAdmin() {
         settings.forEach((s: any) => {
           if (s.key === "contact_email") setContactEmail(s.value);
           if (s.key === "contact_phone") setContactPhone(s.value);
-          if (s.key === "contact_address") setContactAddress(s.value);
+          if (s.key === "contact_address") {
+            const addr = s.value
+              ? s.value
+                  .replace(/Bandladesh/gi, "Bangladesh")
+                  .replace(/^25\/2\s*\.?\s*salimuddin market road,\s*mirpur-1,\s*dhaka,\s*bangladesh/i, "25/2, Salimuddin Market Road, Mirpur-1, Dhaka, Bangladesh")
+              : "";
+            setContactAddress(addr);
+          }
           if (s.key === "contact_hours") setContactHours(s.value);
         });
       }

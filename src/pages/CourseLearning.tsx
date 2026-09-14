@@ -4,6 +4,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { formatCourseTitle } from "@/lib/formatTitle";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -396,10 +397,12 @@ export default function CourseLearning() {
   }
 
   // Enrolled Student Classroom View
+  const displayTitle = formatCourseTitle(course?.title);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <SEOHead
-        title={course ? `${course.title} — Classroom | IndustryMentor` : "Classroom | IndustryMentor"}
+        title={course ? `${displayTitle} — Classroom | IndustryMentor` : "Classroom | IndustryMentor"}
         noindex={true}
       />
       {/* 1. LMS Top Bar (Distraction-Free) */}
@@ -428,8 +431,8 @@ export default function CourseLearning() {
                 </Badge>
               )}
             </div>
-            <h1 className="text-sm sm:text-base font-bold truncate text-foreground leading-tight" title={course.title}>
-              {course.title}
+            <h1 className="text-sm sm:text-base font-bold truncate text-foreground leading-tight" title={displayTitle}>
+              {displayTitle}
             </h1>
           </div>
         </div>

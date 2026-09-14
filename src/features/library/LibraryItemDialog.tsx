@@ -41,7 +41,7 @@ const tocByKey: Record<string, string[]> = {
   "sop-inline-inspection": [
     "Purpose and scope",
     "Inspector responsibilities",
-    "Sampling plan (demo)",
+    "Sampling plan & acceptance criteria",
     "Defect logging format",
   ],
   "sop-cutting-room": [
@@ -74,7 +74,7 @@ export function LibraryItemDialog(props: {
     return purchases.some((p) => p.item_type === itemType && p.item_key === item.key);
   }, [purchases, item.key, itemType]);
 
-  const toc = tocByKey[item.key] ?? ["Overview", "Key concepts", "Templates (demo)", "Quick checklist"];
+  const toc = tocByKey[item.key] ?? ["Overview", "Key concepts", "Standard Templates", "Quick checklist"];
 
   const [isPaying, setIsPaying] = useState(false);
   const [txnId, setTxnId] = useState("");
@@ -227,7 +227,7 @@ export function LibraryItemDialog(props: {
 
                 {!user && (
                   <div className="text-xs text-muted-foreground">
-                    You’re not signed in. Sign in first to unlock demo downloads.
+                    You’re not signed in. Sign in first to access and download resources.
                   </div>
                 )}
               </div>

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { formatCourseTitle } from "@/lib/formatTitle";
 import {
   Accordion,
   AccordionItem,
@@ -226,11 +227,12 @@ export default function CourseDetail() {
   const reviewsTotal = course.reviews ?? 0;
   const coverUrl = course.cover_image_path || courseReact;
   const enrollPath = `/enroll/${course.id}`;
+  const displayTitle = formatCourseTitle(course.title);
 
   return (
     <div className="min-h-screen pb-20">
       <SEOHead
-        title={`${course.title} | IndustryMentor`}
+        title={`${displayTitle} | IndustryMentor`}
         description={
           course.description ||
           "Master practical industrial skills with practitioner-led training and verifiable credentials on IndustryMentor."
@@ -240,7 +242,7 @@ export default function CourseDetail() {
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Course",
-          name: course.title,
+          name: displayTitle,
           description: course.description || undefined,
           provider: {
             "@type": "Organization",
@@ -264,7 +266,7 @@ export default function CourseDetail() {
             <Link to="/courses" className="transition-colors hover:text-foreground">Courses</Link>
             <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
             <span className="truncate max-w-[200px] sm:max-w-md font-medium text-foreground" aria-current="page">
-              {course.title}
+              {displayTitle}
             </span>
           </nav>
         </div>
@@ -286,7 +288,7 @@ export default function CourseDetail() {
 
             {/* H1 Title */}
             <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-4xl lg:text-5xl leading-tight">
-              {course.title}
+              {displayTitle}
             </h1>
 
             {/* Subheading / Value Proposition */}
@@ -565,7 +567,7 @@ export default function CourseDetail() {
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-2">
                 <img
                   src={coverUrl}
-                  alt={`Cover image for ${course.title}`}
+                  alt={`Cover image for ${displayTitle}`}
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute left-3 top-3">

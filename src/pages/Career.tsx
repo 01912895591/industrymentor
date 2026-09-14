@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { CareerPathCard, type CareerPathItem } from "@/components/career/CareerPathCard";
 import { SkillCard, type SkillItem } from "@/components/career/SkillCard";
+import { formatCourseTitle } from "@/lib/formatTitle";
 import { CourseCard, type CourseData } from "@/components/courses/CourseCard";
 import { MentorCard, type Mentor } from "@/components/mentors/MentorCard";
 import {
@@ -157,7 +158,7 @@ const EDITORIAL_SKILLS_INVENTORY: SkillItem[] = [
     context:
       "Execution of Time & Action calendars, tracking order milestones, fabric in-house coordination, and shipment dispatch.",
     courseId: "e373dcce-54fb-4a55-8070-54543691fedb",
-    courseTitle: "Garments Merchandising-from-order-to-shipment-excellence",
+    courseTitle: "Garments Merchandising: From Order to Shipment Excellence",
     mentorId: "f10828d2-3877-4c2f-a94b-130f39a75df1",
     mentorName: "M A QAIYUM TALUKDER",
     libraryTitle: "The Essentials of Supply Chain Management",
@@ -170,7 +171,7 @@ const EDITORIAL_SKILLS_INVENTORY: SkillItem[] = [
     context:
       "Accurate CM (Cost of Making) calculations, trim and fabric consumption estimation, and structured buyer correspondence.",
     courseId: "e373dcce-54fb-4a55-8070-54543691fedb",
-    courseTitle: "Garments Merchandising-from-order-to-shipment-excellence",
+    courseTitle: "Garments Merchandising: From Order to Shipment Excellence",
     libraryTitle: "The Essentials of Supply Chain Management",
   },
   {
@@ -412,7 +413,7 @@ export default function Career() {
             s.description +
             (s.practical_application ? ` Practical: ${s.practical_application}` : ""),
           courseId: matchedCourse?.id,
-          courseTitle: matchedCourse?.title,
+          courseTitle: matchedCourse ? formatCourseTitle(matchedCourse.title) : undefined,
           mentorId: matchedMentor?.id,
           mentorName: matchedMentor?.name,
           libraryTitle: matchedLib?.title,
