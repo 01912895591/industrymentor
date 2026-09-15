@@ -1,7 +1,4 @@
 import { Button } from "@/components/ui/button";
-import defaultHeroImage from "@/assets/hero-garment.jpg";
-import courseReact from "@/assets/course-react.jpg";
-import courseDesign from "@/assets/course-design.jpg";
 import { ChevronLeft, ChevronRight, ArrowRight, Users, FileText, ShieldCheck, MessageSquare, BookOpen, GraduationCap, Factory } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useEffect, useState, useCallback, useRef } from "react";
@@ -9,14 +6,16 @@ import { supabase } from "@/integrations/supabase/client";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
+const PRIMARY_HERO_SLIDES: string[] = [
+  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772869711635.webp",
+  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772354426020.webp",
+  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772864274949.webp",
+];
+
 const DYNAMIC_WORDS = ["Lead", "Succeed", "Innovate", "Scale"];
 
 export function HeroSection() {
-  const [heroImages, setHeroImages] = useState<string[]>([
-    defaultHeroImage,
-    courseReact,
-    courseDesign,
-  ]);
+  const [heroImages, setHeroImages] = useState<string[]>(PRIMARY_HERO_SLIDES);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [wordIndex, setWordIndex] = useState(0);
   const [wordPhase, setWordPhase] = useState<"enter" | "exit">("enter");
@@ -84,19 +83,21 @@ export function HeroSection() {
         if (data?.value) {
           let imgs: string[] = [];
           if (Array.isArray(data.value) && data.value.length > 0) {
-            imgs = data.value;
-          } else if (typeof data.value === "string") {
+            imgs = data.value.filter((url: any) => typeof url === "string" && !url.includes("hero-garment"));
+          } else if (typeof data.value === "string" && !data.value.includes("hero-garment")) {
             imgs = [data.value];
           }
 
-          // Prioritize the Garment Quality Inspector banner (matching the user's primary choice) as the first slide
-          const sorted = [...imgs].sort((a, b) => {
-            if (a.includes("1772869711635")) return -1;
-            if (b.includes("1772869711635")) return 1;
-            return 0;
-          });
+          if (imgs.length > 0) {
+            // Prioritize the Garment Quality Inspector banner (matching the user's primary choice) as the first slide
+            const sorted = [...imgs].sort((a, b) => {
+              if (a.includes("1772869711635")) return -1;
+              if (b.includes("1772869711635")) return 1;
+              return 0;
+            });
 
-          setHeroImages(sorted);
+            setHeroImages(sorted);
+          }
         }
       } catch (error) {
         console.error("Error fetching hero images:", error);

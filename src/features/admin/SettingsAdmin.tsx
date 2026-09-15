@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Upload, Trash2, Plus, Facebook, Linkedin, Instagram, Youtube, MessageCircleQuestion, Video, Pin, MapPin, AlertTriangle } from "lucide-react";
-import heroImage from "@/assets/hero-garment.jpg";
 
 function isLinkedInAdminUrl(url: string) {
     return /linkedin\.com\/(?:company-admin|admin|feed|dashboard)/i.test(url);
