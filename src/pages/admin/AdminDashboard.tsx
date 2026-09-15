@@ -78,7 +78,7 @@ export default function AdminDashboard() {
                     courses: courseCount || 0,
                     enrollments: enrollmentCount || 0
                 });
-                setChartData(chart.length > 0 ? chart : [{ name: "No Data", total: 0 }]);
+                setChartData(chart);
                 setRecentSales(sales || []);
 
             } catch (error) {
@@ -105,53 +105,53 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="hover:shadow-lg transition-all duration-200 border-primary/10 bg-gradient-to-br from-card to-primary/5">
+                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <DollarSign className="h-4 w-4 text-primary" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">৳{stats.revenue.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Lifetime earnings
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-all duration-200 border-primary/10 bg-gradient-to-br from-card to-blue-500/5">
+                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Students</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <Users className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.students}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Registered users
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-all duration-200 border-primary/10 bg-gradient-to-br from-card to-orange-500/5">
+                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Courses</CardTitle>
-                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                        <BookOpen className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.courses}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Published courses
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-all duration-200 border-primary/10 bg-gradient-to-br from-card to-purple-500/5">
+                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
-                        <Activity className="h-4 w-4 text-muted-foreground" />
+                        <Activity className="h-4 w-4 text-purple-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.enrollments}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Course signups
                         </p>
                     </CardContent>
@@ -159,75 +159,90 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4 hover:shadow-lg transition-all duration-200">
+                <Card className="col-span-4 rounded-xl border border-border/60 bg-card/60 shadow-xs">
                     <CardHeader>
-                        <CardTitle>Revenue Overview</CardTitle>
+                        <CardTitle className="text-base font-bold">Revenue Overview</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                        <div className="h-[350px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={chartData}>
-                                    <defs>
-                                        <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <XAxis
-                                        dataKey="name"
-                                        stroke="#888888"
-                                        fontSize={12}
-                                        tickLine={false}
-                                        axisLine={false}
-                                    />
-                                    <YAxis
-                                        stroke="#888888"
-                                        fontSize={12}
-                                        tickLine={false}
-                                        axisLine={false}
-                                        tickFormatter={(value) => `৳${value}`}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="total"
-                                        stroke="#8884d8"
-                                        strokeWidth={2}
-                                        fillOpacity={1}
-                                        fill="url(#colorTotal)"
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
+                        {chartData.length === 0 ? (
+                            <div className="h-[350px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-border/50 rounded-xl mx-4 mb-2">
+                                <TrendingUp className="h-10 w-10 text-muted-foreground/40 mb-3" />
+                                <p className="text-base font-semibold text-foreground">No revenue activity recorded yet</p>
+                                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                                    Revenue trends will automatically populate here as course enrollments and payments are completed.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="h-[350px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={chartData}>
+                                        <defs>
+                                            <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <XAxis
+                                            dataKey="name"
+                                            stroke="#888888"
+                                            fontSize={12}
+                                            tickLine={false}
+                                            axisLine={false}
+                                        />
+                                        <YAxis
+                                            stroke="#888888"
+                                            fontSize={12}
+                                            tickLine={false}
+                                            axisLine={false}
+                                            tickFormatter={(value) => `৳${value}`}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                borderRadius: "8px",
+                                                border: "1px solid hsl(var(--border))",
+                                                backgroundColor: "hsl(var(--card))",
+                                                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                                            }}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="total"
+                                            stroke="hsl(var(--primary))"
+                                            strokeWidth={2}
+                                            fillOpacity={1}
+                                            fill="url(#colorTotal)"
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
-                <Card className="col-span-3 hover:shadow-lg transition-all duration-200">
+                <Card className="col-span-3 rounded-xl border border-border/60 bg-card/60 shadow-xs">
                     <CardHeader>
-                        <CardTitle>Recent Sales</CardTitle>
+                        <CardTitle className="text-base font-bold">Recent Sales</CardTitle>
                         <p className="text-sm text-muted-foreground">
                             Latest income transactions.
                         </p>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-8">
+                        <div className="space-y-6">
                             {recentSales.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No recent sales found.</p>
+                                <p className="text-sm text-muted-foreground text-center py-8">No recent sales found.</p>
                             ) : (
                                 recentSales.map((sale) => (
                                     <div key={sale.id} className="flex items-center">
-                                        <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                            $
+                                        <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                                            ৳
                                         </div>
-                                        <div className="ml-4 space-y-1">
-                                            <p className="text-sm font-medium leading-none">{sale.description || "Course Sale"}</p>
-                                            <p className="text-sm text-muted-foreground">
+                                        <div className="ml-4 space-y-1 min-w-0 flex-1">
+                                            <p className="text-sm font-medium leading-none truncate">{sale.description || "Course Sale"}</p>
+                                            <p className="text-xs text-muted-foreground">
                                                 {new Date(sale.created_at).toLocaleDateString()}
                                             </p>
                                         </div>
-                                        <div className="ml-auto font-medium">+৳{sale.amount}</div>
+                                        <div className="ml-auto font-semibold text-sm shrink-0">+৳{sale.amount}</div>
                                     </div>
                                 ))
                             )}

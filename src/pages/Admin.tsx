@@ -12,10 +12,10 @@ export default function Admin() {
   return (
     <AmbientSpotlight>
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-        <header className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
+        <header className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-4xl font-black tracking-tight">Admin Dashboard</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
               <p className="mt-2 text-sm text-muted-foreground">
                 Manage courses, enrollments & payments, library resources, certificates, and finance.
               </p>
@@ -30,7 +30,7 @@ export default function Admin() {
 
         <section className="mt-6">
           <Tabs defaultValue="courses">
-            <div className="rounded-3xl border border-border/60 bg-card/25 p-2 shadow-elev">
+            <div className="rounded-xl border border-border/60 bg-card/40 p-2 shadow-xs">
               <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent sm:grid-cols-6">
                 <TabsTrigger value="courses">Courses</TabsTrigger>
                 <TabsTrigger value="enrollments">Enrollments</TabsTrigger>

@@ -297,7 +297,7 @@ export function MessagesAdmin() {
     <div className="space-y-8 animate-fade-in pb-20">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-foreground">Message Center</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Message Center</h2>
           <p className="text-muted-foreground text-sm">
             Triage general inquiries and incoming practitioner mentorship requests.
           </p>
@@ -330,7 +330,7 @@ export function MessagesAdmin() {
 
         <TabsContent value="inbox" className="space-y-6">
           {/* Controls Strip: Category Tabs + Status + Search */}
-          <div className="rounded-2xl border border-border/60 bg-card/25 p-4 backdrop-blur-xl shadow-elev space-y-4">
+          <div className="rounded-xl border border-border/60 bg-card/40 p-4 shadow-xs space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               {/* Category Filter Chips */}
               <div className="flex flex-wrap items-center gap-1.5">
@@ -436,38 +436,71 @@ export function MessagesAdmin() {
               <p className="mt-4 text-muted-foreground italic text-xs">Fetching messages from database...</p>
             </div>
           ) : filteredMessages.length === 0 ? (
-            <div className="text-center py-16 rounded-3xl border border-dashed border-border/60 bg-muted/10 p-8">
-              <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
-              <h4 className="text-base font-bold text-foreground">No Messages Found</h4>
-              <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-                {searchQuery || categoryFilter !== "all" || statusFilter !== "all"
-                  ? "No messages match your active filters or search terms."
-                  : "Your message center is currently clear. Incoming submissions will appear here."}
-              </p>
-              {(searchQuery || categoryFilter !== "all" || statusFilter !== "all") && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setCategoryFilter("all");
-                    setStatusFilter("all");
-                    setSearchQuery("");
-                  }}
-                  className="mt-4 text-xs font-semibold"
-                >
-                  Reset All Filters
-                </Button>
-              )}
-            </div>
+            (() => {
+              const emptyState = (() => {
+                if (searchQuery) {
+                  return {
+                    title: "No Matching Messages",
+                    desc: `No messages found matching "${searchQuery}". Try adjusting your search query.`,
+                  };
+                }
+                if (statusFilter === "new") {
+                  return {
+                    title: "No unread messages",
+                    desc: "All incoming inquiries and mentorship requests have been reviewed.",
+                  };
+                }
+                if (categoryFilter === "inquiries") {
+                  return {
+                    title: "No mentorship inquiries yet",
+                    desc: "Student mentorship requests will appear here once submitted.",
+                  };
+                }
+                if (categoryFilter === "contact") {
+                  return {
+                    title: "No general contact messages yet",
+                    desc: "Inquiries submitted via the general contact form will appear here.",
+                  };
+                }
+                return {
+                  title: "No messages yet",
+                  desc: "Your message center is currently clear. Incoming submissions will appear here.",
+                };
+              })();
+
+              return (
+                <div className="text-center py-16 rounded-xl border border-dashed border-border/60 bg-muted/10 p-8">
+                  <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                  <h4 className="text-base font-bold text-foreground">{emptyState.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                    {emptyState.desc}
+                  </p>
+                  {(searchQuery || categoryFilter !== "all" || statusFilter !== "all") && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setCategoryFilter("all");
+                        setStatusFilter("all");
+                        setSearchQuery("");
+                      }}
+                      className="mt-4 text-xs font-semibold"
+                    >
+                      Reset All Filters
+                    </Button>
+                  )}
+                </div>
+              );
+            })()
           ) : (
             <div className="space-y-4">
               {filteredMessages.map((m) => (
                 <Card
                   key={m.id}
-                  className={`rounded-3xl border transition-all shadow-elev ${
+                  className={`rounded-xl border transition-all shadow-xs ${
                     m.status === "new"
                       ? "bg-primary/5 border-primary/30"
-                      : "bg-card/25 border-border/60 hover:bg-card/35"
+                      : "bg-card/40 border-border/60 hover:bg-card/60"
                   }`}
                 >
                   <CardHeader className="pb-3">
@@ -475,7 +508,7 @@ export function MessagesAdmin() {
                       {/* Requester Identity */}
                       <div className="flex items-start gap-3.5 min-w-0">
                         <div
-                          className={`h-11 w-11 shrink-0 rounded-2xl flex items-center justify-center ${
+                          className={`h-11 w-11 shrink-0 rounded-xl flex items-center justify-center ${
                             m.isMentorshipInquiry
                               ? "bg-primary/20 text-primary border border-primary/30"
                               : m.status === "new"
@@ -561,7 +594,7 @@ export function MessagesAdmin() {
                   <CardContent className="space-y-4">
                     {/* Inquiry Details Banner for Mentorship Requests */}
                     {m.isMentorshipInquiry && (
-                      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-2 text-xs">
+                      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2 text-xs">
                         <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-primary/15">
                           <div className="flex items-center gap-2">
                             <ShieldCheck className="h-4 w-4 text-primary" />
@@ -648,7 +681,7 @@ export function MessagesAdmin() {
         </TabsContent>
 
         <TabsContent value="settings">
-          <Card className="rounded-3xl border border-border/60 bg-card/25 shadow-elev">
+          <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
             <CardHeader>
               <CardTitle>Contact Information</CardTitle>
               <CardDescription>Update the contact details shown on the website.</CardDescription>

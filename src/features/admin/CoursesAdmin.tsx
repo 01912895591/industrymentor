@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
@@ -274,9 +275,9 @@ export function CoursesAdmin() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
+      <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
         <div className="flex flex-col gap-1">
-          <div className="text-lg font-extrabold">Courses</div>
+          <div className="text-lg font-bold">Courses</div>
           <p className="text-sm text-muted-foreground">Create, edit, publish, and delete courses.</p>
         </div>
 
@@ -421,31 +422,42 @@ export function CoursesAdmin() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
+      <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-lg font-extrabold">Recent courses</div>
+          <div className="text-lg font-bold">Recent courses</div>
           <div className="text-sm text-muted-foreground">{rows.length} total</div>
         </div>
 
         <div className="mt-4 space-y-3">
           {rows.length === 0 ? (
-            <div className="text-sm text-muted-foreground">No courses yet.</div>
+            <div className="text-sm text-muted-foreground text-center py-8">No courses yet.</div>
           ) : (
             rows.map((c) => (
-              <div key={c.id} className="rounded-2xl border border-border/70 bg-background/15 p-4">
+              <div key={c.id} className="rounded-xl border border-border/70 bg-background/20 p-4 transition-all hover:bg-background/40">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex gap-4 min-w-0">
                     {c.cover_image_path && (
                       <img
                         src={c.cover_image_path}
                         alt={c.title}
-                        className="h-16 w-24 rounded-lg object-cover bg-muted"
+                        className="h-16 w-24 rounded-lg object-cover bg-muted shrink-0"
                       />
                     )}
                     <div className="min-w-0">
-                      <div className="truncate font-semibold">{formatCourseTitle(c.title)}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="truncate font-semibold text-base">{formatCourseTitle(c.title)}</span>
+                        {c.published ? (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-500 font-medium shrink-0">
+                            Published
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-amber-500/30 bg-amber-500/10 text-amber-500 font-medium shrink-0">
+                            Draft
+                          </Badge>
+                        )}
+                      </div>
                       <div className="mt-1 text-xs text-muted-foreground line-clamp-1">
-                        /{c.slug} • ৳{(c.price_cents / 100).toFixed(0)} • {c.published ? "Published" : "Draft"}
+                        /{c.slug} • ৳{(c.price_cents / 100).toFixed(0)} • {c.mode || "Online"}
                       </div>
                     </div>
                   </div>

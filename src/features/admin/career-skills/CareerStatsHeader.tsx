@@ -130,7 +130,7 @@ export function CareerStatsHeader({
                 </div>
               </div>
               <div className="mt-2">
-                <div className="text-2xl font-black tracking-tight text-foreground">
+                <div className="text-2xl font-bold tracking-tight text-foreground">
                   {isLoading ? "—" : stat.count}
                 </div>
                 <div className="text-[11px] text-muted-foreground font-medium mt-0.5">

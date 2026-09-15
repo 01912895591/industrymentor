@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { Copy, Check, Award } from "lucide-react";
 
 type ProfileRow = { id: string; user_id: string; full_name: string | null; created_at: string };
-
-
 
 type CourseRow = { id: string; title: string; slug: string };
 
@@ -26,6 +26,7 @@ export function CertificatesAdmin() {
   const [courses, setCourses] = useState<CourseRow[]>([]);
   const [certs, setCerts] = useState<CertificateRow[]>([]);
   const [busy, setBusy] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
@@ -143,15 +144,35 @@ export function CertificatesAdmin() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
-        <div className="text-lg font-extrabold">Certificates</div>
-        <p className="mt-1 text-sm text-muted-foreground">Issue certificates for course buyers (auto-PDF generation comes next).</p>
+      {/* Issue Certificate Card */}
+      <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
+        <div className="flex items-center gap-2">
+          <Award className="h-5 w-5 text-primary" />
+          <div className="text-lg font-bold">Certificates</div>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">Issue certificates for course graduates.</p>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label>User ID</Label>
-            <Input value={selectedUserId} onChange={(e) => setSelectedUserId(e.target.value)} placeholder="Paste user_id" />
-            <div className="text-xs text-muted-foreground">Tip: copy from Users tab.</div>
+            <Label>Student</Label>
+            <select
+              className="h-10 w-full rounded-md border border-border/60 bg-background/20 px-3 text-sm"
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+            >
+              <option value="">Select registered student</option>
+              {profiles.map((p) => (
+                <option key={p.user_id || p.id} value={p.user_id || p.id}>
+                  {p.full_name ? `${p.full_name} (${(p.user_id || p.id).slice(0, 8)}...)` : (p.user_id || p.id)}
+                </option>
+              ))}
+            </select>
+            <Input
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              placeholder="Or paste student user_id directly"
+              className="h-8 text-xs bg-background/40 font-mono"
+            />
           </div>
           <div className="space-y-2">
             <Label>Course</Label>
@@ -180,14 +201,15 @@ export function CertificatesAdmin() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-destructive/20 bg-background/20 p-6 shadow-elev">
-        <div className="text-lg font-extrabold text-destructive">Pending Requests</div>
+      {/* Pending Requests Card */}
+      <div className="rounded-xl border border-destructive/20 bg-background/20 p-6 shadow-xs">
+        <div className="text-lg font-bold text-destructive">Pending Requests</div>
         <div className="mt-4 space-y-3">
           {certs.filter(c => c.status === 'pending').length === 0 ? (
             <div className="text-sm text-muted-foreground">No pending requests.</div>
           ) : (
             certs.filter(c => c.status === 'pending').map(c => (
-              <div key={c.id} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between rounded-2xl border border-border/70 bg-card p-4">
+              <div key={c.id} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between rounded-xl border border-border/70 bg-card/60 p-4">
                 <div>
                   <div className="font-bold">Course: {courses.find(co => co.id === c.course_id)?.title || c.course_id}</div>
                   <div className="text-xs text-muted-foreground mt-1">User: {profiles.find(p => p.user_id === c.user_id)?.full_name || c.user_id}</div>
@@ -203,24 +225,67 @@ export function CertificatesAdmin() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
-        <div className="text-lg font-extrabold">Latest certificates</div>
+      {/* Latest Certificates List */}
+      <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
+        <div className="text-lg font-bold">Latest Certificates</div>
         <div className="mt-4 space-y-3">
           {certs.length === 0 ? (
             <div className="text-sm text-muted-foreground">No certificates yet.</div>
           ) : (
-            certs.map((c) => (
-              <div key={c.id} className="rounded-2xl border border-border/70 bg-background/15 p-4">
-                <div className="font-semibold">Course: {c.course_id}</div>
-                <div className="mt-1 text-xs text-muted-foreground break-all">User: {c.user_id}</div>
-                <div className="mt-1 text-xs text-muted-foreground break-all">File: {c.certificate_path}</div>
-              </div>
-            ))
+            certs.map((c) => {
+              const courseTitle = courses.find((co) => co.id === c.course_id)?.title || `Course (${c.course_id.slice(0, 8)}...)`;
+              const studentName = profiles.find((p) => p.user_id === c.user_id)?.full_name || `Student (${c.user_id.slice(0, 8)}...)`;
+              const isApproved = c.status === "approved";
+
+              return (
+                <div key={c.id} className="rounded-xl border border-border/70 bg-background/20 p-4 transition-all hover:bg-background/40">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-base text-foreground">{courseTitle}</span>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] px-1.5 py-0 font-medium ${
+                            isApproved
+                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
+                              : "border-amber-500/30 bg-amber-500/10 text-amber-500"
+                          }`}
+                        >
+                          {c.status || "approved"}
+                        </Badge>
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span>Student: <strong className="text-foreground font-medium">{studentName}</strong></span>
+                        <span>•</span>
+                        <span className="font-mono text-[11px] flex items-center gap-1">
+                          Cert ID: {c.id.slice(0, 8)}...
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(c.id);
+                              setCopiedId(c.id);
+                              setTimeout(() => setCopiedId(null), 2000);
+                            }}
+                            className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                            title="Copy full certificate UUID"
+                          >
+                            {copiedId === c.id ? (
+                              <Check className="h-3 w-3 text-emerald-400" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </button>
+                        </span>
+                        <span>•</span>
+                        <span>Issued: {c.issued_at ? new Date(c.issued_at).toLocaleDateString() : new Date(c.created_at).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
           )}
         </div>
       </div>
-
-
     </div>
   );
 }

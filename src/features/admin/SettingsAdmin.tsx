@@ -6,8 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Upload, Trash2, Plus, Facebook, Linkedin, Instagram, Youtube, MessageCircleQuestion, Video, Pin, MapPin } from "lucide-react";
+import { Loader2, Upload, Trash2, Plus, Facebook, Linkedin, Instagram, Youtube, MessageCircleQuestion, Video, Pin, MapPin, AlertTriangle } from "lucide-react";
 import heroImage from "@/assets/hero-garment.jpg";
+
+function isLinkedInAdminUrl(url: string) {
+    return /linkedin\.com\/(?:company-admin|admin|feed|dashboard)/i.test(url);
+}
 
 export function SettingsAdmin() {
     const [uploading, setUploading] = useState(false);
@@ -247,9 +251,9 @@ export function SettingsAdmin() {
                 </div>
             </div>
 
-            <Card>
+            <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
                 <CardHeader>
-                    <CardTitle>Hero Section Slider</CardTitle>
+                    <CardTitle className="text-xl font-bold">Hero Section Slider</CardTitle>
                     <CardDescription>
                         Manage the images displayed in the homepage hero slider. Add multiple images to enable sliding.
                     </CardDescription>
@@ -288,7 +292,7 @@ export function SettingsAdmin() {
                             )}
 
                             {currentHeroImages.map((imgUrl, index) => (
-                                <div key={index} className="group relative aspect-[16/10] overflow-hidden rounded-lg border bg-muted shadow-sm hover:shadow-md transition-all">
+                                <div key={index} className="group relative aspect-[16/10] overflow-hidden rounded-xl border bg-muted shadow-xs hover:shadow-sm transition-all">
                                     <img
                                         src={imgUrl}
                                         alt={`Slide ${index + 1}`}
@@ -312,64 +316,83 @@ export function SettingsAdmin() {
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
                 <CardHeader>
-                    <CardTitle>Social Media Links</CardTitle>
+                    <CardTitle className="text-xl font-bold">Social Media Links</CardTitle>
                     <CardDescription>
                         Manage social media links displayed in the footer.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="flex flex-col sm:flex-row gap-4 items-end">
-                        <div className="w-full sm:w-1/3">
-                            <Label className="mb-2 block">Platform</Label>
-                            <select
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                value={newSocialLink.platform}
-                                onChange={(e) => setNewSocialLink({ ...newSocialLink, platform: e.target.value })}
-                            >
-                                {socialPlatforms.map((p) => (
-                                    <option key={p.name} value={p.name}>{p.name}</option>
-                                ))}
-                            </select>
+                    <div className="space-y-2">
+                        <div className="flex flex-col sm:flex-row gap-4 items-end">
+                            <div className="w-full sm:w-1/3">
+                                <Label className="mb-2 block text-xs font-bold uppercase tracking-wider opacity-70">Platform</Label>
+                                <select
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={newSocialLink.platform}
+                                    onChange={(e) => setNewSocialLink({ ...newSocialLink, platform: e.target.value })}
+                                >
+                                    {socialPlatforms.map((p) => (
+                                        <option key={p.name} value={p.name}>{p.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="w-full sm:w-1/2">
+                                <Label className="mb-2 block text-xs font-bold uppercase tracking-wider opacity-70">URL</Label>
+                                <Input
+                                    placeholder="https://..."
+                                    value={newSocialLink.url}
+                                    onChange={(e) => setNewSocialLink({ ...newSocialLink, url: e.target.value })}
+                                    className="h-10 text-xs"
+                                />
+                            </div>
+                            <Button onClick={handleAddSocialLink} disabled={isAddingLink} className="h-10">
+                                {isAddingLink ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                                <span className="ml-2 font-bold text-xs">Add</span>
+                            </Button>
                         </div>
-                        <div className="w-full sm:w-1/2">
-                            <Label className="mb-2 block">URL</Label>
-                            <Input
-                                placeholder="https://..."
-                                value={newSocialLink.url}
-                                onChange={(e) => setNewSocialLink({ ...newSocialLink, url: e.target.value })}
-                            />
-                        </div>
-                        <Button onClick={handleAddSocialLink} disabled={isAddingLink}>
-                            {isAddingLink ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                            <span className="ml-2">Add</span>
-                        </Button>
+                        {newSocialLink.platform === "LinkedIn" && isLinkedInAdminUrl(newSocialLink.url) && (
+                            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5 flex items-start gap-2 text-xs text-amber-600 dark:text-amber-400">
+                                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                                <span>Note: This URL appears to be an internal LinkedIn management page. For public visitors, use your public company page URL (e.g., <code>linkedin.com/company/industrymentor</code>).</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-3 mt-4">
                         {socialLinks.map((link, index) => {
                             const platform = socialPlatforms.find(p => p.name === link.platform) || socialPlatforms[0];
                             const Icon = platform.icon;
+                            const hasAdminUrl = link.platform === "LinkedIn" && isLinkedInAdminUrl(link.url);
+
                             return (
-                                <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-card/50">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-muted rounded-full">
-                                            <Icon className="h-4 w-4" />
+                                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 border border-border/60 rounded-xl bg-background/20 gap-3">
+                                    <div className="flex items-start sm:items-center gap-3 min-w-0">
+                                        <div className="p-2 bg-muted rounded-full shrink-0">
+                                            <Icon className="h-4 w-4 text-primary" />
                                         </div>
-                                        <div>
-                                            <div className="font-medium">{link.platform}</div>
-                                            <div className="text-xs text-muted-foreground">{link.url}</div>
+                                        <div className="min-w-0">
+                                            <div className="font-semibold text-sm">{link.platform}</div>
+                                            <div className="text-xs text-muted-foreground truncate max-w-[240px] sm:max-w-md" title={link.url}>
+                                                {link.url}
+                                            </div>
+                                            {hasAdminUrl && (
+                                                <div className="text-[11px] text-amber-500 flex items-center gap-1 mt-1">
+                                                    <AlertTriangle className="h-3 w-3 shrink-0" />
+                                                    <span>Admin URL detected — consider using public company URL for visitors.</span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteSocialLink(index)}>
-                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10 shrink-0 self-end sm:self-auto" onClick={() => handleDeleteSocialLink(index)}>
+                                        <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
                             );
                         })}
                         {socialLinks.length === 0 && (
-                            <div className="text-center py-6 text-muted-foreground text-sm">
+                            <div className="text-center py-6 text-muted-foreground text-xs italic">
                                 No social links added yet.
                             </div>
                         )}
@@ -377,7 +400,7 @@ export function SettingsAdmin() {
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
                 <CardHeader>
                     <CardTitle>Office Location & Map</CardTitle>
                     <CardDescription>

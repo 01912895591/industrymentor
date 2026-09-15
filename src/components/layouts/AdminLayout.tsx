@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
 
@@ -50,8 +48,6 @@ export function AdminLayout() {
                     <Outlet />
                 </div>
             </main>
-            <Toaster />
-            <Sonner />
         </div>
     );
 }

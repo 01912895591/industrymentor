@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
+import { AlertCircle, Trash2, Image as ImageIcon, Upload, Pencil } from "lucide-react";
 
 type LibraryItemRow = {
   id: string;
@@ -272,10 +274,10 @@ export function LibraryAdmin() {
   return (
     <div className="space-y-6">
       {dbError === "missing_column" && (
-        <div className="rounded-3xl border border-destructive/50 bg-destructive/10 p-6 shadow-elev">
+        <div className="rounded-xl border border-destructive/50 bg-destructive/10 p-6 shadow-xs">
           <div className="flex items-center gap-3 text-destructive mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>
-            <div className="text-lg font-black uppercase">Database Update Required</div>
+            <AlertCircle className="h-6 w-6 shrink-0" />
+            <div className="text-base font-bold uppercase">Database Update Required</div>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
             The <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-mono">image_url</code> column is missing from your <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-mono">library_items</code> table.
@@ -293,9 +295,9 @@ ADD COLUMN IF NOT EXISTS image_url text;`}
         </div>
       )}
 
-      <div className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
+      <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
         <div className="flex flex-col gap-1">
-          <div className="text-lg font-extrabold">Library (E‑Books + SOPs)</div>
+          <div className="text-lg font-bold">Library (E‑Books + SOPs)</div>
           <p className="text-sm text-muted-foreground">Upload files to private storage and manage metadata.</p>
         </div>
 
@@ -362,14 +364,14 @@ ADD COLUMN IF NOT EXISTS image_url text;`}
             <Label>Cover Page Image</Label>
             <div className="flex items-start gap-4">
               {imageUrl ? (
-                <div className="relative group aspect-[3/4] w-24 overflow-hidden rounded-lg border bg-muted shadow-sm">
+                <div className="relative group aspect-[3/4] w-24 overflow-hidden rounded-lg border bg-muted shadow-xs">
                   <img src={imageUrl} alt="Cover" className="h-full w-full object-cover" />
                   <button
                     onClick={() => setImageUrl("")}
-                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                     title="Remove image"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
+                    <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
               ) : (
@@ -382,9 +384,9 @@ ADD COLUMN IF NOT EXISTS image_url text;`}
                 <Button asChild variant="soft" size="sm" disabled={uploading}>
                   <label className="cursor-pointer flex items-center gap-2">
                     {uploading ? (
-                      <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                     ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
+                      <ImageIcon className="h-3.5 w-3.5" />
                     )}
                     {uploading ? "Uploading..." : "Upload Cover"}
                     <input
@@ -425,9 +427,9 @@ ADD COLUMN IF NOT EXISTS image_url text;`}
         </div>
       </div>
 
-      <div className="rounded-3xl border border-border/60 bg-card/25 p-6 shadow-elev">
+      <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-lg font-extrabold">Recent items</div>
+          <div className="text-lg font-bold">Recent items</div>
           <div className="text-sm text-muted-foreground">{rows.length} total</div>
         </div>
 
@@ -436,7 +438,7 @@ ADD COLUMN IF NOT EXISTS image_url text;`}
             <div className="text-sm text-muted-foreground">No library items yet.</div>
           ) : (
             rows.map((it) => (
-              <div key={it.id} className="rounded-2xl border border-border/70 bg-background/15 p-4">
+              <div key={it.id} className="rounded-xl border border-border/60 bg-card/20 p-4 transition-all hover:bg-card/40">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex flex-1 gap-4">
                     <div className="h-16 w-12 rounded bg-muted overflow-hidden flex-shrink-0 border border-border/40">
@@ -448,15 +450,34 @@ ADD COLUMN IF NOT EXISTS image_url text;`}
                     </div>
                     <div className="min-w-0">
                       <div className="truncate font-semibold">{it.title}</div>
-                      <div className="mt-1 text-xs text-muted-foreground">
-                        {it.item_type.toUpperCase()} • key: {it.item_key} • ৳{(it.price_cents / 100).toFixed(2)} • {it.published ? "Published" : "Draft"}
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                        <Badge variant="outline" className="text-[10px] uppercase font-mono font-medium">
+                          {it.item_type === "ebook" ? "E-Book" : "SOP"}
+                        </Badge>
+                        {it.published ? (
+                          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-[10px] font-medium uppercase">
+                            Published
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-500 text-[10px] font-medium uppercase">
+                            Draft
+                          </Badge>
+                        )}
+                        <span className="text-xs text-muted-foreground">• key: {it.item_key}</span>
+                        <span className="text-xs font-semibold text-foreground">৳{Math.round(it.price_cents / 100).toLocaleString()}</span>
                       </div>
-                      {it.file_path && <div className="mt-1 text-xs text-muted-foreground">File: {it.file_path}</div>}
+                      {it.file_path && <div className="mt-1 text-xs text-muted-foreground truncate max-w-md">File: {it.file_path}</div>}
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="soft" size="sm" disabled={busy} onClick={() => onEdit(it)}>Edit</Button>
-                    <Button variant="outline" size="sm" disabled={busy} onClick={() => void onDelete(it.id)}>Delete</Button>
+                  <div className="flex gap-2 shrink-0">
+                    <Button variant="ghost" size="sm" className="h-8 text-primary hover:bg-primary/10" disabled={busy} onClick={() => onEdit(it)}>
+                      <Pencil className="h-3.5 w-3.5 mr-1" />
+                      Edit
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 text-destructive hover:bg-destructive/10" disabled={busy} onClick={() => void onDelete(it.id)}>
+                      <Trash2 className="h-3.5 w-3.5 mr-1" />
+                      Delete
+                    </Button>
                   </div>
                 </div>
               </div>

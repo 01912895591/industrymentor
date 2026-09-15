@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Edit, Image as ImageIcon, Plus, Trash2, Database, AlertCircle } from "lucide-react";
 
 type BlogRow = {
@@ -188,10 +189,10 @@ export function BlogsAdmin() {
         return (
             <div className="space-y-8 animate-fade-in">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight">Blog Management</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">Blog Management</h2>
                     <p className="text-muted-foreground">Create and share insights with your audience.</p>
                 </div>
-                <Card className="rounded-3xl border border-destructive/50 bg-destructive/10 shadow-elev">
+                <Card className="rounded-xl border border-destructive/50 bg-destructive/10 shadow-xs">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-destructive">
                             <AlertCircle className="h-6 w-6" />
@@ -275,7 +276,7 @@ CREATE TRIGGER update_blogs_updated_at BEFORE UPDATE ON public.blogs FOR EACH RO
         <div className="space-y-8 animate-fade-in">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight">Blog Management</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">Blog Management</h2>
                     <p className="text-muted-foreground">Create and share insights with your audience.</p>
                 </div>
                 <Button variant="soft" onClick={resetForm} disabled={!editing}>
@@ -285,9 +286,9 @@ CREATE TRIGGER update_blogs_updated_at BEFORE UPDATE ON public.blogs FOR EACH RO
             </div>
 
             {/* Editor Card */}
-            <Card className="rounded-3xl border border-border/60 bg-card/25 shadow-elev">
+            <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
                 <CardHeader>
-                    <CardTitle className="text-xl font-extrabold">
+                    <CardTitle className="text-xl font-bold">
                         {editing ? "Edit Post" : "Create New Post"}
                     </CardTitle>
                 </CardHeader>
@@ -393,9 +394,9 @@ CREATE TRIGGER update_blogs_updated_at BEFORE UPDATE ON public.blogs FOR EACH RO
             </Card>
 
             {/* List Card */}
-            <Card className="rounded-3xl border border-border/60 bg-card/25 shadow-elev">
+            <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
                 <CardHeader>
-                    <CardTitle className="text-xl font-extrabold flex items-center justify-between">
+                    <CardTitle className="text-xl font-bold flex items-center justify-between">
                         Recent Posts
                         <Button variant="ghost" size="sm" onClick={load} disabled={busy}>Refresh</Button>
                     </CardTitle>
@@ -406,7 +407,7 @@ CREATE TRIGGER update_blogs_updated_at BEFORE UPDATE ON public.blogs FOR EACH RO
                             <div className="text-center py-8 text-muted-foreground italic">No blog posts found.</div>
                         ) : (
                             blogs.map((blog) => (
-                                <div key={blog.id} className="group relative flex items-center gap-4 p-4 rounded-2xl border border-border/70 bg-background/20 transition-all hover:bg-background/40">
+                                <div key={blog.id} className="group relative flex items-center gap-4 p-4 rounded-xl border border-border/60 bg-card/20 transition-all hover:bg-card/40">
                                     <div className="h-16 w-24 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/40">
                                         {blog.cover_image_url ? (
                                             <img src={blog.cover_image_url} alt="" className="h-full w-full object-cover" />
@@ -418,9 +419,15 @@ CREATE TRIGGER update_blogs_updated_at BEFORE UPDATE ON public.blogs FOR EACH RO
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="font-bold flex items-center gap-2 truncate">
-                                            {blog.title}
-                                            {!blog.published && (
-                                                <span className="px-1.5 py-0.5 rounded-md bg-yellow-500/10 text-yellow-500 text-[10px] font-black uppercase">Draft</span>
+                                            <span className="truncate">{blog.title}</span>
+                                            {blog.published ? (
+                                                <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-[10px] font-medium uppercase shrink-0">
+                                                    Published
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-500 text-[10px] font-medium uppercase shrink-0">
+                                                    Draft
+                                                </Badge>
                                             )}
                                         </div>
                                         <div className="mt-1 text-xs text-muted-foreground flex items-center gap-3">
@@ -429,11 +436,11 @@ CREATE TRIGGER update_blogs_updated_at BEFORE UPDATE ON public.blogs FOR EACH RO
                                             <span className="flex-shrink-0">{new Date(blog.created_at).toLocaleDateString()}</span>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10" onClick={() => onEdit(blog)}>
+                                    <div className="flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10" onClick={() => onEdit(blog)} title="Edit post">
                                             <Edit className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:bg-red-500/10" onClick={() => onDelete(blog.id)}>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => onDelete(blog.id)} title="Delete post">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>

@@ -169,7 +169,7 @@ export function MentorsAdmin() {
         <div className="space-y-8 animate-fade-in pb-20">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight">Mentor Management</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">Mentor Management</h2>
                     <p className="text-muted-foreground">Manage your team of expert mentors.</p>
                 </div>
                 <Button variant="soft" onClick={resetForm} disabled={!editing}>
@@ -178,10 +178,10 @@ export function MentorsAdmin() {
                 </Button>
             </div>
 
-            {/* Editor Card - Matching BlogsAdmin style */}
-            <Card className="rounded-3xl border border-border/60 bg-card/25 shadow-elev">
+            {/* Editor Card */}
+            <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
                 <CardHeader>
-                    <CardTitle className="text-xl font-extrabold">
+                    <CardTitle className="text-xl font-bold">
                         {editing ? "Edit Mentor profile" : "Create New Mentor"}
                     </CardTitle>
                 </CardHeader>
@@ -197,12 +197,12 @@ export function MentorsAdmin() {
                         </div>
                     </div>
 
-                    {/* Image Upload Section - Matching BlogsAdmin style (16:9 aspect) */}
+                    {/* Image Upload Section - Portrait Square aspect */}
                     <div className="space-y-2">
                         <Label>Profile Portrait</Label>
                         <div className="flex items-start gap-4">
                             {imagePath ? (
-                                <div className="relative group aspect-video w-40 overflow-hidden rounded-lg border bg-muted">
+                                <div className="relative group aspect-square w-28 overflow-hidden rounded-xl border bg-muted shadow-xs">
                                     <img src={imagePath} alt="Preview" className="h-full w-full object-cover" />
                                     <button
                                         onClick={() => setImagePath("")}
@@ -213,8 +213,8 @@ export function MentorsAdmin() {
                                     </button>
                                 </div>
                             ) : (
-                                <div className="flex h-24 w-40 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-xs text-muted-foreground">
-                                    No image
+                                <div className="flex h-28 w-28 items-center justify-center rounded-xl border border-dashed bg-muted/50 text-xs text-muted-foreground text-center p-2">
+                                    No photo
                                 </div>
                             )}
 
@@ -285,10 +285,10 @@ export function MentorsAdmin() {
                 </CardContent>
             </Card>
 
-            {/* List Card - Matching BlogsAdmin style */}
-            <Card className="rounded-3xl border border-border/60 bg-card/25 shadow-elev">
+            {/* List Card */}
+            <Card className="rounded-xl border border-border/60 bg-card/40 shadow-xs">
                 <CardHeader>
-                    <CardTitle className="text-xl font-extrabold flex items-center justify-between">
+                    <CardTitle className="text-xl font-bold flex items-center justify-between">
                         Active Mentors
                         <Button variant="ghost" size="sm" onClick={loadMentors} disabled={loading}>Refresh</Button>
                     </CardTitle>
@@ -301,12 +301,12 @@ export function MentorsAdmin() {
                             <div className="text-center py-8 text-muted-foreground italic">No mentors found.</div>
                         ) : (
                             mentors.map((m) => (
-                                <div key={m.id} className="group relative flex items-center gap-4 p-4 rounded-2xl border border-border/70 bg-background/20 transition-all hover:bg-background/40">
-                                    <div className="h-16 w-24 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/40">
+                                <div key={m.id} className="group relative flex items-center gap-4 p-4 rounded-xl border border-border/70 bg-background/20 transition-all hover:bg-background/40">
+                                    <div className="h-16 w-16 rounded-xl overflow-hidden bg-muted flex-shrink-0 border border-border/40">
                                         {m.image_path ? (
                                             <img src={m.image_path} alt="" className="h-full w-full object-cover" />
                                         ) : (
-                                            <div className="h-full w-full flex items-center justify-center text-primary font-black text-xl bg-primary/10">
+                                            <div className="h-full w-full flex items-center justify-center text-primary font-bold text-lg bg-primary/10">
                                                 {m.initials}
                                             </div>
                                         )}

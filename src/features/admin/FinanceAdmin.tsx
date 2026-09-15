@@ -183,32 +183,32 @@ export function FinanceAdmin() {
     <div className="space-y-8 animate-fade-in pb-20">
       {/* Overview Cards */}
       <div className="grid gap-6 md:grid-cols-3">
-        <div className="group rounded-[2rem] border border-border/60 bg-card/25 p-8 shadow-elev transition-all hover:bg-card/40">
-          <div className="flex items-center gap-2 text-sm font-bold text-green-500/80 uppercase tracking-wider">
+        <div className="group rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs transition-all hover:bg-card/60">
+          <div className="flex items-center gap-2 text-xs font-bold text-green-500/80 uppercase tracking-wider">
             <ArrowUpCircle className="h-4 w-4" />
             Total Income
           </div>
-          <div className="mt-3 text-4xl font-black tabular-nums tracking-tight text-foreground">
+          <div className="mt-2 text-3xl font-bold tabular-nums tracking-tight text-foreground">
             ৳{(totals.income / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className="group rounded-[2rem] border border-border/60 bg-card/25 p-8 shadow-elev transition-all hover:bg-card/40">
-          <div className="flex items-center gap-2 text-sm font-bold text-red-500/80 uppercase tracking-wider">
+        <div className="group rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs transition-all hover:bg-card/60">
+          <div className="flex items-center gap-2 text-xs font-bold text-red-500/80 uppercase tracking-wider">
             <ArrowDownCircle className="h-4 w-4" />
             Total Expense
           </div>
-          <div className="mt-3 text-4xl font-black tabular-nums tracking-tight text-foreground">
+          <div className="mt-2 text-3xl font-bold tabular-nums tracking-tight text-foreground">
             ৳{(totals.expense / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className="group rounded-[2rem] border border-border/60 bg-card/25 p-8 shadow-elev transition-all hover:bg-card/40">
-          <div className="flex items-center gap-2 text-sm font-bold text-primary/80 uppercase tracking-wider">
+        <div className="group rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs transition-all hover:bg-card/60">
+          <div className="flex items-center gap-2 text-xs font-bold text-primary/80 uppercase tracking-wider">
             <RefreshCw className="h-4 w-4" />
             Net Profit
           </div>
-          <div className={`mt-3 text-4xl font-black tabular-nums tracking-tight ${totals.net >= 0 ? "text-primary" : "text-red-500"}`}>
+          <div className={`mt-2 text-3xl font-bold tabular-nums tracking-tight ${totals.net >= 0 ? "text-primary" : "text-red-500"}`}>
             ৳{(totals.net / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>
@@ -217,54 +217,54 @@ export function FinanceAdmin() {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Entry Form */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-[2.5rem] border border-border/60 bg-card/25 p-8 shadow-elev">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black flex items-center gap-3">
-                {editingTxn ? <Pencil className="h-6 w-6 text-primary" /> : <Plus className="h-6 w-6 text-primary" />}
+          <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold flex items-center gap-2.5">
+                {editingTxn ? <Pencil className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
                 {editingTxn ? "Edit Transaction" : "Manual Entry"}
               </h2>
               {editingTxn && (
-                <Button variant="ghost" size="sm" onClick={() => { setEditingTxn(null); setAmount(""); setNote(""); }} className="rounded-xl">
+                <Button variant="ghost" size="sm" onClick={() => { setEditingTxn(null); setAmount(""); setNote(""); }} className="rounded-lg h-8 text-xs">
                   Cancel
                 </Button>
               )}
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-4">
-                <Label className="text-xs font-black uppercase tracking-widest opacity-60">Type</Label>
-                <div className="flex p-1 bg-background/40 rounded-2xl border border-border/50">
+              <div className="space-y-3">
+                <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Type</Label>
+                <div className="flex p-1 bg-background/40 rounded-xl border border-border/50">
                   <button
                     onClick={() => setTxnType("income")}
-                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${txnType === "income" ? "bg-primary text-white shadow-lg" : "hover:bg-background/60"}`}
+                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${txnType === "income" ? "bg-primary text-white shadow-sm" : "hover:bg-background/60"}`}
                   >
                     Income
                   </button>
                   <button
                     onClick={() => setTxnType("expense")}
-                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${txnType === "expense" ? "bg-red-500 text-white shadow-lg" : "hover:bg-background/60"}`}
+                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${txnType === "expense" ? "bg-red-500 text-white shadow-sm" : "hover:bg-background/60"}`}
                   >
                     Expense
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <Label className="text-xs font-black uppercase tracking-widest opacity-60">Amount (BDT)</Label>
+              <div className="space-y-3">
+                <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Amount (BDT)</Label>
                 <Input
                   inputMode="decimal"
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="rounded-2xl h-14 text-lg font-bold"
+                  className="rounded-xl h-11 text-base font-bold bg-background/50"
                 />
               </div>
 
-              <div className="space-y-4">
-                <Label className="text-xs font-black uppercase tracking-widest opacity-60">Category</Label>
+              <div className="space-y-3">
+                <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Category</Label>
                 <select
-                  className="h-14 w-full rounded-2xl border border-border/60 bg-background/20 px-4 text-sm font-bold focus:ring-2 ring-primary transition-all outline-none"
+                  className="h-11 w-full rounded-xl border border-border/60 bg-background/40 px-3 text-sm font-semibold focus:ring-2 ring-primary transition-all outline-none"
                   value={categoryId ?? ""}
                   onChange={(e) => setCategoryId(e.target.value || null)}
                 >
@@ -277,24 +277,24 @@ export function FinanceAdmin() {
                 </select>
               </div>
 
-              <div className="space-y-4">
-                <Label className="text-xs font-black uppercase tracking-widest opacity-60">Note / Description</Label>
+              <div className="space-y-3">
+                <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Note / Description</Label>
                 <Input
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="What is this for?"
-                  className="rounded-2xl h-14"
+                  className="rounded-xl h-11 bg-background/50"
                 />
               </div>
             </div>
 
-            <div className="mt-10 flex gap-4">
+            <div className="mt-6 flex gap-4">
               <Button
                 variant="hero"
                 size="lg"
                 disabled={busy}
                 onClick={() => void onSaveTxn()}
-                className="flex-1 rounded-2xl h-14 font-black text-lg shadow-glow"
+                className="flex-1 rounded-xl h-11 font-bold text-base shadow-xs"
               >
                 {busy ? <Loader2 className="animate-spin h-5 w-5" /> : (editingTxn ? "Update Entry" : "Save Transaction")}
               </Button>
@@ -302,33 +302,33 @@ export function FinanceAdmin() {
           </div>
 
           {/* Transactions List */}
-          <div className="rounded-[2.5rem] border border-border/60 bg-card/25 p-8 shadow-elev">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black">History</h2>
-              <Button variant="soft" size="sm" onClick={() => void load()} disabled={busy} className="rounded-xl">
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+          <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold">History</h2>
+              <Button variant="soft" size="sm" onClick={() => void load()} disabled={busy} className="rounded-lg h-8 text-xs">
+                {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 mr-1.5" />}
                 Refresh
               </Button>
             </div>
 
             <div className="space-y-3">
               {txns.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground italic border-2 border-dashed rounded-[2rem]">
+                <div className="text-center py-12 text-muted-foreground text-xs border border-dashed border-border/60 rounded-xl">
                   No transactions found.
                 </div>
               ) : (
                 txns.map((t) => (
-                  <div key={t.id} className="group relative flex items-center justify-between p-5 rounded-[1.5rem] border border-border/70 bg-background/20 transition-all hover:bg-background/40 hover:border-primary/30">
-                    <div className="flex items-center gap-4">
-                      <div className={`h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 ${t.txn_type === "income" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}>
-                        {t.txn_type === "income" ? <ArrowUpCircle className="h-6 w-6" /> : <ArrowDownCircle className="h-6 w-6" />}
+                  <div key={t.id} className="group relative flex items-center justify-between p-4 rounded-xl border border-border/70 bg-background/20 transition-all hover:bg-background/40 hover:border-primary/30">
+                    <div className="flex items-center gap-3.5">
+                      <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${t.txn_type === "income" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}>
+                        {t.txn_type === "income" ? <ArrowUpCircle className="h-5 w-5" /> : <ArrowDownCircle className="h-5 w-5" />}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-black text-lg">৳{(t.amount_cents / 100).toLocaleString()}</span>
-                          {t.purchase_id && <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-primary/10 text-primary">System</span>}
+                          <span className="font-bold text-base">৳{(t.amount_cents / 100).toLocaleString()}</span>
+                          {t.purchase_id && <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-primary/10 text-primary">System</span>}
                         </div>
-                        <div className="text-xs text-muted-foreground font-bold mt-1 max-w-[200px] truncate">
+                        <div className="text-xs text-muted-foreground mt-0.5 max-w-[200px] truncate">
                           {t.note || "No description"}
                         </div>
                       </div>
@@ -336,20 +336,20 @@ export function FinanceAdmin() {
 
                     <div className="flex items-center gap-4">
                       <div className="text-right hidden sm:block">
-                        <div className="text-[10px] font-black uppercase tracking-wider opacity-60">
+                        <div className="text-[10px] font-medium uppercase tracking-wider opacity-70">
                           {new Date(t.created_at).toLocaleDateString()}
                         </div>
-                        <div className="text-[10px] text-muted-foreground italic">
+                        <div className="text-[10px] text-muted-foreground">
                           {categories.find(c => c.id === t.category_id)?.name || "General"}
                         </div>
                       </div>
 
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl" onClick={() => startEditTxn(t)}>
-                          <Edit className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10 rounded-lg" onClick={() => startEditTxn(t)}>
+                          <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-10 w-10 text-red-500 hover:bg-red-500/10 rounded-xl" onClick={() => onDeleteTxn(t.id)}>
-                          <Trash2 className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:bg-red-500/10 rounded-lg" onClick={() => onDeleteTxn(t.id)}>
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
@@ -361,42 +361,42 @@ export function FinanceAdmin() {
         </div>
 
         {/* Categories Section */}
-        <div className="rounded-[2.5rem] border border-border/60 bg-card/25 p-8 shadow-elev h-fit">
-          <h2 className="text-2xl font-black mb-8 flex items-center gap-3">
-            <RefreshCw className="h-6 w-6 text-primary" />
+        <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-xs h-fit">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2.5">
+            <RefreshCw className="h-5 w-5 text-primary" />
             Categories
           </h2>
 
-          <div className="flex gap-2 mb-8">
+          <div className="flex gap-2 mb-6">
             <Input
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder={editingCategory ? "Rename category..." : "New category..."}
-              className="rounded-xl h-12"
+              className="rounded-xl h-10 text-xs bg-background/50"
             />
-            <Button variant="hero" disabled={busy} onClick={() => void onSaveCategory()} className="rounded-xl px-5 h-12 shadow-md">
-              {editingCategory ? <Pencil className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            <Button variant="hero" disabled={busy} onClick={() => void onSaveCategory()} className="rounded-xl px-4 h-10 shadow-xs text-xs font-bold">
+              {editingCategory ? <Pencil className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
             </Button>
             {editingCategory && (
-              <Button variant="ghost" size="icon" onClick={() => { setEditingCategory(null); setNewCategory(""); }} className="rounded-xl h-12 w-12">
-                <X className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={() => { setEditingCategory(null); setNewCategory(""); }} className="rounded-xl h-10 w-10">
+                <X className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
 
           <div className="space-y-2">
             {categories.length === 0 ? (
-              <div className="text-sm text-muted-foreground italic text-center py-4">No categories yet.</div>
+              <div className="text-xs text-muted-foreground italic text-center py-4">No categories yet.</div>
             ) : (
               categories.map((c) => (
-                <div key={c.id} className="group flex items-center justify-between p-4 rounded-2xl border border-border/70 bg-background/15 transition-all hover:border-primary/30">
-                  <span className="font-bold text-sm">{c.name}</span>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90">
-                    <button onClick={() => startEditCategory(c)} className="p-2 text-primary hover:bg-primary/10 rounded-xl">
-                      <Pencil className="h-4 w-4" />
+                <div key={c.id} className="group flex items-center justify-between p-3 rounded-xl border border-border/70 bg-background/20 transition-all hover:border-primary/30">
+                  <span className="font-semibold text-xs">{c.name}</span>
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => startEditCategory(c)} className="p-1.5 text-primary hover:bg-primary/10 rounded-lg" title="Edit category">
+                      <Pencil className="h-3.5 w-3.5" />
                     </button>
-                    <button onClick={() => onDeleteCategory(c.id)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-xl">
-                      <Trash2 className="h-4 w-4" />
+                    <button onClick={() => onDeleteCategory(c.id)} className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg" title="Delete category">
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </div>
@@ -406,14 +406,5 @@ export function FinanceAdmin() {
         </div>
       </div>
     </div>
-  );
-}
-
-function Edit({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
   );
 }

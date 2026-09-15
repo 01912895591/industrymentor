@@ -225,7 +225,7 @@ export function EnrollmentsAdmin() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <CreditCard className="h-6 w-6 text-primary" /> Course Enrollments &amp; Payments
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -300,7 +300,7 @@ export function EnrollmentsAdmin() {
           Loading enrollments...
         </div>
       ) : filtered.length === 0 ? (
-        <div className="p-12 text-center border border-dashed border-border/60 rounded-3xl bg-card/20 space-y-2">
+        <div className="p-12 text-center border border-dashed border-border/60 rounded-xl bg-card/20 space-y-2">
           <ShieldCheck className="h-8 w-8 mx-auto text-muted-foreground/60" />
           <div className="text-sm font-bold text-foreground">No enrollments found</div>
           <p className="text-xs text-muted-foreground">
@@ -316,11 +316,12 @@ export function EnrollmentsAdmin() {
             const isActive = record.status === "active";
             const isRejected = record.status === "rejected";
             const isBusy = busyId === record.id;
+            const coursePrice = (record.courses?.price_cents || 0) / 100;
 
             return (
               <div
                 key={record.id}
-                className={`p-4 sm:p-5 rounded-2xl border transition-all ${
+                className={`p-4 sm:p-5 rounded-xl border transition-all ${
                   isPending
                     ? "bg-amber-500/[0.03] border-amber-500/30 hover:border-amber-500/50"
                     : isActive
@@ -371,9 +372,13 @@ export function EnrollmentsAdmin() {
                     </div>
                   </div>
 
-                  {/* Payment Info Box */}
+                  {/* Payment Info Box with Price */}
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="p-2.5 rounded-xl bg-background/60 border border-border/60 flex items-center gap-2.5 text-xs">
+                      <span className="font-bold text-emerald-500">
+                        ৳{coursePrice.toLocaleString()}
+                      </span>
+                      <div className="h-3 w-px bg-border/80" />
                       <span className="font-bold uppercase tracking-wider text-[10px] text-muted-foreground">
                         {record.payment_method || "MFS"}
                       </span>

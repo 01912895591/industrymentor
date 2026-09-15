@@ -98,7 +98,7 @@ function UserRow({ user, onDelete }: { user: UserData; onDelete: (id: string) =>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <div className="font-bold text-base md:text-lg leading-tight">{user.full_name || "Unnamed"}</div>
+                <div className="font-bold text-base md:text-lg leading-tight">{user.full_name || "Student"}</div>
                 <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-mono text-muted-foreground">
                   {shortId}
                 </span>
@@ -149,7 +149,7 @@ function UserRow({ user, onDelete }: { user: UserData; onDelete: (id: string) =>
             <Mail className="hidden lg:block h-4 w-4 text-muted-foreground/50" />
             <div className="flex flex-1 gap-2">
               <Input
-                placeholder={`Email to ${user.email?.split('@')[0]}...`}
+                placeholder={user.email ? `Email to ${user.email.split('@')[0]}...` : "Email message..."}
                 value={emailMsg}
                 onChange={(e) => setEmailMsg(e.target.value)}
                 className="h-8 text-xs bg-background/50"
@@ -270,10 +270,10 @@ export function UsersAdmin() {
         <div className="space-y-4">
           {loading
             ? // Loading Skeleton
-            [1, 2, 3].map((i) => <div key={i} className="h-40 animate-pulse rounded-2xl bg-muted/20" />)
+            [1, 2, 3].map((i) => <div key={i} className="h-40 animate-pulse rounded-xl bg-muted/20" />)
             : filteredUsers.length === 0
               ? (
-                <div className="py-12 text-center text-muted-foreground border border-dashed border-border/60 rounded-2xl">
+                <div className="py-12 text-center text-muted-foreground border border-dashed border-border/60 rounded-xl">
                   {searchQuery ? `No users found matching "${searchQuery}"` : "No users found."}
                 </div>
               )
