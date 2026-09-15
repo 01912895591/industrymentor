@@ -161,43 +161,45 @@ export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditF
                     </div>
                     <Input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploading} />
                 </Label>
-                <div className="text-center">
-                    <p className="text-sm font-bold">Profile Picture</p>
-                    <p className="text-[10px] text-muted-foreground">Tap to upload your photo</p>
+                <div className="text-center space-y-1">
+                    <p className="text-sm font-bold text-foreground">Profile Photo</p>
+                    <p className="text-xs text-muted-foreground max-w-xs">
+                        Upload a clear headshot to personalize your student profile and certificates.
+                    </p>
                 </div>
             </div>
 
             <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="full_name">Full Name</Label>
-                    <Input id="full_name" placeholder="John Doe" {...form.register("full_name")} />
+                <div className="space-y-1.5">
+                    <Label htmlFor="full_name" className="text-xs font-semibold text-foreground">Full Name</Label>
+                    <Input id="full_name" placeholder="e.g. Abdullah Al Mamun" className="h-10 rounded-lg" {...form.register("full_name")} />
                     {form.formState.errors.full_name && (
                         <p className="text-xs text-destructive">{form.formState.errors.full_name.message}</p>
                     )}
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" placeholder="+8801..." {...form.register("phone")} />
+                <div className="space-y-1.5">
+                    <Label htmlFor="phone" className="text-xs font-semibold text-foreground">Phone Number</Label>
+                    <Input id="phone" type="tel" placeholder="e.g. +880 1912-345678" className="h-10 rounded-lg" {...form.register("phone")} />
                     {form.formState.errors.phone && (
                         <p className="text-xs text-destructive">{form.formState.errors.phone.message}</p>
                     )}
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input id="location" placeholder="Dhaka, Bangladesh" {...form.register("location")} />
+                <div className="space-y-1.5">
+                    <Label htmlFor="location" className="text-xs font-semibold text-foreground">Location</Label>
+                    <Input id="location" placeholder="e.g. Dhaka, Bangladesh" className="h-10 rounded-lg" {...form.register("location")} />
                     {form.formState.errors.location && (
                         <p className="text-xs text-destructive">{form.formState.errors.location.message}</p>
                     )}
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
+                <div className="space-y-1.5">
+                    <Label htmlFor="bio" className="text-xs font-semibold text-foreground">Professional Bio / Summary</Label>
                     <Textarea
                         id="bio"
-                        placeholder="Tell us about yourself..."
-                        className="min-h-[100px] resize-none"
+                        placeholder="Brief summary of your academic background or current role in apparel & textile manufacturing..."
+                        className="min-h-[100px] resize-none rounded-lg text-xs sm:text-sm leading-relaxed"
                         {...form.register("bio")}
                     />
                     {form.formState.errors.bio && (
@@ -207,7 +209,7 @@ export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditF
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
-                <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+                <Button type="submit" variant="default" disabled={loading} className="w-full sm:w-auto font-semibold">
                     {loading ? "Saving..." : "Save Changes"}
                 </Button>
             </div>

@@ -2,7 +2,7 @@ import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useIsAdmin } from "@/components/auth/useIsAdmin";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, Phone, Shield, Sparkles, User } from "lucide-react";
+import { LogOut, Menu, Phone, Shield, Sparkles, User, LayoutDashboard } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -60,8 +60,8 @@ export function SiteNavbar() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <div className="flex min-w-0 items-center gap-6">
-          <NavLink to="/" className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-4 lg:gap-6">
+          <NavLink to="/" className="flex items-center gap-3 shrink-0">
             {isLoading ? (
               // Placeholder while loading to prevent layout shift & flash
               <div className="h-16 w-32" />
@@ -69,14 +69,14 @@ export function SiteNavbar() {
               <img
                 src={logoUrl}
                 alt="Logo"
-                className="h-9 sm:h-11 md:h-12 max-w-[160px] sm:max-w-[200px] object-contain"
+                className="h-9 sm:h-11 md:h-12 max-w-[150px] sm:max-w-[190px] object-contain"
                 loading="eager"
                 // @ts-ignore
                 fetchPriority="high"
               />
             ) : (
               <>
-                <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand shadow-elev">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand shadow-sm">
                   <span className="text-sm font-black tracking-tight text-primary-foreground">IM</span>
                 </div>
                 <div className="text-base font-semibold tracking-tight">
@@ -86,13 +86,13 @@ export function SiteNavbar() {
             )}
           </NavLink>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-0.5 md:flex">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
-                className="px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                activeClassName="text-foreground"
+                className="px-2.5 py-1.5 text-xs lg:text-sm lg:px-3 lg:py-2 text-muted-foreground transition-colors hover:text-foreground rounded-md"
+                activeClassName="text-foreground font-semibold"
               >
                 {item.label}
               </NavLink>
@@ -100,18 +100,14 @@ export function SiteNavbar() {
           </nav>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
           <a
             href={`tel:${contactPhone}`}
-            className="group relative flex items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3 py-1.5 text-xs sm:text-sm font-medium text-foreground shadow-sm transition-all duration-300 hover:border-emerald-400/70 hover:bg-emerald-500/20 hover:shadow-[0_0_18px_rgba(16,185,129,0.35)]"
+            className="group relative flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs sm:text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:border-emerald-400/60 hover:bg-emerald-500/15"
             title="Direct Call Hotline"
           >
-            <span className="relative flex h-5 w-5 items-center justify-center shrink-0">
-              {/* Expanding ring wave ripple */}
-              <span className="animate-ring-wave bg-emerald-400/40" />
-              <span className="absolute -inset-0.5 rounded-full bg-emerald-400/20 blur-xs animate-pulse" />
-              {/* Ringing phone icon */}
-              <Phone className="relative h-3.5 w-3.5 text-emerald-400 animate-phone-ring" />
+            <span className="relative flex h-4 w-4 items-center justify-center shrink-0">
+              <Phone className="h-3.5 w-3.5 text-emerald-400" />
             </span>
             <span className="hidden sm:inline tabular-nums font-semibold tracking-tight text-xs sm:text-sm text-foreground group-hover:text-emerald-300 transition-colors">
               {contactPhone}
@@ -122,62 +118,65 @@ export function SiteNavbar() {
             {user ? (
               <>
                 {isAdmin && (
-                  <Button variant="soft" size="sm" asChild>
+                  <Button variant="soft" size="sm" asChild className="h-9 gap-1.5 font-medium">
                     <NavLink to="/admin">
-                      <Shield className="h-4 w-4" />
+                      <Shield className="h-3.5 w-3.5" />
                       Admin
                     </NavLink>
                   </Button>
                 )}
-                <Button variant="soft" size="sm" asChild>
+                <Button variant="default" size="sm" asChild className="h-9 gap-1.5 font-semibold shadow-sm">
                   <NavLink to="/dashboard">
-                    <Sparkles className="h-4 w-4" />
+                    <LayoutDashboard className="h-3.5 w-3.5" />
                     Dashboard
                   </NavLink>
                 </Button>
-                <Button variant="soft" size="sm" asChild>
+                <Button variant="soft" size="sm" asChild className="h-9 gap-1.5 font-medium">
                   <NavLink to="/portfolio">
-                    <User className="h-4 w-4" />
+                    <User className="h-3.5 w-3.5" />
                     Portfolio
                   </NavLink>
                 </Button>
                 <Button
-                  variant="soft"
+                  variant="outline"
                   size="sm"
+                  className="h-9 gap-1.5 font-medium text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     void signOut();
                   }}
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-3.5 w-3.5" />
                   Logout
                 </Button>
               </>
             ) : (
-              <Button variant="soft" size="sm" asChild>
-                <NavLink to={{ pathname: "/auth", search: "?mode=login" }}>
-                  <Sparkles className="h-4 w-4" />
-                  Sign In
-                </NavLink>
-              </Button>
+              <>
+                <Button variant="soft" size="sm" asChild className="h-9">
+                  <NavLink to={{ pathname: "/auth", search: "?mode=login" }}>
+                    Sign In
+                  </NavLink>
+                </Button>
+                <Button variant="hero" size="sm" asChild className="h-9">
+                  <NavLink to={{ pathname: "/auth", search: "?mode=signup" }} state={{ from: "/dashboard" }}>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Start Learning
+                  </NavLink>
+                </Button>
+              </>
             )}
-
-            <Button variant="hero" size="sm" asChild>
-              <NavLink to={{ pathname: "/auth", search: "?mode=signup" }} state={{ from: "/dashboard" }}>
-                <Sparkles className="h-4 w-4" />
-                Start Learning
-              </NavLink>
-            </Button>
           </div>
 
           {/* Mobile Menu & Quick Actions */}
           <div className="flex shrink-0 items-center gap-2 md:hidden">
-            <div className="hidden sm:block">
-              <Button variant="hero" size="sm" className="h-8 px-3 text-xs font-medium" asChild>
-                <NavLink to={{ pathname: "/auth", search: "?mode=signup" }} state={{ from: "/dashboard" }}>
-                  Start Learning
-                </NavLink>
-              </Button>
-            </div>
+            {!user && (
+              <div className="hidden sm:block">
+                <Button variant="hero" size="sm" className="h-8 px-3 text-xs font-medium" asChild>
+                  <NavLink to={{ pathname: "/auth", search: "?mode=signup" }} state={{ from: "/dashboard" }}>
+                    Start Learning
+                  </NavLink>
+                </Button>
+              </div>
+            )}
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
@@ -211,9 +210,9 @@ export function SiteNavbar() {
                             </NavLink>
                           </Button>
                         )}
-                        <Button variant="soft" className="justify-start" asChild onClick={() => setIsOpen(false)}>
+                        <Button variant="default" className="justify-start font-semibold shadow-sm" asChild onClick={() => setIsOpen(false)}>
                           <NavLink to="/dashboard">
-                            <Sparkles className="mr-2 h-4 w-4" />
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
                             Dashboard
                           </NavLink>
                         </Button>

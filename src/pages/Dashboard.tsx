@@ -133,19 +133,18 @@ function CertificatesSection({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <header className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm relative overflow-hidden">
+      <header className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs">
         <div className="relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold mb-3">
             <Award className="h-3.5 w-3.5" /> Official Credentials
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground flex items-center gap-2.5">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
             Certificates & Achievements
           </h2>
           <p className="mt-1.5 text-sm text-muted-foreground max-w-xl">
             IndustryMentor verified credentials with unique cryptographic IDs and instant online verification for your CV & LinkedIn.
           </p>
         </div>
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
       </header>
 
       {/* Eligible / Pending Approval Section */}
@@ -153,7 +152,7 @@ function CertificatesSection({
         <div className="space-y-4">
           <div className="flex items-center gap-2 px-1">
             <Sparkles className="h-5 w-5 text-amber-500" />
-            <h3 className="text-lg font-extrabold text-foreground">Eligible for Certificate Claim</h3>
+            <h3 className="text-lg font-bold text-foreground">Eligible for Certificate Claim</h3>
           </div>
           <div className="grid gap-4">
             {eligibleCourses.map((enroll) => {
@@ -164,11 +163,11 @@ function CertificatesSection({
               return (
                 <Card
                   key={enroll.course_id}
-                  className="rounded-3xl border-border/60 bg-card/60 backdrop-blur-sm shadow-sm transition-all hover:border-primary/30"
+                  className="rounded-xl border-border/60 bg-card/60 backdrop-blur-xs shadow-xs transition-all hover:border-primary/30"
                 >
                   <CardContent className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 shadow-inner">
+                      <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
                         <GraduationCap className="h-6 w-6" />
                       </div>
                       <div>
@@ -186,7 +185,7 @@ function CertificatesSection({
                       {isPending ? (
                         <Badge
                           variant="outline"
-                          className="bg-amber-500/10 text-amber-600 border-amber-500/30 px-3.5 py-1.5 text-xs font-semibold flex items-center gap-1.5 animate-pulse"
+                          className="bg-amber-500/10 text-amber-600 border-amber-500/30 px-3.5 py-1.5 text-xs font-semibold flex items-center gap-1.5"
                         >
                           <Clock className="h-3.5 w-3.5" /> Verification in Review
                         </Badge>
@@ -208,7 +207,7 @@ function CertificatesSection({
                         <Button
                           variant="hero"
                           size="sm"
-                          className="h-9 px-4 text-xs font-bold gap-1.5 shadow-sm"
+                          className="h-9 px-4 text-xs font-bold gap-1.5 shadow-xs"
                           onClick={() => handleRequestCertificate(enroll.course_id)}
                           disabled={requesting === enroll.course_id}
                         >
@@ -235,14 +234,14 @@ function CertificatesSection({
       <div className="space-y-4">
         <div className="flex items-center gap-2 px-1">
           <ShieldCheck className="h-5 w-5 text-emerald-600" />
-          <h3 className="text-lg font-extrabold text-foreground">
+          <h3 className="text-lg font-bold text-foreground">
             Earned Certificates ({approvedCerts.length})
           </h3>
         </div>
 
         {approvedCerts.length === 0 ? (
-          <Card className="rounded-3xl border-dashed border-border/70 bg-card/25 p-8 text-center shadow-none">
-            <div className="h-12 w-12 rounded-2xl bg-muted/30 mx-auto flex items-center justify-center text-muted-foreground mb-3">
+          <Card className="rounded-xl border-dashed border-border/70 bg-card/25 p-8 text-center shadow-none">
+            <div className="h-12 w-12 rounded-xl bg-muted/30 mx-auto flex items-center justify-center text-muted-foreground mb-3">
               <Award className="h-6 w-6" />
             </div>
             <h4 className="text-sm font-bold text-foreground">No approved certificates yet</h4>
@@ -255,11 +254,11 @@ function CertificatesSection({
             {approvedCerts.map((cert) => (
               <Card
                 key={cert.id}
-                className="group overflow-hidden rounded-3xl border-border/60 bg-card/60 backdrop-blur-sm shadow-sm transition-all hover:border-emerald-500/30 hover:shadow-md"
+                className="group overflow-hidden rounded-xl border-border/60 bg-card/60 backdrop-blur-xs shadow-xs transition-all hover:border-emerald-500/30 hover:shadow-xs"
               >
                 <CardContent className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                   <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 group-hover:scale-105 transition-transform shrink-0">
+                    <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 group-hover:scale-105 transition-transform shrink-0">
                       <ShieldCheck className="h-6 w-6" />
                     </div>
                     <div>
@@ -315,7 +314,7 @@ function CertificatesSection({
               return (
                 <div
                   key={enr.id}
-                  className="rounded-2xl border border-border/50 bg-card/30 p-4 space-y-2.5 backdrop-blur-sm"
+                  className="rounded-xl border border-border/50 bg-card/30 p-4 space-y-2.5 backdrop-blur-xs"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-bold text-foreground line-clamp-1">
@@ -352,17 +351,17 @@ function NotificationsSection() {
   if (isLoading) {
     return (
       <div className="space-y-3">
-        <div className="h-20 animate-pulse rounded-2xl bg-muted/20" />
-        <div className="h-20 animate-pulse rounded-2xl bg-muted/20" />
+        <div className="h-20 animate-pulse rounded-xl bg-muted/20" />
+        <div className="h-20 animate-pulse rounded-xl bg-muted/20" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm space-y-6">
+    <div className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Bell className="h-6 w-6 text-primary" /> Notifications & Alerts
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -376,14 +375,14 @@ function NotificationsSection() {
 
       <div className="space-y-3">
         {notifications.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
             You're all caught up! No unread notifications.
           </div>
         ) : (
           notifications.map((n) => (
             <div
               key={n.id}
-              className="rounded-2xl border border-border/60 bg-background/40 p-4 sm:p-5 transition-all hover:bg-background/60 hover:border-primary/30 space-y-1"
+              className="rounded-xl border border-border/60 bg-background/40 p-4 sm:p-5 transition-all hover:bg-background/60 hover:border-primary/30 space-y-1"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="font-bold text-sm text-foreground">{n.title}</span>
@@ -417,11 +416,11 @@ function PortfolioProjectsSection({
 
   return (
     <div className="space-y-6">
-      <header className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm">
+      <header className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold mb-3">
           <FolderKanban className="h-3.5 w-3.5" /> Career Showcase
         </div>
-        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           Industrial Projects & Portfolio
         </h2>
         <p className="mt-1.5 text-sm text-muted-foreground max-w-2xl">
@@ -431,7 +430,7 @@ function PortfolioProjectsSection({
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Portfolio Showcase Card */}
-        <Card className="rounded-3xl border-border/60 bg-card/50 backdrop-blur-sm shadow-sm flex flex-col justify-between">
+        <Card className="rounded-xl border-border/60 bg-card/50 backdrop-blur-xs shadow-xs flex flex-col justify-between">
           <CardHeader>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-primary">
@@ -447,7 +446,7 @@ function PortfolioProjectsSection({
                 </Badge>
               )}
             </div>
-            <CardTitle className="text-xl font-black mt-2">Personal Developer Portfolio</CardTitle>
+            <CardTitle className="text-xl font-bold mt-2">Personal Industry Portfolio</CardTitle>
             <CardDescription className="text-xs">
               {portfolio?.slug
                 ? `industrymentor.net/portfolio/${portfolio.slug}`
@@ -455,15 +454,15 @@ function PortfolioProjectsSection({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 text-xs space-y-1.5">
+            <div className="p-4 rounded-xl bg-muted/20 border border-border/40 text-xs space-y-1.5">
               <div className="flex justify-between text-muted-foreground">
                 <span>Showcase Items:</span>
                 <span className="font-bold text-foreground">{portfolio?.items?.length || 0} Projects</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>Domain Focus:</span>
+                <span>Domain Track:</span>
                 <span className="font-bold text-foreground">
-                  {portfolio?.career_path?.title || "Full-Stack Development"}
+                  {portfolio?.career_path?.title || (portfolio ? "General Industrial Track" : "Not Configured")}
                 </span>
               </div>
             </div>
@@ -494,18 +493,18 @@ function PortfolioProjectsSection({
         </Card>
 
         {/* Industrial Projects Library Card */}
-        <Card className="rounded-3xl border-border/60 bg-card/50 backdrop-blur-sm shadow-sm flex flex-col justify-between">
+        <Card className="rounded-xl border-border/60 bg-card/50 backdrop-blur-xs shadow-xs flex flex-col justify-between">
           <CardHeader>
             <span className="text-xs font-bold uppercase tracking-wider text-primary">
               Hands-on Experience
             </span>
-            <CardTitle className="text-xl font-black mt-2">Real-World Industry Projects</CardTitle>
+            <CardTitle className="text-xl font-bold mt-2">Real-World Industry Projects</CardTitle>
             <CardDescription className="text-xs">
               Work on production-grade briefs designed by senior mentors to bridge academic knowledge with industry demands.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 text-xs space-y-2">
+            <div className="p-4 rounded-xl bg-muted/20 border border-border/40 text-xs space-y-2">
               <div className="flex items-center gap-2 text-foreground font-semibold">
                 <CheckCircle2 className="h-4 w-4 text-primary" /> Production architectural patterns
               </div>
@@ -614,6 +613,14 @@ export default function Dashboard() {
     return certificates.filter((c: any) => c.status === "approved" || !c.status);
   }, [certificates]);
 
+  const eligibleCourses = useMemo(() => {
+    return enrollments.filter((e: any) => {
+      if (!e.completed) return false;
+      const cert = certificates.find((c: any) => c.course_id === e.course_id);
+      return !cert || cert.status !== "approved";
+    });
+  }, [enrollments, certificates]);
+
   // Filtered courses based on current pill
   const visibleEnrollments = useMemo(() => {
     if (courseFilter === "active") return activeEnrollments;
@@ -649,20 +656,19 @@ export default function Dashboard() {
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
           {/* Modern Sidebar */}
-          <aside className="h-fit rounded-3xl border border-border/60 bg-card/40 p-5 sm:p-6 backdrop-blur-xl shadow-sm sticky top-6 space-y-6">
+          <aside className="h-fit rounded-xl border border-border/60 bg-card/40 p-5 sm:p-6 backdrop-blur-xl shadow-xs sticky top-6 space-y-6">
             {/* Student Profile Card in Sidebar */}
             <div className="flex flex-col items-center text-center">
               <div className="relative group cursor-pointer" onClick={() => setActive("profile")}>
-                <Avatar className="h-24 w-24 rounded-full border-2 border-primary/30 p-1 group-hover:scale-105 transition-all duration-300 relative z-10 shadow-sm">
+                <Avatar className="h-24 w-24 rounded-full border-2 border-primary/30 p-1 group-hover:scale-105 transition-all duration-300 relative z-10 shadow-xs">
                   <AvatarImage src={profile?.avatar_url} className="rounded-full object-cover" />
-                  <AvatarFallback className="bg-gradient-brand text-2xl font-black text-primary-foreground">
+                  <AvatarFallback className="bg-gradient-brand text-2xl font-bold text-primary-foreground">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <div className="absolute -inset-2 rounded-full bg-primary/20 blur-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </div>
 
-              <div className="mt-4 text-xl font-black tracking-tight text-foreground line-clamp-1">
+              <div className="mt-4 text-xl font-bold tracking-tight text-foreground line-clamp-1">
                 {profile?.full_name || "Student"}
               </div>
 
@@ -694,10 +700,10 @@ export default function Dashboard() {
                     key={it.key}
                     onClick={() => setActive(it.key)}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition-all duration-200",
+                      "flex w-full items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left text-sm font-medium transition-all duration-200",
                       isActive
-                        ? "bg-primary/15 border-primary/30 text-primary shadow-sm font-bold"
-                        : "border-transparent text-muted-foreground hover:bg-background/60 hover:text-foreground",
+                        ? "bg-primary/10 border-primary/25 text-primary shadow-xs font-semibold"
+                        : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground",
                     )}
                   >
                     <it.icon
@@ -708,7 +714,7 @@ export default function Dashboard() {
                     />
                     <span className="flex-1">{it.label}</span>
                     {it.key === "courses" && pendingEnrollments.length > 0 && (
-                      <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                      <span className="h-2 w-2 rounded-full bg-amber-500" />
                     )}
                     {isActive && (
                       <ChevronRight className="h-3.5 w-3.5 text-primary animate-in fade-in" />
@@ -719,7 +725,7 @@ export default function Dashboard() {
 
               <div className="pt-4 border-t border-border/40">
                 <button
-                  className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-left text-xs font-semibold text-destructive transition-all duration-200 hover:bg-destructive/10"
+                  className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-xs font-semibold text-destructive transition-all duration-200 hover:bg-destructive/10"
                   onClick={async () => {
                     await signOut();
                     toast({ title: "Signed out successfully", description: "See you next time!" });
@@ -738,12 +744,12 @@ export default function Dashboard() {
             {active === "overview" && (
               <>
                 {/* Hero Banner */}
-                <header className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm relative overflow-hidden">
+                <header className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs">
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider mb-2">
                       <Sparkles className="h-3.5 w-3.5" /> Student Workspace
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                       {greeting}, {profile?.full_name?.split(" ")[0] || "Student"}!
                     </h1>
                     <p className="mt-2 text-sm text-muted-foreground max-w-xl">
@@ -767,23 +773,84 @@ export default function Dashboard() {
                       </button>
                     </div>
                   </div>
-                  <div className="absolute top-0 right-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
                 </header>
+
+                {/* Dynamic Next Recommended Action Card */}
+                <div className="rounded-xl border border-primary/25 bg-primary/[0.04] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+                      <Sparkles className="h-3.5 w-3.5" /> Next Recommended Action
+                    </div>
+                    <p className="text-sm font-medium text-foreground">
+                      {eligibleCourses.length > 0
+                        ? "Congratulations! You have completed a course curriculum and your official certificate is ready to claim."
+                        : activeEnrollments.length > 0
+                          ? `Continue your learning journey with ${formatCourseTitle(activeEnrollments[0]?.courses?.title) || "your active course"} (${activeEnrollments[0]?.progress_percent || 0}% completed).`
+                          : pendingEnrollments.length > 0
+                            ? "Your course enrollment payment is under review. Our admin team will verify it shortly (usually within 1–2 hours)."
+                            : "Start your practical engineering journey with an industry-standard curriculum designed by mentors."}
+                    </p>
+                  </div>
+                  <div className="shrink-0">
+                    {eligibleCourses.length > 0 ? (
+                      <Button
+                        size="sm"
+                        variant="hero"
+                        className="h-8 text-xs font-bold gap-1.5"
+                        onClick={() => setActive("certificates")}
+                      >
+                        <Award className="h-3.5 w-3.5" /> Claim Certificate
+                      </Button>
+                    ) : activeEnrollments.length > 0 ? (
+                      <Button
+                        size="sm"
+                        variant="hero"
+                        className="h-8 text-xs font-bold gap-1.5"
+                        onClick={() =>
+                          navigate(`/learn/${activeEnrollments[0]?.courses?.slug || activeEnrollments[0]?.course_id}`)
+                        }
+                      >
+                        <BookOpen className="h-3.5 w-3.5" /> Continue Learning
+                      </Button>
+                    ) : pendingEnrollments.length > 0 ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs font-semibold gap-1.5 border-amber-500/30 text-amber-700 dark:text-amber-300"
+                        onClick={() => {
+                          setActive("courses");
+                          setCourseFilter("pending");
+                        }}
+                      >
+                        <Clock className="h-3.5 w-3.5" /> View Status
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="hero"
+                        className="h-8 text-xs font-bold gap-1.5"
+                        onClick={() => navigate("/courses")}
+                      >
+                        <BookOpen className="h-3.5 w-3.5" /> Browse Courses
+                      </Button>
+                    )}
+                  </div>
+                </div>
 
                 {/* 4 Metric KPI Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {/* Card 1: Active Courses */}
-                  <Card className="rounded-3xl border-border/60 bg-card/50 backdrop-blur-sm shadow-sm hover:border-primary/30 transition-all">
+                  <Card className="rounded-xl border-border/60 bg-card/50 backdrop-blur-xs shadow-xs hover:border-primary/30 transition-all">
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
                       <CardDescription className="font-bold uppercase tracking-wider text-[10px]">
-                        Active Courses
+                        In Progress
                       </CardDescription>
                       <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <BookOpen className="h-4 w-4" />
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <CardTitle className="text-3xl font-black tabular-nums text-foreground">
+                      <CardTitle className="text-2xl sm:text-3xl font-bold tabular-nums text-foreground">
                         {activeEnrollments.length}
                       </CardTitle>
                       <p className="text-xs text-muted-foreground mt-1">In-progress classrooms</p>
@@ -793,13 +860,13 @@ export default function Dashboard() {
                   {/* Card 2: Pending Verifications */}
                   <Card
                     className={cn(
-                      "rounded-3xl border-border/60 bg-card/50 backdrop-blur-sm shadow-sm transition-all",
+                      "rounded-xl border-border/60 bg-card/50 backdrop-blur-xs shadow-xs transition-all",
                       pendingEnrollments.length > 0 && "border-amber-500/40 bg-amber-500/[0.03]",
                     )}
                   >
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
                       <CardDescription className="font-bold uppercase tracking-wider text-[10px]">
-                        Payment Verification
+                        Verification Pending
                       </CardDescription>
                       <div
                         className={cn(
@@ -814,23 +881,23 @@ export default function Dashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-3xl font-black tabular-nums text-foreground">
+                        <CardTitle className="text-2xl sm:text-3xl font-bold tabular-nums text-foreground">
                           {pendingEnrollments.length}
                         </CardTitle>
                         {pendingEnrollments.length > 0 && (
-                          <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/30 text-[10px] animate-pulse">
+                          <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/30 text-[10px]">
                             Reviewing
                           </Badge>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {pendingEnrollments.length > 0 ? "Under admin review (1-2h)" : "All verified"}
+                        {pendingEnrollments.length > 0 ? "Under admin review (1–2h)" : "All verified"}
                       </p>
                     </CardContent>
                   </Card>
 
                   {/* Card 3: Completed Courses */}
-                  <Card className="rounded-3xl border-border/60 bg-card/50 backdrop-blur-sm shadow-sm hover:border-emerald-500/30 transition-all">
+                  <Card className="rounded-xl border-border/60 bg-card/50 backdrop-blur-xs shadow-xs hover:border-emerald-500/30 transition-all">
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
                       <CardDescription className="font-bold uppercase tracking-wider text-[10px]">
                         Completed
@@ -840,7 +907,7 @@ export default function Dashboard() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <CardTitle className="text-3xl font-black tabular-nums text-foreground">
+                      <CardTitle className="text-2xl sm:text-3xl font-bold tabular-nums text-foreground">
                         {completedEnrollments.length}
                       </CardTitle>
                       <p className="text-xs text-muted-foreground mt-1">100% Curriculums finished</p>
@@ -848,7 +915,7 @@ export default function Dashboard() {
                   </Card>
 
                   {/* Card 4: Certificates */}
-                  <Card className="rounded-3xl border-border/60 bg-card/50 backdrop-blur-sm shadow-sm hover:border-primary/30 transition-all">
+                  <Card className="rounded-xl border-border/60 bg-card/50 backdrop-blur-xs shadow-xs hover:border-primary/30 transition-all">
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
                       <CardDescription className="font-bold uppercase tracking-wider text-[10px]">
                         Certificates
@@ -858,7 +925,7 @@ export default function Dashboard() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <CardTitle className="text-3xl font-black tabular-nums text-foreground">
+                      <CardTitle className="text-2xl sm:text-3xl font-bold tabular-nums text-foreground">
                         {approvedCertificates.length}
                       </CardTitle>
                       <p className="text-xs text-muted-foreground mt-1">Official verified credentials</p>
@@ -868,13 +935,13 @@ export default function Dashboard() {
 
                 {/* Pending Verification Notice Banner (if any) */}
                 {pendingEnrollments.length > 0 && (
-                  <div className="rounded-3xl border border-amber-500/30 bg-amber-500/5 p-5 sm:p-6 backdrop-blur-sm space-y-3">
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-5 sm:p-6 backdrop-blur-xs space-y-3">
                     <div className="flex items-start gap-3.5">
                       <div className="h-9 w-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 shrink-0">
                         <Clock className="h-5 w-5" />
                       </div>
                       <div className="space-y-1">
-                        <h3 className="font-extrabold text-sm sm:text-base text-foreground">
+                        <h3 className="font-bold text-sm sm:text-base text-foreground">
                           Payment Verification in Progress ({pendingEnrollments.length} Course)
                         </h3>
                         <p className="text-xs text-muted-foreground leading-relaxed">
@@ -909,9 +976,9 @@ export default function Dashboard() {
 
                 {/* Resume Learning Section */}
                 {activeEnrollments.length > 0 ? (
-                  <div className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm space-y-4">
+                  <div className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-lg font-extrabold text-foreground">
+                      <div className="flex items-center gap-2 text-lg font-bold text-foreground">
                         <PlayCircle className="h-5 w-5 text-primary" /> Resume Learning
                       </div>
                       <Button
@@ -933,7 +1000,7 @@ export default function Dashboard() {
                         return (
                           <div
                             key={enr.id}
-                            className="p-5 rounded-2xl border border-border/60 bg-background/40 flex flex-col justify-between gap-4 hover:border-primary/40 transition-all hover:bg-background/60 shadow-sm"
+                            className="p-5 rounded-xl border border-border/60 bg-background/40 flex flex-col justify-between gap-4 hover:border-primary/40 transition-all hover:bg-background/60 shadow-xs"
                           >
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
@@ -968,7 +1035,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-3xl border border-dashed border-border/70 bg-card/25 p-8 text-center shadow-none">
+                  <Card className="rounded-xl border border-dashed border-border/70 bg-card/25 p-8 text-center shadow-none">
                     <BookOpen className="h-8 w-8 mx-auto text-muted-foreground/60 mb-2" />
                     <h3 className="font-bold text-sm text-foreground">No active course in progress</h3>
                     <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
@@ -982,17 +1049,17 @@ export default function Dashboard() {
                     >
                       Browse Courses
                     </Button>
-                  </div>
+                  </Card>
                 )}
 
                 {/* Quick Shortcuts to Portfolio & Library */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div
                     onClick={() => setActive("portfolio")}
-                    className="group cursor-pointer rounded-3xl border border-border/60 bg-card/40 p-6 backdrop-blur-sm hover:border-primary/40 transition-all hover:bg-card/60"
+                    className="group cursor-pointer rounded-xl border border-border/60 bg-card/40 p-6 backdrop-blur-xs hover:border-primary/40 transition-all hover:bg-card/60"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
                         <FolderKanban className="h-5 w-5" />
                       </div>
                       <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -1005,10 +1072,10 @@ export default function Dashboard() {
 
                   <div
                     onClick={() => setActive("downloads")}
-                    className="group cursor-pointer rounded-3xl border border-border/60 bg-card/40 p-6 backdrop-blur-sm hover:border-primary/40 transition-all hover:bg-card/60"
+                    className="group cursor-pointer rounded-xl border border-border/60 bg-card/40 p-6 backdrop-blur-xs hover:border-primary/40 transition-all hover:bg-card/60"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
                         <Download className="h-5 w-5" />
                       </div>
                       <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -1024,9 +1091,9 @@ export default function Dashboard() {
 
             {/* MY COURSES TAB */}
             {active === "courses" && (
-              <div className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm space-y-6">
+              <div className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+                  <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
                     <BookOpen className="h-6 w-6 text-primary" /> My Courses
                   </h2>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -1041,7 +1108,7 @@ export default function Dashboard() {
                     className={cn(
                       "px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer",
                       courseFilter === "all"
-                        ? "bg-primary text-primary-foreground shadow-sm"
+                        ? "bg-primary text-primary-foreground shadow-xs"
                         : "bg-muted/40 hover:bg-muted text-muted-foreground",
                     )}
                   >
@@ -1052,7 +1119,7 @@ export default function Dashboard() {
                     className={cn(
                       "px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer",
                       courseFilter === "active"
-                        ? "bg-primary text-primary-foreground shadow-sm"
+                        ? "bg-primary text-primary-foreground shadow-xs"
                         : "bg-muted/40 hover:bg-muted text-muted-foreground",
                     )}
                   >
@@ -1063,13 +1130,13 @@ export default function Dashboard() {
                     className={cn(
                       "px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5",
                       courseFilter === "pending"
-                        ? "bg-amber-500 text-white shadow-sm"
+                        ? "bg-amber-500 text-white shadow-xs"
                         : "bg-muted/40 hover:bg-muted text-muted-foreground",
                     )}
                   >
                     Pending Verification ({pendingEnrollments.length})
                     {pendingEnrollments.length > 0 && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-white" />
                     )}
                   </button>
                   <button
@@ -1077,7 +1144,7 @@ export default function Dashboard() {
                     className={cn(
                       "px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer",
                       courseFilter === "completed"
-                        ? "bg-emerald-600 text-white shadow-sm"
+                        ? "bg-emerald-600 text-white shadow-xs"
                         : "bg-muted/40 hover:bg-muted text-muted-foreground",
                     )}
                   >
@@ -1088,9 +1155,9 @@ export default function Dashboard() {
                 {/* Course List */}
                 <div className="space-y-4">
                   {visibleEnrollments.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+                    <Card className="rounded-xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground shadow-none">
                       No courses found in this category.
-                    </div>
+                    </Card>
                   ) : (
                     visibleEnrollments.map((enr: any) => {
                       const isPending = enr.status === "pending";
@@ -1102,7 +1169,7 @@ export default function Dashboard() {
                         <div
                           key={enr.id}
                           className={cn(
-                            "rounded-2xl border bg-background/40 p-5 sm:p-6 transition-all hover:bg-background/60 space-y-4",
+                            "rounded-xl border bg-background/40 p-5 sm:p-6 transition-all hover:bg-background/60 space-y-4",
                             isPending
                               ? "border-amber-500/30 hover:border-amber-500/50"
                               : isCompleted
@@ -1120,7 +1187,7 @@ export default function Dashboard() {
                                 {isPending ? (
                                   <Badge
                                     variant="outline"
-                                    className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-[11px] font-semibold flex items-center gap-1 shrink-0 animate-pulse"
+                                    className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-[11px] font-semibold flex items-center gap-1 shrink-0"
                                   >
                                     <Clock className="h-3 w-3" /> Pending Verification
                                   </Badge>
@@ -1283,9 +1350,9 @@ export default function Dashboard() {
 
             {/* DOWNLOADS TAB */}
             {active === "downloads" && (
-              <div className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm space-y-6">
+              <div className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+                  <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
                     <Download className="h-6 w-6 text-primary" /> My Resource Downloads
                   </h2>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -1295,14 +1362,26 @@ export default function Dashboard() {
 
                 <div className="space-y-3">
                   {filteredPurchases.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
-                      No downloads yet. Explore the Resource Library to access curated guides and templates.
-                    </div>
+                    <Card className="rounded-xl border border-dashed border-border/70 bg-card/25 p-8 text-center shadow-none">
+                      <Download className="h-8 w-8 mx-auto text-muted-foreground/60 mb-2" />
+                      <h4 className="text-sm font-bold text-foreground">No downloads in your library yet</h4>
+                      <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto">
+                        Access official technical E-books, architecture templates, and industry standard SOPs.
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="hero"
+                        className="mt-4 text-xs font-bold"
+                        onClick={() => navigate("/library")}
+                      >
+                        Explore Resource Library
+                      </Button>
+                    </Card>
                   ) : (
                     filteredPurchases.map((p) => (
                       <div
                         key={p.id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-border/60 bg-background/40 p-4 sm:p-5 transition-all hover:bg-background/60 hover:border-primary/40"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border/60 bg-background/40 p-4 sm:p-5 transition-all hover:bg-background/60 hover:border-primary/40 shadow-xs"
                       >
                         <div className="min-w-0">
                           <div className="font-bold text-base text-foreground truncate">
@@ -1339,9 +1418,9 @@ export default function Dashboard() {
             {/* PROFILE TAB */}
             {active === "profile" && (
               <div className="space-y-6">
-                <header className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <header className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
                       <UserIcon className="h-6 w-6 text-primary" /> Student Profile & Account
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -1357,10 +1436,10 @@ export default function Dashboard() {
                 </header>
 
                 {isEditing ? (
-                  <div className="rounded-3xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-sm">
+                  <div className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs">
                     <ProfileEditForm
                       userId={user!.id}
-                      initialData={profile || { full_name: "", phone: "", avatar_url: "" }}
+                      initialData={profile || { full_name: "", phone: "", avatar_url: "", location: "", bio: "" }}
                       onSuccess={() => {
                         setIsEditing(false);
                         refetchProfile();
@@ -1369,7 +1448,7 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <Card className="rounded-3xl border-border/60 bg-card/50 shadow-sm">
+                    <Card className="rounded-xl border-border/60 bg-card/50 shadow-xs">
                       <CardHeader>
                         <CardDescription className="font-bold uppercase tracking-wider text-[10px]">
                           Contact Information
@@ -1406,7 +1485,7 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
 
-                    <Card className="rounded-3xl border-border/60 bg-card/50 shadow-sm">
+                    <Card className="rounded-xl border-border/60 bg-card/50 shadow-xs">
                       <CardHeader>
                         <CardDescription className="font-bold uppercase tracking-wider text-[10px]">
                           Student Credentials
@@ -1421,7 +1500,7 @@ export default function Dashboard() {
                             <div className="text-[10px] uppercase font-bold text-muted-foreground">
                               Student ID
                             </div>
-                            <div className="text-sm font-black text-primary font-mono">
+                            <div className="text-sm font-bold text-primary font-mono">
                               {studentId}
                             </div>
                           </div>
@@ -1444,7 +1523,7 @@ export default function Dashboard() {
                     </Card>
 
                     {(profile?.bio || profile?.location) && (
-                      <Card className="rounded-3xl border-border/60 bg-card/50 shadow-sm sm:col-span-2">
+                      <Card className="rounded-xl border-border/60 bg-card/50 shadow-xs sm:col-span-2">
                         <CardHeader>
                           <CardDescription className="font-bold uppercase tracking-wider text-[10px]">
                             About Me
