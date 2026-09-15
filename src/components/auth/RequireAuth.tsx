@@ -8,7 +8,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="rounded-3xl border border-border/60 bg-card/25 p-8 shadow-elev">
+        <div className="rounded-xl border border-border/60 bg-card/25 p-8 shadow-sm">
           <div className="text-sm text-muted-foreground">Loading…</div>
         </div>
       </div>

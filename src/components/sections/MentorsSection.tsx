@@ -43,12 +43,12 @@ export function MentorsSection() {
   }
 
   return (
-    <section id="mentors" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6">
+    <section id="mentors" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-20 lg:py-24 sm:px-6">
       <header className="text-center mb-12 sm:mb-16">
-        <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider mb-3">
+        <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider mb-3">
           VERIFIED INDUSTRY PRACTITIONERS
         </div>
-        <h2 className="text-3xl xs:text-4xl sm:text-5xl font-black tracking-tight text-foreground">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Meet Our <span className="text-primary">Expert Mentors</span>
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm xs:text-base text-muted-foreground">
@@ -57,7 +57,7 @@ export function MentorsSection() {
       </header>
 
       {mentors.length === 0 ? (
-        <div className="text-center py-12 rounded-lg border border-border/60 bg-card/30 p-8 max-w-md mx-auto">
+        <div className="text-center py-12 rounded-xl border border-border/60 bg-card/30 p-8 max-w-md mx-auto">
           <p className="text-sm text-muted-foreground">
             Our network of textile and industrial engineering mentors is expanding. New verified profiles are being added.
           </p>

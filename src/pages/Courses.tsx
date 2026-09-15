@@ -140,7 +140,7 @@ export default function Courses() {
           <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider mb-3">
             PRACTICAL INDUSTRY CURRICULUM
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
             Build Skills That Work in the <span className="text-primary">Real Industry</span>
           </h1>
           <p className="mt-4 text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed">
@@ -274,7 +274,7 @@ export default function Courses() {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="h-[440px] animate-pulse rounded-lg bg-card/40 border border-border/60 p-6 space-y-4"
+                className="h-[440px] animate-pulse rounded-xl bg-card/40 border border-border/60 p-6 space-y-4"
               >
                 <div className="aspect-[16/10] w-full rounded bg-muted/30" />
                 <div className="h-4 w-1/3 rounded bg-muted/40" />

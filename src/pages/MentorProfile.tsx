@@ -286,9 +286,9 @@ export default function MentorProfile() {
         <div className="grid gap-8 lg:grid-cols-12 items-start">
           {/* Left Column (Sticky Hero & Profile Card - 4 cols on desktop) */}
           <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
-            <Card className="rounded-3xl border border-border/60 bg-card/30 backdrop-blur-xl shadow-elev overflow-hidden text-center p-6 sm:p-8">
+            <Card className="rounded-xl border border-border/70 bg-card/40 backdrop-blur-xl shadow-sm overflow-hidden text-center p-6 sm:p-8">
               {/* Photo & Verified Badge */}
-              <div className="relative mx-auto mb-5 h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-primary/30 bg-surface-2 shadow-glow">
+              <div className="relative mx-auto mb-5 h-32 w-32 shrink-0 overflow-hidden rounded-full border border-border/80 ring-4 ring-primary/20 bg-surface-2 shadow-sm">
                 {mentor.image_path ? (
                   <img
                     src={mentor.image_path}

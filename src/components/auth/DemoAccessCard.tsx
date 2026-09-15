@@ -61,8 +61,8 @@ export function DemoAccessCard(props: { redirectTo: string; onAuthed: () => void
   };
 
   return (
-    <div className="mt-6 rounded-3xl border border-border/60 bg-card/25 p-5 shadow-elev">
-      <div className="text-sm font-extrabold">Demo access</div>
+    <div className="mt-6 rounded-xl border border-border/60 bg-card/25 p-5 shadow-sm">
+      <div className="text-sm font-bold">Demo access</div>
       <p className="mt-1 text-xs text-muted-foreground">
         Student: <span className="font-semibold">student@demo.com</span> • Password: <span className="font-semibold">{DEMO_PASSWORD}</span>
         <br />

@@ -122,13 +122,13 @@ export function ResourceLibrarySection() {
   };
 
   return (
-    <section id="library" className="scroll-mt-24 py-12 sm:py-20 lg:py-24">
+    <section id="library" className="scroll-mt-24 py-20 lg:py-24 border-b border-border/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="text-center">
-          <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Resource <span className="text-primary">Library</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm xs:text-base sm:text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground">
             E-books and SOPs — curated resources for garment industry professionals.
           </p>
         </div>
@@ -183,7 +183,7 @@ export function ResourceLibrarySection() {
                 <button
                   key={ind}
                   onClick={() => setSelectedIndustry(ind)}
-                  className="group flex flex-col items-center justify-center rounded-lg border border-border/70 bg-card/40 p-6 sm:p-8 text-center shadow-sm transition-all hover:border-border-active hover:bg-card/60"
+                  className="group flex flex-col items-center justify-center rounded-xl border border-border/70 bg-card/40 p-6 sm:p-8 text-center shadow-sm transition-all hover:border-border-active hover:bg-card/60"
                   type="button"
                 >
                   <div className="mb-4 rounded-md bg-primary/10 p-3 sm:p-4 text-primary group-hover:bg-primary/20">
@@ -203,7 +203,7 @@ export function ResourceLibrarySection() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className="group flex flex-col items-center justify-center rounded-lg border border-border/70 bg-card/40 p-6 sm:p-8 text-center shadow-sm transition-all hover:border-border-active hover:bg-card/60"
+                  className="group flex flex-col items-center justify-center rounded-xl border border-border/70 bg-card/40 p-6 sm:p-8 text-center shadow-sm transition-all hover:border-border-active hover:bg-card/60"
                   type="button"
                 >
                   <div className="mb-4 rounded-md bg-primary/10 p-3 sm:p-4 text-primary group-hover:bg-primary/20">
@@ -222,7 +222,7 @@ export function ResourceLibrarySection() {
               {filteredItems.map((it) => (
                 <div
                   key={it.id}
-                  className="group flex flex-col overflow-hidden rounded-lg border border-border/70 bg-card/50 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md hover:-translate-y-0.5"
+                  className="group flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card/50 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md hover:-translate-y-0.5"
                 >
                   {/* Item Image / Cover */}
                   <div className="relative aspect-[16/10] overflow-hidden bg-muted/20">
@@ -251,20 +251,20 @@ export function ResourceLibrarySection() {
 
                   <div className="flex flex-1 flex-col p-5 sm:p-6">
                     <div className="flex-1">
-                      <div className="text-lg font-black tracking-tight leading-tight">{it.title}</div>
+                      <div className="text-base sm:text-lg font-bold tracking-tight leading-snug">{it.title}</div>
                       <p className="mt-2 text-xs text-muted-foreground leading-relaxed line-clamp-2">
                         {it.description}
                       </p>
                     </div>
 
                     <div className="mt-6 flex items-center justify-between gap-4">
-                      <div className="text-base font-black text-primary sm:text-lg">
+                      <div className="text-base font-bold font-mono text-foreground sm:text-lg tabular-nums">
                         ৳{(it.price_cents / 100).toFixed(0)}
                       </div>
                       <Button
-                        variant="hero"
+                        variant="default"
                         size="sm"
-                        className="rounded-xl px-6"
+                        className="rounded-lg px-5 font-semibold text-xs h-8"
                         onClick={() => {
                           if (!user) {
                             navigate(`/auth?mode=login&buy_key=${it.item_key}`);

@@ -64,7 +64,7 @@ export function PublicPortfolioHero({ portfolio, isOwner }: PublicPortfolioHeroP
       )}
 
       {/* Main Hero Card */}
-      <div className="rounded-3xl border border-border/60 bg-card/40 backdrop-blur-2xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card/40 backdrop-blur-2xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10" />
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

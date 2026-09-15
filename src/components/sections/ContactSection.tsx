@@ -72,9 +72,9 @@ export function ContactSection() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+    <section className="mx-auto max-w-7xl px-4 py-20 lg:py-24 sm:px-6">
       <header className="text-center">
-        <h2 className="text-4xl font-black tracking-tight">
+        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
           Get in <span className="text-primary">Touch</span>
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
@@ -83,53 +83,53 @@ export function ContactSection() {
       </header>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-border/60 bg-card/25 p-7 shadow-elev">
-          <div className="text-xl font-extrabold">Contact Information</div>
+        <div className="rounded-xl border border-border/70 bg-card/40 p-7 shadow-sm">
+          <div className="text-xl font-bold text-foreground">Contact Information</div>
 
           <div className="mt-6 space-y-5">
             <div className="flex gap-3">
-              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-xl bg-background/25">
+              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-lg bg-surface-2/60 border border-border/50">
                 <Mail className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Email</div>
+                <div className="text-sm font-semibold text-foreground">Email</div>
                 <div className="text-sm text-muted-foreground">{contactInfo.email}</div>
               </div>
             </div>
 
             <div className="flex gap-3">
-              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-xl bg-background/25">
+              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-lg bg-surface-2/60 border border-border/50">
                 <Phone className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Phone</div>
+                <div className="text-sm font-semibold text-foreground">Phone</div>
                 <div className="text-sm text-muted-foreground">{contactInfo.phone}</div>
               </div>
             </div>
 
             <div className="flex gap-3">
-              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-xl bg-background/25">
+              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-lg bg-surface-2/60 border border-border/50">
                 <MapPin className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Address</div>
+                <div className="text-sm font-semibold text-foreground">Address</div>
                 <div className="text-sm text-muted-foreground">{contactInfo.address}</div>
               </div>
             </div>
 
             <div className="flex gap-3">
-              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-xl bg-background/25">
+              <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-lg bg-surface-2/60 border border-border/50">
                 <Timer className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Business Hours</div>
+                <div className="text-sm font-semibold text-foreground">Business Hours</div>
                 <div className="text-sm text-muted-foreground">{contactInfo.hours}</div>
               </div>
             </div>
           </div>
         </div>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="rounded-3xl border border-border/60 bg-card/25 p-7 shadow-elev">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="rounded-xl border border-border/70 bg-card/40 p-7 shadow-sm">
           <div className="grid gap-4">
             <div className="space-y-2">
               <Label htmlFor="contactName">Your Name</Label>
@@ -159,7 +159,7 @@ export function ContactSection() {
               )}
             </div>
 
-            <Button variant="hero" className="w-full">
+            <Button variant="default" className="w-full font-semibold">
               Send Message
             </Button>
           </div>

@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 
 export function FinalCTASection() {
   return (
-    <section className="py-16 sm:py-24 relative overflow-hidden bg-card/40 border-t border-border/60">
+    <section className="py-20 lg:py-24 relative overflow-hidden bg-card/40 border-t border-border/60">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
+        <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
           VERIFIED INDUSTRIAL CAREER PLATFORM
         </div>
 
-        <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-foreground">
+        <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-foreground">
           Ready to Build Your{" "}
           <span className="text-primary">Industry Advantage?</span>
         </h2>

@@ -35,13 +35,13 @@ const items = [
 
 export function WhyChooseSection() {
   return (
-    <section className="py-16 sm:py-20">
+    <section className="py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="text-center">
-          <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Why Choose <span className="text-primary">IndustryMentor</span>?
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base xs:text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground">
             We go beyond traditional learning. Enroll and gain access to a comprehensive ecosystem designed for your
             success.
           </p>
@@ -51,7 +51,7 @@ export function WhyChooseSection() {
           {items.map((it) => (
             <div
               key={it.title}
-              className="relative overflow-hidden rounded-lg border border-border/70 bg-card/50 p-6 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md"
+              className="relative overflow-hidden rounded-xl border border-border/70 bg-card/50 p-6 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md"
             >
               <div className="flex items-center gap-4">
                 <div className="grid h-11 w-11 place-items-center rounded-md border border-primary/25 bg-primary/10 text-primary">

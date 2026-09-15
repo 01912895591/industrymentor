@@ -42,30 +42,20 @@ const steps = [
 
 export function CareerPathwaySection() {
   return (
-    <section id="career" className="scroll-mt-24 py-16 sm:py-24 border-b border-border/40 bg-surface/30">
+    <section id="career" className="scroll-mt-24 py-20 lg:py-24 border-b border-border/40 bg-surface/30">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider shadow-[0_0_15px_rgba(56,189,248,0.15)] backdrop-blur-sm">
-            <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
+          <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
             THE CAREER OPERATING SYSTEM
           </div>
 
-          <div className="relative">
-            {/* Ambient decorative glow behind heading */}
-            <div
-              className="pointer-events-none absolute left-1/2 -top-6 -translate-x-1/2 -z-10 h-36 w-80 sm:w-[28rem] rounded-full bg-primary/15 blur-3xl opacity-60"
-              aria-hidden="true"
-            />
-
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
-              <span className="bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent inline-block">
-                Education is Only the Beginning.
-              </span>{" "}
-              <span className="hero-gradient-text block sm:inline-block">
-                IndustryMentor is the Bridge.
-              </span>
-            </h2>
-          </div>
+          <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+            <span className="text-foreground">Education is Only the Beginning.</span>{" "}
+            <span className="text-primary block sm:inline-block">
+              IndustryMentor is the Bridge.
+            </span>
+          </h2>
 
           <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
             The traditional classroom teaches abstract equations. We guide you through the exact five-stage progression required to become an indispensable industrial leader.
@@ -76,7 +66,7 @@ export function CareerPathwaySection() {
           {steps.map((s, idx) => (
             <div
               key={s.step}
-              className="relative flex flex-col justify-between rounded-lg border border-border/70 bg-card/60 p-5 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md"
+              className="relative flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-5 shadow-sm transition-all duration-200 hover:border-border-active hover:shadow-md"
             >
               <div>
                 <div className="flex items-center justify-between">

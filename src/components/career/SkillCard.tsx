@@ -22,7 +22,7 @@ interface SkillCardProps {
 
 export function SkillCard({ skill }: SkillCardProps) {
   return (
-    <div className="group rounded-3xl border border-border/60 bg-card/30 p-5 sm:p-6 backdrop-blur-xl shadow-elev hover:border-border-active hover:bg-card/50 transition-all duration-200 flex flex-col justify-between text-left">
+    <div className="group rounded-xl border border-border/60 bg-card/30 p-5 sm:p-6 backdrop-blur-xl shadow-sm hover:shadow-md hover:border-border-active hover:bg-card/50 transition-all duration-200 flex flex-col justify-between text-left">
       <div className="space-y-3.5">
         {/* Domain Badge & Icon */}
         <div className="flex items-center justify-between gap-2">

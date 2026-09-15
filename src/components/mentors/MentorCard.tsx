@@ -27,11 +27,11 @@ export function MentorCard({ mentor, className = "" }: MentorCardProps) {
   return (
     <Card
       variant="interactive"
-      className={`flex flex-col justify-between text-center p-6 sm:p-7 rounded-3xl border-border/60 bg-card/25 hover:bg-card/35 transition-all shadow-elev ${className}`}
+      className={`flex flex-col justify-between text-center p-6 sm:p-7 rounded-xl border-border/60 bg-card/40 hover:bg-card/60 transition-all shadow-sm hover:shadow-md ${className}`}
     >
       <div>
         {/* Mentor Photo / Avatar */}
-        <div className="relative mx-auto mb-4 h-24 w-24 shrink-0 overflow-hidden rounded-full border-2 border-primary/30 bg-surface-2 shadow-sm group">
+        <div className="relative mx-auto mb-4 h-24 w-24 shrink-0 overflow-hidden rounded-full border border-border/80 ring-2 ring-primary/20 bg-surface-2 shadow-sm group">
           {mentor.image_path ? (
             <img
               src={mentor.image_path}
@@ -44,7 +44,7 @@ export function MentorCard({ mentor, className = "" }: MentorCardProps) {
               <span className="text-2xl font-black text-primary">{initials}</span>
             </div>
           )}
-          <div className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-background border-2 border-primary/30 flex items-center justify-center text-primary" title="Verified Industry Mentor">
+          <div className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-background border border-border/80 ring-1 ring-primary/30 flex items-center justify-center text-primary" title="Verified Industry Mentor">
             <ShieldCheck className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -90,7 +90,7 @@ export function MentorCard({ mentor, className = "" }: MentorCardProps) {
 
       {/* Action Footer */}
       <div className="pt-4 border-t border-border/50 flex items-center gap-2">
-        <Button variant="hero" size="sm" asChild className="flex-1 font-bold text-xs h-9">
+        <Button variant="outline" size="sm" asChild className="flex-1 font-semibold text-xs h-9 hover:border-primary/50 hover:text-primary">
           <Link to={`/mentors/${mentor.id}`}>
             View Profile
             <ArrowRight className="ml-1.5 h-3.5 w-3.5" />

@@ -118,14 +118,14 @@ export function HeroSection() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 sm:gap-8 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:px-8 w-full">
         <div>
           <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
-            <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
             INDUSTRY-LED LEARNING
           </div>
 
           <div className="relative">
             {/* Ambient soft glow aura behind headline */}
             <div
-              className="pointer-events-none absolute -top-8 -left-6 -z-10 h-44 w-72 sm:w-96 rounded-full bg-primary/15 blur-3xl opacity-60"
+              className="pointer-events-none absolute -top-8 -left-6 -z-10 h-44 w-72 sm:w-96 rounded-full bg-primary/10 blur-3xl opacity-35"
               aria-hidden="true"
             />
 
@@ -181,7 +181,7 @@ export function HeroSection() {
               variant="outline"
               size="default"
               asChild
-              className="group px-4.5 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold border-border/80 bg-card/40 backdrop-blur-md transition-all duration-200 hover:border-primary/50 hover:bg-card/70 hover:shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)]"
+              className="group px-4.5 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold border-border/80 bg-card/40 backdrop-blur-md transition-all duration-200 hover:border-primary/50 hover:bg-card/70 hover:shadow-sm"
             >
               <NavLink to="/#library">
                 <BookOpen className="mr-2 h-4 w-4 text-primary transition-transform duration-200 group-hover:scale-110" />
@@ -296,7 +296,7 @@ export function HeroSection() {
                       aria-label={`Go to slide ${i + 1}`}
                       className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                         selectedIndex === i
-                          ? "w-6 bg-primary shadow-[0_0_8px_rgba(56,189,248,0.6)]"
+                          ? "w-6 bg-primary"
                           : "w-2 bg-white/50 hover:bg-white/90"
                       }`}
                     />

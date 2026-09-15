@@ -169,7 +169,7 @@ export default function Mentors() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="rounded-3xl border border-border/60 bg-card/25 p-7 flex flex-col items-center text-center space-y-4 shadow-elev"
+                className="rounded-xl border border-border/60 bg-card/25 p-7 flex flex-col items-center text-center space-y-4 shadow-sm"
               >
                 <div className="h-24 w-24 rounded-full bg-muted/30 animate-pulse" />
                 <div className="h-5 w-3/4 rounded bg-muted/30 animate-pulse" />
@@ -185,7 +185,7 @@ export default function Mentors() {
           </div>
         ) : error ? (
           /* Error State */
-          <div className="text-center py-12 rounded-3xl border border-border/60 bg-card/30 p-8 max-w-md mx-auto space-y-4">
+          <div className="text-center py-12 rounded-xl border border-border/60 bg-card/30 p-8 max-w-md mx-auto space-y-4">
             <AlertCircle className="h-10 w-10 text-destructive mx-auto" />
             <p className="text-sm text-muted-foreground">{error}</p>
             <Button variant="outline" size="sm" onClick={fetchMentors} className="gap-2">
@@ -194,7 +194,7 @@ export default function Mentors() {
           </div>
         ) : filteredMentors.length === 0 ? (
           /* Empty State */
-          <div className="text-center py-16 rounded-3xl border border-dashed border-border/70 bg-card/25 p-8 max-w-md mx-auto space-y-4">
+          <div className="text-center py-16 rounded-xl border border-dashed border-border/70 bg-card/25 p-8 max-w-md mx-auto space-y-4">
             <Users className="h-12 w-12 text-muted-foreground/60 mx-auto" />
             <h2 className="text-base font-bold text-foreground">No Mentors Found</h2>
             <p className="text-xs text-muted-foreground">

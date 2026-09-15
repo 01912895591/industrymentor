@@ -69,12 +69,12 @@ export default function Blogs() {
                 ) : (
                     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                         {blogs.map((blog) => (
-                            <Card key={blog.id} className="group overflow-hidden rounded-3xl border border-border/60 bg-card/25 shadow-elev transition-all hover:shadow-glow translate-y-0 hover:-translate-y-2">
+                            <Card key={blog.id} className="group overflow-hidden rounded-xl border border-border/70 bg-card/40 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
                                 <div className="aspect-video overflow-hidden">
                                     <img
                                         src={blog.cover_image_url || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80"}
                                         alt={blog.title}
-                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
                                 </div>
                                 <CardHeader className="p-5 sm:p-6">
@@ -82,7 +82,7 @@ export default function Blogs() {
                                         <Calendar className="h-3 w-3" />
                                         {new Date(blog.created_at).toLocaleDateString()}
                                     </div>
-                                    <CardTitle className="line-clamp-2 text-lg xs:text-xl font-extrabold group-hover:text-primary transition-colors">
+                                    <CardTitle className="line-clamp-2 text-lg xs:text-xl font-bold group-hover:text-primary transition-colors">
                                         {blog.title}
                                     </CardTitle>
                                 </CardHeader>
@@ -91,8 +91,8 @@ export default function Blogs() {
                                         {blog.excerpt || "Read more about this insightful topic from our experts..."}
                                     </p>
                                 </CardContent>
-                                <CardFooter className="px-6 pb-8 pt-0">
-                                    <Button variant="hero" className="w-full group/btn" asChild>
+                                <CardFooter className="px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
+                                    <Button variant="outline" className="w-full font-semibold text-xs h-9 hover:border-primary/50 hover:text-primary" asChild>
                                         <Link to={`/blog/${blog.slug}`}>
                                             Read More
                                             <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />

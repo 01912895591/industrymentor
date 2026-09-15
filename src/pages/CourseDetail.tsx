@@ -601,7 +601,7 @@ export default function CourseDetail() {
                 </div>
 
                 {/* Primary CTA */}
-                <Button variant="hero" size="lg" className="w-full text-sm font-bold shadow-glow" asChild>
+                <Button variant="hero" size="lg" className="w-full text-sm font-bold" asChild>
                   <Link to={enrollPath}>
                     <Sparkles className="mr-2 h-4 w-4" />
                     Enroll In Course

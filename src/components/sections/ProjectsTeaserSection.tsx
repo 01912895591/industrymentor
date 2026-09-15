@@ -29,15 +29,15 @@ const practicalModules = [
 
 export function ProjectsTeaserSection() {
   return (
-    <section id="projects" className="scroll-mt-24 py-16 sm:py-24 border-b border-border/40">
+    <section id="projects" className="scroll-mt-24 py-20 lg:py-24 border-b border-border/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider">
               <FolderKanban className="h-3.5 w-3.5" />
               PRACTICAL PROJECT METHODOLOGY
             </div>
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-foreground">
+            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
               Don't Just Learn Theory.{" "}
               <span className="text-primary block sm:inline">Build Practical Capability.</span>
             </h2>
