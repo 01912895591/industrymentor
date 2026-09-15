@@ -32,15 +32,18 @@ export function CourseCard({ course, showEnrollButton = true }: CourseCardProps)
   const courseUrl = `/courses/${course.slug || course.id}`;
   const enrollUrl = `/enroll/${course.id}`;
   const coverImage = course.cover_image_path || courseReact;
-  const ratingValue = (course.rating ?? 5.0).toFixed(1);
-  const reviewsCount = course.reviews ?? 0;
+  const ratingNum = typeof course.rating === "number" ? course.rating : Number(course.rating || 5.0);
+  const ratingValue = isNaN(ratingNum) ? "5.0" : ratingNum.toFixed(1);
+  const reviewsCount = typeof course.reviews === "number" ? course.reviews : (Number(course.reviews) || 0);
   const badgeLabel = course.badge_text || "Professional";
   const modeLabel = course.mode || "Online";
   const instructorTitle = course.instructor_heading || "Taught by Experts";
   const instructorRole = course.instructor_subheading || "Industry Professionals";
-  const currentPrice = Math.round(course.price_cents / 100).toLocaleString();
-  const oldPrice = course.old_price_cents
-    ? Math.round(course.old_price_cents / 100).toLocaleString()
+  const priceNum = typeof course.price_cents === "number" ? course.price_cents : (Number(course.price_cents) || 0);
+  const currentPrice = Math.round(priceNum / 100).toLocaleString();
+  const oldPriceNum = course.old_price_cents != null ? Number(course.old_price_cents) : null;
+  const oldPrice = oldPriceNum != null && !isNaN(oldPriceNum)
+    ? Math.round(oldPriceNum / 100).toLocaleString()
     : null;
 
   return (

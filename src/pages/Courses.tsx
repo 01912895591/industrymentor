@@ -57,28 +57,31 @@ export default function Courses() {
   // Compute unique filter options from actual data
   const availableModes = useMemo(() => {
     const modes = new Set<string>();
-    courses.forEach((c) => {
-      if (c.mode) modes.add(c.mode);
+    (courses || []).forEach((c) => {
+      if (c?.mode) modes.add(c.mode);
     });
     return Array.from(modes);
   }, [courses]);
 
   const availableLevels = useMemo(() => {
     const levels = new Set<string>();
-    courses.forEach((c) => {
-      if (c.badge_text) levels.add(c.badge_text);
+    (courses || []).forEach((c) => {
+      if (c?.badge_text) levels.add(c.badge_text);
     });
     return Array.from(levels);
   }, [courses]);
 
   // Filtered & Sorted courses
   const filteredCourses = useMemo(() => {
-    return courses
+    return (courses || [])
       .filter((c) => {
+        if (!c) return false;
+
         // Search query check
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
-          const matchesTitle = c.title.toLowerCase().includes(q) || formatCourseTitle(c.title).toLowerCase().includes(q);
+          const titleStr = c.title || "";
+          const matchesTitle = titleStr.toLowerCase().includes(q) || formatCourseTitle(titleStr).toLowerCase().includes(q);
           const matchesDesc = c.description?.toLowerCase().includes(q) ?? false;
           const matchesInstructor =
             (c.instructor_heading?.toLowerCase().includes(q) ?? false) ||
@@ -102,11 +105,13 @@ export default function Courses() {
         return true;
       })
       .sort((a, b) => {
+        const priceA = Number(a?.price_cents) || 0;
+        const priceB = Number(b?.price_cents) || 0;
         if (sortBy === "price-asc") {
-          return a.price_cents - b.price_cents;
+          return priceA - priceB;
         }
         if (sortBy === "price-desc") {
-          return b.price_cents - a.price_cents;
+          return priceB - priceA;
         }
         return 0; // Default creation order preserved
       });
