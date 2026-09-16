@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { Copy, Check, Award } from "lucide-react";
+import { Copy, Check, Award, ExternalLink } from "lucide-react";
 
 type ProfileRow = { id: string; user_id: string; full_name: string | null; created_at: string };
 
@@ -258,7 +258,7 @@ export function CertificatesAdmin() {
                         <span>Student: <strong className="text-foreground font-medium">{studentName}</strong></span>
                         <span>•</span>
                         <span className="font-mono text-[11px] flex items-center gap-1">
-                          Cert ID: {c.id.slice(0, 8)}...
+                          Cert ID: <strong className="text-primary font-bold">{c.id.replace(/-/g, "").slice(0, 8).toUpperCase()}</strong>
                           <button
                             onClick={() => {
                               navigator.clipboard.writeText(c.id);
@@ -275,6 +275,15 @@ export function CertificatesAdmin() {
                             )}
                           </button>
                         </span>
+                        <span>•</span>
+                        <a
+                          href={`/verify/${c.id.replace(/-/g, "").slice(0, 8).toUpperCase()}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
+                        >
+                          Verify <ExternalLink className="h-2.5 w-2.5" />
+                        </a>
                         <span>•</span>
                         <span>Issued: {c.issued_at ? new Date(c.issued_at).toLocaleDateString() : new Date(c.created_at).toLocaleDateString()}</span>
                       </div>

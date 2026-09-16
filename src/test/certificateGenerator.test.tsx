@@ -24,6 +24,16 @@ vi.mock("qrcode", () => {
   };
 });
 
+// Mock bwip-js barcode generator
+vi.mock("bwip-js", () => {
+  return {
+    default: {
+      toSVG: vi.fn().mockReturnValue('<svg viewBox="0 0 185 80"><path d="M0 0"/></svg>')
+    },
+    toSVG: vi.fn().mockReturnValue('<svg viewBox="0 0 185 80"><path d="M0 0"/></svg>')
+  };
+});
+
 // Setup spies for jsPDF instance methods
 const mockSave = vi.fn();
 const mockAddImage = vi.fn();
@@ -55,10 +65,11 @@ vi.mock("jspdf", () => {
 
 describe("CertificateGenerator & jsPDF 4.2.1 Integration", () => {
   const defaultProps = {
-    studentName: "John Doe",
-    courseTitle: "Apparel Quality Management",
-    issueDate: "September 13, 2026",
-    certificateId: "CERT-9988-ABC",
+    studentName: "Jahid Hasan",
+    courseTitle: "Garments Merchandising: From Order to Shipment Excellence",
+    issueDate: "14 Sept 2026",
+    certificateId: "9A0FF246",
+    trainingHours: "40 training hours",
   };
 
   beforeEach(() => {
@@ -74,44 +85,42 @@ describe("CertificateGenerator & jsPDF 4.2.1 Integration", () => {
     const button = screen.getByRole("button", { name: /download pdf/i });
     expect(button).toBeInTheDocument();
     expect(button).not.toBeDisabled();
-
-    // Wait for async QR code generation to complete
-    await waitFor(() => {
-      expect(screen.getByAltText("QC")).toBeInTheDocument();
-    });
   });
 
   it("passes certificate data and verification information into the certificate template", async () => {
     render(<CertificateGenerator {...defaultProps} />);
 
     // Verify recipient name
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("Jahid Hasan")).toBeInTheDocument();
 
     // Verify course title
-    expect(screen.getByText("Apparel Quality Management")).toBeInTheDocument();
+    expect(screen.getByText("Garments Merchandising: From Order to Shipment Excellence")).toBeInTheDocument();
 
     // Verify issue date
-    expect(screen.getByText("September 13, 2026")).toBeInTheDocument();
+    expect(screen.getByText(/14 Sept 2026/i)).toBeInTheDocument();
 
-    // Verify Certificate ID and authentic branding
-    expect(screen.getByText("ID: CERT-9988-ABC")).toBeInTheDocument();
-    expect(screen.getByText(/VERIFIED CERTIFICATE • INDUSTRY MENTOR/i)).toBeInTheDocument();
-    expect(screen.getByText("AUTHENTIC")).toBeInTheDocument();
+    // Verify Certificate ID and serial text
+    expect(screen.getAllByText(/9A0FF246/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/IM-9A0FF246-BD/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/VERIFIED/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/CREDENTIAL/i).length).toBeGreaterThan(0);
 
-    // Wait for async QR code generation to complete
-    await waitFor(() => {
-      expect(screen.getByAltText("QC")).toBeInTheDocument();
-    });
+    // Verify dual authorized signatures
+    expect(screen.getByText("M A Qaiyum Talukder")).toBeInTheDocument();
+    expect(screen.getByText(/CEO and Founder/i)).toBeInTheDocument();
+    expect(screen.getByText("Engr. Mehedi Hasan")).toBeInTheDocument();
+    expect(screen.getByText("COO")).toBeInTheDocument();
+
+    // Verify verification instruction
+    expect(screen.getByText(/Scan to verify/i)).toBeInTheDocument();
+
+    // Verify PNG download option is available
+    expect(screen.getByRole("button", { name: /png image/i })).toBeInTheDocument();
   });
 
   it("executes PDF generation workflow with jsPDF without throwing", async () => {
     render(<CertificateGenerator {...defaultProps} />);
     const button = screen.getByRole("button", { name: /download pdf/i });
-
-    // Wait for QR to be ready
-    await waitFor(() => {
-      expect(screen.getByAltText("QC")).toBeInTheDocument();
-    });
 
     fireEvent.click(button);
 
@@ -119,7 +128,7 @@ describe("CertificateGenerator & jsPDF 4.2.1 Integration", () => {
       expect(mockSave).toHaveBeenCalledTimes(1);
     });
 
-    expect(mockSave).toHaveBeenCalledWith("Certificate-Apparel-Quality-Management.pdf");
+    expect(mockSave).toHaveBeenCalledWith("Certificate-Garments-Merchandising--From-Order-to-Shipment-Excellence.pdf");
     expect(mockAddImage).toHaveBeenCalled();
   });
 

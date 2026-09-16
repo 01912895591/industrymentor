@@ -32,6 +32,7 @@ const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const CourseEnrollment = lazy(() => import("@/pages/CourseEnrollment"));
 const Stopwatch = lazy(() => import("@/pages/Stopwatch"));
 const VerifyCertificate = lazy(() => import("@/pages/VerifyCertificate"));
+const CertificatePreview = lazy(() => import("@/pages/CertificatePreview"));
 const Projects = lazy(() => import("@/pages/Projects"));
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 const ProjectWorkspace = lazy(() => import("@/pages/ProjectWorkspace"));
@@ -108,6 +109,7 @@ const App = () => {
                     <Route path="/stopwatch" element={<Stopwatch />} />
                     <Route path="/verify" element={<VerifyCertificate />} />
                     <Route path="/verify/:id" element={<VerifyCertificate />} />
+                    <Route path="/certificate-preview" element={<CertificatePreview />} />
                     <Route
                       path="/dashboard"
                       element={

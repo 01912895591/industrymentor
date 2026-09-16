@@ -282,7 +282,7 @@ function CertificatesSection({
                       className="h-9 text-xs font-semibold gap-1.5"
                       asChild
                     >
-                      <Link to={`/verify/${cert.id}`} target="_blank" rel="noopener noreferrer">
+                      <Link to={`/verify/${cert.id.replace(/-/g, "").slice(0, 8).toUpperCase()}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3.5 w-3.5" /> Verify Online
                       </Link>
                     </Button>
@@ -290,7 +290,7 @@ function CertificatesSection({
                     <CertificateGenerator
                       studentName={profile?.full_name || "Valued Student"}
                       courseTitle={cert.courses?.title || "Industry Specialization"}
-                      issueDate={new Date(cert.issued_at || Date.now()).toLocaleDateString()}
+                      issueDate={new Date(cert.issued_at || Date.now()).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
                       certificateId={cert.id}
                     />
                   </div>
