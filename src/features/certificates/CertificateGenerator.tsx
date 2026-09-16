@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download, FileImage, Loader2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
-import { QAIYUM_SIGNATURE_DATA_URL } from "./signatureAsset";
+import { QAIYUM_SIGNATURE_DATA_URL, MEHEDI_SIGNATURE_DATA_URL } from "./signatureAsset";
 
 export interface CertificateGeneratorProps {
   studentName: string;
@@ -487,6 +487,16 @@ export function CertificateGenerator({
 
               {/* Right Signature: Engr. Mehedi Hasan / COO */}
               <g transform="translate(720, 10)">
+                {/* COO Signature Image - positioned directly above underline */}
+                <image
+                  href={MEHEDI_SIGNATURE_DATA_URL}
+                  xlinkHref={MEHEDI_SIGNATURE_DATA_URL}
+                  x="-75"
+                  y="-52"
+                  width="150"
+                  height="52"
+                  preserveAspectRatio="xMidYMid meet"
+                />
                 <line x1="-80" y1="0" x2="80" y2="0" stroke="#94A3B8" strokeWidth="0.9" />
                 <text x="0" y="16" textAnchor="middle" className="im-font-sans" fontSize="13" fontWeight="600" fill="#0C243E">
                   Engr. Mehedi Hasan
