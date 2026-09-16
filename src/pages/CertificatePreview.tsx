@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { CertificateGenerator } from "@/features/certificates/CertificateGenerator";
+import { CertificateVector } from "@/features/certificates/CertificateVector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -142,11 +143,15 @@ export default function CertificatePreview() {
           </div>
 
           <div className="rounded-2xl border border-border/80 shadow-2xl overflow-hidden bg-slate-900/40 p-4 sm:p-8 flex justify-center items-center">
-            <div className="w-full max-w-5xl rounded-lg overflow-hidden shadow-2xl border border-border/40">
-              <img
-                src="/certificate-preview.png"
-                alt="IndustryMentor Official Certificate Preview"
-                className="w-full h-auto block bg-[#F8F9F4]"
+            <div className="w-full max-w-5xl rounded-lg overflow-hidden shadow-2xl border border-border/40 bg-[#F8F9F4]">
+              <CertificateVector
+                studentName={studentName}
+                courseTitle={courseTitle}
+                issueDate={issueDate}
+                certificateId={certificateId}
+                trainingHours={trainingHours}
+                idPrefix="live-"
+                className="w-full h-auto block"
               />
             </div>
           </div>

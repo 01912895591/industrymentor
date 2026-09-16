@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Download, FileImage, Loader2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
+import { QAIYUM_SIGNATURE_DATA_URL } from "./signatureAsset";
+
 export interface CertificateGeneratorProps {
   studentName: string;
   courseTitle: string;
@@ -13,6 +15,7 @@ export interface CertificateGeneratorProps {
   certificateId: string;
   trainingHours?: string;
   className?: string;
+  showPreview?: boolean;
 }
 
 export function CertificateGenerator({
@@ -454,13 +457,14 @@ export function CertificateGenerator({
 
               {/* Left Signature: M A Qaiyum Talukder / CEO and Founder */}
               <g transform="translate(270, 10)">
-                {/* CEO Signature Image - positioned above the underline */}
+                {/* CEO Signature Image - positioned directly above underline */}
                 <image
-                  href="/signatures/qaiyum-signature.png"
-                  x="-65"
+                  href={QAIYUM_SIGNATURE_DATA_URL}
+                  xlinkHref={QAIYUM_SIGNATURE_DATA_URL}
+                  x="-75"
                   y="-52"
-                  width="130"
-                  height="45"
+                  width="150"
+                  height="52"
                   preserveAspectRatio="xMidYMid meet"
                 />
                 <line x1="-80" y1="0" x2="80" y2="0" stroke="#94A3B8" strokeWidth="0.9" />
