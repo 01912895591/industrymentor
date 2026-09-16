@@ -454,6 +454,15 @@ export function CertificateGenerator({
 
               {/* Left Signature: M A Qaiyum Talukder / CEO and Founder */}
               <g transform="translate(270, 10)">
+                {/* CEO Signature Image - positioned above the underline */}
+                <image
+                  href="/signatures/qaiyum-signature.png"
+                  x="-65"
+                  y="-52"
+                  width="130"
+                  height="45"
+                  preserveAspectRatio="xMidYMid meet"
+                />
                 <line x1="-80" y1="0" x2="80" y2="0" stroke="#94A3B8" strokeWidth="0.9" />
                 <text x="0" y="16" textAnchor="middle" className="im-font-sans" fontSize="13" fontWeight="600" fill="#0C243E">
                   M A Qaiyum Talukder
