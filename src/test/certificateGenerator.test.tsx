@@ -118,6 +118,17 @@ describe("CertificateGenerator & jsPDF 4.2.1 Integration", () => {
     expect(screen.getByRole("button", { name: /png image/i })).toBeInTheDocument();
   });
 
+  it("renders dynamic student name passed from student profile rather than static fallback", () => {
+    render(
+      <CertificateGenerator
+        {...defaultProps}
+        studentName="Md. Munna"
+      />
+    );
+    expect(screen.getByText("Md. Munna")).toBeInTheDocument();
+    expect(screen.queryByText("Valued Student")).not.toBeInTheDocument();
+  });
+
   it("executes PDF generation workflow with jsPDF without throwing", async () => {
     render(<CertificateGenerator {...defaultProps} />);
     const button = screen.getByRole("button", { name: /download pdf/i });

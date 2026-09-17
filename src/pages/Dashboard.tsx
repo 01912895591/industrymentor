@@ -65,6 +65,27 @@ function CertificatesSection({
   const { user } = useAuth();
   const [requesting, setRequesting] = useState<string | null>(null);
 
+  const studentDisplayName = useMemo(() => {
+    if (profile?.full_name && profile.full_name.trim()) {
+      return profile.full_name.trim();
+    }
+    if (user?.user_metadata?.full_name && String(user.user_metadata.full_name).trim()) {
+      return String(user.user_metadata.full_name).trim();
+    }
+    if (user?.user_metadata?.name && String(user.user_metadata.name).trim()) {
+      return String(user.user_metadata.name).trim();
+    }
+    if (user?.email) {
+      const prefix = user.email.split("@")[0].replace(/[._-]/g, " ").trim();
+      return prefix
+        .split(" ")
+        .filter(Boolean)
+        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+    }
+    return "Valued Student";
+  }, [profile?.full_name, user?.user_metadata, user?.email]);
+
   const approvedCerts = useMemo(() => {
     return certificates.filter((c) => c.status === "approved" || !c.status);
   }, [certificates]);
@@ -288,7 +309,7 @@ function CertificatesSection({
                     </Button>
 
                     <CertificateGenerator
-                      studentName={profile?.full_name || "Valued Student"}
+                      studentName={studentDisplayName}
                       courseTitle={cert.courses?.title || "Industry Specialization"}
                       issueDate={new Date(cert.issued_at || Date.now()).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
                       certificateId={cert.id}
@@ -572,12 +593,12 @@ export default function Dashboard() {
   }, []);
 
   const initials = useMemo(() => {
-    const base = profile?.full_name || user?.email || "Student";
+    const base = profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "Student";
     const parts = base.trim().split(/\s+/).filter(Boolean);
     const a = parts[0]?.[0] ?? "S";
     const b = parts[1]?.[0] ?? parts[0]?.[1] ?? "";
     return `${a}${b}`.toUpperCase();
-  }, [profile?.full_name, user?.email]);
+  }, [profile?.full_name, user?.user_metadata, user?.email]);
 
   const studentId = useMemo(() => {
     if (!user?.id) return "IM-XXXXXX";
@@ -669,7 +690,7 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 text-xl font-bold tracking-tight text-foreground line-clamp-1">
-                {profile?.full_name || "Student"}
+                {profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || "Student"}
               </div>
 
               {/* Student ID pill with copy button */}
@@ -750,7 +771,7 @@ export default function Dashboard() {
                       <Sparkles className="h-3.5 w-3.5" /> Student Workspace
                     </div>
                     <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                      {greeting}, {profile?.full_name?.split(" ")[0] || "Student"}!
+                      {greeting}, {profile?.full_name?.split(" ")[0] || user?.user_metadata?.full_name?.split(" ")[0] || user?.user_metadata?.name?.split(" ")[0] || "Student"}!
                     </h1>
                     <p className="mt-2 text-sm text-muted-foreground max-w-xl">
                       Welcome to your learning dashboard. Access courses, track your curriculum progress, manage verified certificates, and build your industrial portfolio.
@@ -1438,11 +1459,21 @@ export default function Dashboard() {
                 {isEditing ? (
                   <div className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs">
                     <ProfileEditForm
+                      key={profile?.updated_at || profile?.id || user!.id}
                       userId={user!.id}
-                      initialData={profile || { full_name: "", phone: "", avatar_url: "", location: "", bio: "" }}
+                      initialData={
+                        profile || {
+                          full_name: user?.user_metadata?.full_name || user?.user_metadata?.name || "",
+                          phone: "",
+                          avatar_url: "",
+                          location: "",
+                          bio: "",
+                        }
+                      }
                       onSuccess={() => {
                         setIsEditing(false);
                         refetchProfile();
+                        queryClient.invalidateQueries({ queryKey: ["profile"] });
                       }}
                     />
                   </div>
@@ -1455,6 +1486,20 @@ export default function Dashboard() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <UserIcon className="h-4 w-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-[10px] uppercase font-bold text-muted-foreground">
+                              Full Name
+                            </div>
+                            <div className="text-sm font-semibold truncate text-foreground">
+                              {profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || "Not set"}
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                             <Bell className="h-4 w-4" />

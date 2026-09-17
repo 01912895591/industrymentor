@@ -5,8 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
 import * as z from "zod";
 
 const profileSchema = z.object({
@@ -27,6 +28,7 @@ interface ProfileEditFormProps {
 
 export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditFormProps) {
     const [loading, setLoading] = useState(false);
+    const queryClient = useQueryClient();
 
     const form = useForm<ProfileValues>({
         resolver: zodResolver(profileSchema),
@@ -41,6 +43,18 @@ export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditF
 
     const [avatarPreview, setAvatarPreview] = useState<string>(initialData.avatar_url || "");
     const [uploading, setUploading] = useState(false);
+
+    // Synchronize form values whenever initialData changes (e.g. after async profile fetch)
+    useEffect(() => {
+        form.reset({
+            full_name: initialData.full_name || "",
+            phone: initialData.phone || "",
+            bio: initialData.bio || "",
+            location: initialData.location || "",
+            avatar_url: initialData.avatar_url || "",
+        });
+        setAvatarPreview(initialData.avatar_url || "");
+    }, [initialData, form]);
 
     const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         try {
@@ -75,45 +89,41 @@ export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditF
     const onSubmit = async (values: ProfileValues) => {
         setLoading(true);
         try {
-            // Prepare update payload
-            const updateData: any = {
-                full_name: values.full_name,
-                phone: values.phone,
-                bio: values.bio,
-                location: values.location,
+            // Prepare upsert payload: ensures row is created if absent, or updated if present
+            const payload: any = {
+                user_id: userId,
+                full_name: values.full_name.trim(),
+                phone: values.phone?.trim() || null,
+                bio: values.bio?.trim() || null,
+                location: values.location?.trim() || null,
+                avatar_url: values.avatar_url || null,
                 updated_at: new Date().toISOString(),
             };
 
-            // Only include avatar_url if it's actually been set/changed to avoid schema errors if column is missing
-            if (values.avatar_url) {
-                updateData.avatar_url = values.avatar_url;
-            }
-
             const { error } = await (supabase as any)
                 .from("profiles")
-                .update(updateData)
-                .eq("user_id", userId);
+                .upsert(payload, { onConflict: "user_id" });
 
             if (error) {
-                // If it's a "column not found" error, try updating without the advanced fields
+                // If it's a "column not found" error, fallback to core fields
                 if (error.message?.includes("column") && error.message?.includes("not found")) {
-                    console.warn("Schema mismatch detected, attempting simplified update...", error.message);
+                    console.warn("Schema mismatch detected, attempting simplified upsert...", error.message);
 
                     const simplifiedData = {
-                        full_name: values.full_name,
+                        user_id: userId,
+                        full_name: values.full_name.trim(),
                         updated_at: new Date().toISOString(),
                     };
 
                     const { error: retryError } = await (supabase as any)
                         .from("profiles")
-                        .update(simplifiedData)
-                        .eq("user_id", userId);
+                        .upsert(simplifiedData, { onConflict: "user_id" });
 
                     if (retryError) throw retryError;
 
                     toast({
                         title: "Partial update successful",
-                        description: "Some fields (like Avatar/Bio) couldn't be saved because the database columns are missing. Please run the SQL fix in Supabase.",
+                        description: "Core profile saved. Some additional fields couldn't be saved due to column configuration.",
                         variant: "default"
                     });
                 } else {
@@ -122,6 +132,21 @@ export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditF
             } else {
                 toast({ title: "Profile updated", description: "Your changes have been saved successfully." });
             }
+
+            // Sync user_metadata in auth so Auth session immediately reflects new name
+            try {
+                await supabase.auth.updateUser({
+                    data: {
+                        full_name: values.full_name.trim(),
+                        name: values.full_name.trim(),
+                    },
+                });
+            } catch (authErr) {
+                console.warn("Could not sync user_metadata in auth:", authErr);
+            }
+
+            // Invalidate profile queries across the application
+            await queryClient.invalidateQueries({ queryKey: ["profile"] });
 
             onSuccess();
         } catch (err: any) {
