@@ -109,7 +109,14 @@ const App = () => {
                     <Route path="/stopwatch" element={<Stopwatch />} />
                     <Route path="/verify" element={<VerifyCertificate />} />
                     <Route path="/verify/:id" element={<VerifyCertificate />} />
-                    <Route path="/certificate-preview" element={<CertificatePreview />} />
+                    <Route
+                      path="/certificate-preview"
+                      element={
+                        <RequireAdmin>
+                          <CertificatePreview />
+                        </RequireAdmin>
+                      }
+                    />
                     <Route
                       path="/dashboard"
                       element={

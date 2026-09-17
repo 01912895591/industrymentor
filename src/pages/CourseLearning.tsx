@@ -177,10 +177,16 @@ export default function CourseLearning() {
           setEnrollmentStatus("rejected");
           setLoading(false);
           return;
-        } else {
-          // 'active' or legacy approved enrollment
+        } else if (enrollData.status === "active") {
           setEnrollment(enrollData);
           setEnrollmentStatus("active");
+        } else {
+          // Unverified or unknown status: deny course access
+          setEnrollment(enrollData);
+          setEnrollmentStatus("none");
+          setNotEnrolled(true);
+          setLoading(false);
+          return;
         }
 
         // 3. Fetch modules for the verified enrolled course
