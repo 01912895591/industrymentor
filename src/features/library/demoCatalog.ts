@@ -15,21 +15,21 @@ export const demoEbooks: DemoCatalogItem[] = [
     title: "E‑Book: Garment Sizing & Fit Basics",
     description: "A practical guide to measurement points, tolerances, and fit checks.",
     priceCents: 199,
-    image_url: "/ebook-sizing.png"
+    image_url: "/ebook-sizing.webp"
   },
   {
     key: "ebook-production-planning",
     title: "E‑Book: Production Planning Playbook",
     description: "Line planning, capacity, bottlenecks, and daily production control.",
     priceCents: 299,
-    image_url: "/ebook-planning.png"
+    image_url: "/ebook-planning.webp"
   },
   {
     key: "ebook-quality-audit",
     title: "E‑Book: Quality Audit Checklist",
     description: "A ready-to-use audit checklist for inline and final inspection.",
     priceCents: 149,
-    image_url: "/ebook-quality.png"
+    image_url: "/ebook-quality.webp"
   },
 ];
 

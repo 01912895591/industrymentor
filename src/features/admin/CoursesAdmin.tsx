@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CourseModulesDialog } from "./CourseModulesDialog";
 import { sanitizers, validators } from "@/lib/validation";
 import { formatCourseTitle } from "@/lib/formatTitle";
+import { optimizeImage } from "@/lib/imageOptimizer";
 
 type CourseRow = {
   id: string;
@@ -243,14 +244,32 @@ export function CoursesAdmin() {
 
       setUploading(true);
       const file = event.target.files[0];
-      const fileExt = file.name.split(".").pop();
+
+      // Safe optimization for course cover
+      let uploadFile: File = file;
+      try {
+        const result = await optimizeImage(file, {
+          assetType: "course_cover",
+          maxDimension: 1200,
+          quality: 0.82,
+        });
+        uploadFile = result.file;
+      } catch (optErr) {
+        console.warn("[CoursesAdmin] Optimization fallback to original file:", optErr);
+        uploadFile = file;
+      }
+
+      const fileExt = uploadFile.name.split(".").pop()?.toLowerCase() || (uploadFile.type === "image/webp" ? "webp" : "jpg");
       const fileName = `course-cover-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // 1. Upload to Storage
+      // 1. Upload to Storage with matching contentType and long-term cache
       const { error: uploadError } = await supabase.storage
         .from("site_assets")
-        .upload(filePath, file);
+        .upload(filePath, uploadFile, {
+          contentType: uploadFile.type || "image/webp",
+          cacheControl: "31536000",
+        });
 
       if (uploadError) throw uploadError;
 
@@ -267,7 +286,7 @@ export function CoursesAdmin() {
 
     } catch (error: any) {
       console.error("Error uploading image:", error);
-      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      toast({ title: "Upload failed", description: error?.message || "Failed to upload image. Please try again.", variant: "destructive" });
     } finally {
       setUploading(false);
     }

@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import * as z from "zod";
+import { optimizeImage } from "@/lib/imageOptimizer";
 
 const profileSchema = z.object({
     full_name: z.string().trim().min(2, "Name must be at least 2 characters").max(80),
@@ -61,14 +62,31 @@ export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditF
             if (!event.target.files || event.target.files.length === 0) return;
             setUploading(true);
             const file = event.target.files[0];
-            const fileExt = file.name.split(".").pop();
+
+            let uploadFile: File = file;
+            try {
+                const result = await optimizeImage(file, {
+                    assetType: "avatar",
+                    maxDimension: 800,
+                    quality: 0.82,
+                });
+                uploadFile = result.file;
+            } catch (optErr) {
+                console.warn("[ProfileEditForm] Optimization fallback to original file:", optErr);
+                uploadFile = file;
+            }
+
+            const fileExt = uploadFile.name.split(".").pop()?.toLowerCase() || (uploadFile.type === "image/webp" ? "webp" : "jpg");
             const fileName = `avatar-${userId}-${Date.now()}.${fileExt}`;
             const filePath = `avatars/${fileName}`;
 
-            // Use site_assets bucket as per existing mentors implementation
+            // Use site_assets bucket with matching contentType and long-term cache
             const { error: uploadError } = await (supabase.storage
                 .from("site_assets" as any) as any)
-                .upload(filePath, file);
+                .upload(filePath, uploadFile, {
+                    contentType: uploadFile.type || "image/webp",
+                    cacheControl: "31536000",
+                });
 
             if (uploadError) throw uploadError;
 
@@ -80,7 +98,7 @@ export function ProfileEditForm({ userId, initialData, onSuccess }: ProfileEditF
             form.setValue("avatar_url", publicUrl);
             toast({ title: "Profile picture uploaded" });
         } catch (error: any) {
-            toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+            toast({ title: "Upload failed", description: error?.message || "Failed to upload avatar", variant: "destructive" });
         } finally {
             setUploading(false);
         }

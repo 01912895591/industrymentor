@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Upload, Trash2, Plus, Facebook, Linkedin, Instagram, Youtube, MessageCircleQuestion, Video, Pin, MapPin, AlertTriangle } from "lucide-react";
+import { optimizeImage } from "@/lib/imageOptimizer";
 
 function isLinkedInAdminUrl(url: string) {
     return /linkedin\.com\/(?:company-admin|admin|feed|dashboard)/i.test(url);
@@ -99,14 +100,31 @@ export function SettingsAdmin() {
 
             setUploading(true);
             const file = event.target.files[0];
-            const fileExt = file.name.split(".").pop();
+
+            let uploadFile: File = file;
+            try {
+                const result = await optimizeImage(file, {
+                    assetType: "hero",
+                    maxDimension: 1600,
+                    quality: 0.82,
+                });
+                uploadFile = result.file;
+            } catch (optErr) {
+                console.warn("[SettingsAdmin] Optimization fallback to original file:", optErr);
+                uploadFile = file;
+            }
+
+            const fileExt = uploadFile.name.split(".").pop()?.toLowerCase() || (uploadFile.type === "image/webp" ? "webp" : "jpg");
             const fileName = `hero-image-${Date.now()}.${fileExt}`;
             const filePath = `${fileName}`;
 
-            // 1. Upload to Storage
+            // 1. Upload to Storage with matching contentType and long-term cache
             const { error: uploadError } = await supabase.storage
                 .from("site_assets")
-                .upload(filePath, file);
+                .upload(filePath, uploadFile, {
+                    contentType: uploadFile.type || "image/webp",
+                    cacheControl: "31536000",
+                });
 
             if (uploadError) throw uploadError;
 

@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Image as ImageIcon, Trash2, Plus, Pencil, Loader2, Linkedin, Edit } from "lucide-react";
+import { optimizeImage } from "@/lib/imageOptimizer";
 
 type Mentor = {
     id: string;
@@ -73,13 +74,30 @@ export function MentorsAdmin() {
             if (!event.target.files || event.target.files.length === 0) return;
             setUploading(true);
             const file = event.target.files[0];
-            const fileExt = file.name.split(".").pop();
+
+            let uploadFile: File = file;
+            try {
+                const result = await optimizeImage(file, {
+                    assetType: "mentor_photo",
+                    maxDimension: 1200,
+                    quality: 0.82,
+                });
+                uploadFile = result.file;
+            } catch (optErr) {
+                console.warn("[MentorsAdmin] Optimization fallback to original file:", optErr);
+                uploadFile = file;
+            }
+
+            const fileExt = uploadFile.name.split(".").pop()?.toLowerCase() || (uploadFile.type === "image/webp" ? "webp" : "jpg");
             const fileName = `mentor-${Date.now()}.${fileExt}`;
             const filePath = `mentors/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from("site_assets")
-                .upload(filePath, file);
+                .upload(filePath, uploadFile, {
+                    contentType: uploadFile.type || "image/webp",
+                    cacheControl: "31536000",
+                });
 
             if (uploadError) throw uploadError;
 
@@ -91,7 +109,7 @@ export function MentorsAdmin() {
             toast({ title: "Image uploaded successfully" });
             event.target.value = "";
         } catch (error: any) {
-            toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+            toast({ title: "Upload failed", description: error?.message || "Failed to upload mentor photo", variant: "destructive" });
         } finally {
             setUploading(false);
         }

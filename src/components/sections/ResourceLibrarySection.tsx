@@ -228,9 +228,9 @@ export function ResourceLibrarySection() {
                   <div className="relative aspect-[16/10] overflow-hidden bg-muted/20">
                     {(() => {
                       const fallbackCovers = [
-                        "/ebook-sizing.png",
-                        "/ebook-planning.png",
-                        "/ebook-quality.png"
+                        "/ebook-sizing.webp",
+                        "/ebook-planning.webp",
+                        "/ebook-quality.webp"
                       ];
                       // Use hash of title to consistently pick a fallback
                       const hash = it.title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -240,6 +240,8 @@ export function ResourceLibrarySection() {
                         <img
                           src={imageUrl}
                           alt={it.title}
+                          loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       );

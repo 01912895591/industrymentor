@@ -7,6 +7,7 @@ import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
 import { AlertCircle, Trash2, Image as ImageIcon, Upload, Pencil } from "lucide-react";
+import { optimizeImage } from "@/lib/imageOptimizer";
 
 type LibraryItemRow = {
   id: string;
@@ -130,51 +131,30 @@ export function LibraryAdmin() {
       setUploading(true);
       const file = event.target.files[0];
 
-      // Optimization step: Resize and compress using Canvas
-      const optimizedBlob = await new Promise<Blob>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement("canvas");
-            let width = img.width;
-            let height = img.height;
-            const maxSize = 800;
+      // Safe optimization for library cover
+      let uploadFile: File = file;
+      try {
+        const result = await optimizeImage(file, {
+          assetType: "library_cover",
+          maxDimension: 1200,
+          quality: 0.82,
+        });
+        uploadFile = result.file;
+      } catch (optErr) {
+        console.warn("[LibraryAdmin] Optimization fallback to original file:", optErr);
+        uploadFile = file;
+      }
 
-            if (width > height) {
-              if (width > maxSize) {
-                height *= maxSize / width;
-                width = maxSize;
-              }
-            } else {
-              if (height > maxSize) {
-                width *= maxSize / height;
-                height = maxSize;
-              }
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            ctx?.drawImage(img, 0, 0, width, height);
-            canvas.toBlob((blob) => {
-              if (blob) resolve(blob);
-              else reject(new Error("Canvas toBlob failed"));
-            }, "image/jpeg", 0.8);
-          };
-          img.onerror = reject;
-          img.src = e.target?.result as string;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      const fileName = `library-${itemType}-${Date.now()}.jpg`;
+      const fileExt = uploadFile.name.split(".").pop()?.toLowerCase() || (uploadFile.type === "image/webp" ? "webp" : "jpg");
+      const fileName = `library-${itemType}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("site_assets")
-        .upload(filePath, optimizedBlob, { contentType: "image/jpeg" });
+        .upload(filePath, uploadFile, {
+          contentType: uploadFile.type || "image/webp",
+          cacheControl: "31536000",
+        });
 
       if (uploadError) throw uploadError;
 
@@ -183,11 +163,11 @@ export function LibraryAdmin() {
         .getPublicUrl(filePath);
 
       setImageUrl(publicUrl);
-      toast({ title: "Cover image uploaded and optimized" });
+      toast({ title: "Cover image uploaded successfully" });
       event.target.value = "";
     } catch (error: any) {
       console.error("Upload error:", error);
-      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      toast({ title: "Upload failed", description: error?.message || "Failed to upload cover image", variant: "destructive" });
     } finally {
       setUploading(false);
     }

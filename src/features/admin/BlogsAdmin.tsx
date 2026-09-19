@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Image as ImageIcon, Plus, Trash2, Database, AlertCircle } from "lucide-react";
+import { optimizeImage } from "@/lib/imageOptimizer";
 
 type BlogRow = {
     id: string;
@@ -140,14 +141,32 @@ export function BlogsAdmin() {
 
             setUploading(true);
             const file = event.target.files[0];
-            const fileExt = file.name.split(".").pop();
+
+            // Safe optimization for blog cover
+            let uploadFile: File = file;
+            try {
+                const result = await optimizeImage(file, {
+                    assetType: "blog_cover",
+                    maxDimension: 1200,
+                    quality: 0.82,
+                });
+                uploadFile = result.file;
+            } catch (optErr) {
+                console.warn("[BlogsAdmin] Optimization fallback to original file:", optErr);
+                uploadFile = file;
+            }
+
+            const fileExt = uploadFile.name.split(".").pop()?.toLowerCase() || (uploadFile.type === "image/webp" ? "webp" : "jpg");
             const fileName = `blog-cover-${Date.now()}.${fileExt}`;
             const filePath = `${fileName}`;
 
-            // 1. Upload to Storage
+            // 1. Upload to Storage with matching contentType and long-term cache
             const { error: uploadError } = await supabase.storage
                 .from("site_assets")
-                .upload(filePath, file);
+                .upload(filePath, uploadFile, {
+                    contentType: uploadFile.type || "image/webp",
+                    cacheControl: "31536000",
+                });
 
             if (uploadError) throw uploadError;
 
@@ -164,7 +183,7 @@ export function BlogsAdmin() {
 
         } catch (error: any) {
             console.error("Error uploading image:", error);
-            toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+            toast({ title: "Upload failed", description: error?.message || "Failed to upload image. Please try again.", variant: "destructive" });
         } finally {
             setUploading(false);
         }
