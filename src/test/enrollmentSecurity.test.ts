@@ -243,4 +243,144 @@ describe("Course Enrollment RLS Security Enforcement", () => {
       expect(access).toBe("active");
     });
   });
+
+  describe("RPC Security: mark_course_complete(p_enrollment_id)", () => {
+    interface EnrollmentDatabaseRecord {
+      id: string;
+      user_id: string;
+      course_id: string;
+      status: "pending" | "active" | "rejected" | string;
+      completed: boolean;
+      updated_at?: string;
+    }
+
+    function simulateMarkCourseCompleteRpc(
+      auth: AuthContext,
+      p_enrollment_id: string,
+      records: EnrollmentDatabaseRecord[]
+    ): {
+      success: boolean;
+      updatedRecord?: EnrollmentDatabaseRecord;
+      error?: string;
+    } {
+      // 1. Verify authenticated user exists (SECURITY DEFINER check)
+      if (!auth.userId || auth.role !== "authenticated") {
+        return { success: false, error: "Unauthorized: RPC requires authenticated session" };
+      }
+
+      // 2. Locate target record with exact match:
+      // id = p_enrollment_id AND user_id = auth.uid() AND status = 'active'
+      const targetIndex = records.findIndex(
+        (r) => r.id === p_enrollment_id && r.user_id === auth.userId && r.status === "active"
+      );
+
+      if (targetIndex === -1) {
+        // Return FALSE if enrollment does not exist, belongs to another user, or is not active
+        return { success: false };
+      }
+
+      // 3. Update ONLY completed = true and updated_at = now()
+      // Status, course_id, user_id, payment fields remain strictly untouched
+      const updated: EnrollmentDatabaseRecord = {
+        ...records[targetIndex],
+        completed: true,
+        updated_at: new Date().toISOString(),
+      };
+
+      return { success: true, updatedRecord: updated };
+    }
+
+    const initialDb: EnrollmentDatabaseRecord[] = [
+      {
+        id: "enroll-active-111",
+        user_id: "student-uuid-111",
+        course_id: "course-uuid-abc",
+        status: "active",
+        completed: false,
+      },
+      {
+        id: "enroll-pending-111",
+        user_id: "student-uuid-111",
+        course_id: "course-uuid-xyz",
+        status: "pending",
+        completed: false,
+      },
+      {
+        id: "enroll-rejected-111",
+        user_id: "student-uuid-111",
+        course_id: "course-uuid-def",
+        status: "rejected",
+        completed: false,
+      },
+      {
+        id: "enroll-other-student-999",
+        user_id: "attacker-uuid-999",
+        course_id: "course-uuid-abc",
+        status: "active",
+        completed: false,
+      },
+    ];
+
+    // TEST 1: Authenticated user completes own active enrollment -> SUCCESS
+    it("TEST 1: Authenticated student marks own active enrollment as complete -> SUCCESS", () => {
+      const result = simulateMarkCourseCompleteRpc(studentUser, "enroll-active-111", initialDb);
+      expect(result.success).toBe(true);
+      expect(result.updatedRecord?.completed).toBe(true);
+      expect(result.updatedRecord?.status).toBe("active");
+    });
+
+    // TEST 2: Authenticated user attempts another user's enrollment -> FALSE / blocked
+    it("TEST 2: Authenticated student attempts to complete another user's enrollment -> BLOCKED", () => {
+      const result = simulateMarkCourseCompleteRpc(studentUser, "enroll-other-student-999", initialDb);
+      expect(result.success).toBe(false);
+      expect(result.updatedRecord).toBeUndefined();
+    });
+
+    // TEST 3: Authenticated user attempts pending enrollment -> FALSE / blocked
+    it("TEST 3: Authenticated student attempts to complete pending (unapproved) enrollment -> BLOCKED", () => {
+      const result = simulateMarkCourseCompleteRpc(studentUser, "enroll-pending-111", initialDb);
+      expect(result.success).toBe(false);
+      expect(result.updatedRecord).toBeUndefined();
+    });
+
+    // TEST 4: Authenticated user attempts rejected enrollment -> FALSE / blocked
+    it("TEST 4: Authenticated student attempts to complete rejected enrollment -> BLOCKED", () => {
+      const result = simulateMarkCourseCompleteRpc(studentUser, "enroll-rejected-111", initialDb);
+      expect(result.success).toBe(false);
+      expect(result.updatedRecord).toBeUndefined();
+    });
+
+    // TEST 5: Authenticated user cannot change status through RPC -> status remains unchanged
+    it("TEST 5: RPC strictly prevents altering status, user_id, or course_id fields", () => {
+      const result = simulateMarkCourseCompleteRpc(studentUser, "enroll-active-111", initialDb);
+      expect(result.success).toBe(true);
+      expect(result.updatedRecord?.status).toBe("active");
+      expect(result.updatedRecord?.user_id).toBe("student-uuid-111");
+      expect(result.updatedRecord?.course_id).toBe("course-uuid-abc");
+    });
+
+    // TEST 6: Unauthenticated/anon user cannot execute RPC -> blocked
+    it("TEST 6: Unauthenticated / anonymous caller cannot execute completion RPC -> BLOCKED", () => {
+      const anonUser: AuthContext = { userId: null, role: "anon", isAdmin: false };
+      const result = simulateMarkCourseCompleteRpc(anonUser, "enroll-active-111", initialDb);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Unauthorized");
+    });
+
+    // TEST 7: Existing direct UPDATE policy remains absent
+    it("TEST 7: Direct client UPDATE on course_enrollments remains blocked by RLS for students", () => {
+      const existing: CourseEnrollmentRow = {
+        user_id: "student-uuid-111",
+        course_id: "course-uuid-abc",
+        status: "active",
+      };
+      const directUpdateAttempt: CourseEnrollmentRow = {
+        ...existing,
+        status: "active",
+      };
+      const updateResult = evaluateEnrollmentUpdatePolicy(studentUser, existing, directUpdateAttempt);
+      expect(updateResult.allowed).toBe(false);
+      expect(updateResult.reason).toContain("Only administrators can update");
+    });
+  });
 });

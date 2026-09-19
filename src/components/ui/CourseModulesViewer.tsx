@@ -32,6 +32,7 @@ export function CourseModulesViewer({ courseId, courseTitle }: CourseModulesView
     const [open, setOpen] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
     const [isEnrolled, setIsEnrolled] = useState(false);
+    const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
     const [markingComplete, setMarkingComplete] = useState(false);
     const { toast } = useToast();
 
@@ -50,10 +51,10 @@ export function CourseModulesViewer({ courseId, courseTitle }: CourseModulesView
                             .order("created_at", { ascending: true }),
                         user ? supabase
                             .from("course_enrollments")
-                            .select("completed")
+                            .select("id, completed")
                             .eq("course_id", courseId)
                             .eq("user_id", user.id)
-                            .single() : Promise.resolve({ data: null, error: null })
+                            .maybeSingle() : Promise.resolve({ data: null, error: null })
                     ]);
 
                     if (modulesRes.data) {
@@ -61,9 +62,11 @@ export function CourseModulesViewer({ courseId, courseTitle }: CourseModulesView
                     }
                     if (enrollRes.data) {
                         setIsEnrolled(true);
+                        setEnrollmentId(enrollRes.data.id);
                         setIsCompleted(enrollRes.data.completed || false);
                     } else {
                         setIsEnrolled(false);
+                        setEnrollmentId(null);
                     }
                 } catch (error) {
                     console.error("Failed to load data", error);
@@ -79,15 +82,37 @@ export function CourseModulesViewer({ courseId, courseTitle }: CourseModulesView
         try {
             setMarkingComplete(true);
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user || !enrollmentId) {
+                toast({
+                    title: "Action Required",
+                    description: "No active enrollment found for this course.",
+                    variant: "destructive",
+                });
+                return;
+            }
 
-            const { error } = await supabase
-                .from("course_enrollments")
-                .update({ completed: true } as any)
-                .eq("course_id", courseId)
-                .eq("user_id", user.id);
+            const { data: updated, error } = await (supabase as any).rpc("mark_course_complete", {
+                p_enrollment_id: enrollmentId,
+            });
 
-            if (error) throw error;
+            if (error) {
+                console.error("Error marking complete via RPC:", error);
+                toast({
+                    title: "Error",
+                    description: "Failed to update progress. Please try again or contact support.",
+                    variant: "destructive",
+                });
+                return;
+            }
+
+            if (!updated) {
+                toast({
+                    title: "Notice",
+                    description: "Could not mark course complete. Ensure your enrollment is active.",
+                    variant: "destructive",
+                });
+                return;
+            }
 
             setIsCompleted(true);
             toast({
@@ -96,7 +121,7 @@ export function CourseModulesViewer({ courseId, courseTitle }: CourseModulesView
             });
             setTimeout(() => setOpen(false), 1500);
         } catch (error) {
-            console.error("Error marking complete:", error);
+            console.error("Unexpected error marking complete:", error);
             toast({
                 title: "Error",
                 description: "Failed to update progress.",

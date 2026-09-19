@@ -273,12 +273,20 @@ export default function CourseLearning() {
 
     setCompletingCourse(true);
     try {
-      const { error } = await (supabase as any)
-        .from("course_enrollments")
-        .update({ completed: true })
-        .eq("id", enrollment.id);
+      const { data: updated, error } = await (supabase as any).rpc("mark_course_complete", {
+        p_enrollment_id: enrollment.id,
+      });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error completing course via RPC:", error);
+        toast.error("Could not update course status. Please try again or contact support.");
+        return;
+      }
+
+      if (!updated) {
+        toast.error("Could not mark course complete. Ensure your enrollment is active.");
+        return;
+      }
 
       setEnrollment((prev) => (prev ? { ...prev, completed: true } : null));
 
@@ -286,8 +294,8 @@ export default function CourseLearning() {
         description: "You are now eligible to request your verified completion certificate.",
       });
     } catch (err: any) {
-      console.error("Error completing course:", err);
-      toast.error(err.message || "Could not update course status. Please try again or contact support.");
+      console.error("Unexpected error completing course:", err);
+      toast.error("An unexpected error occurred. Please try again or contact support.");
     } finally {
       setCompletingCourse(false);
     }
