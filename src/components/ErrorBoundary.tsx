@@ -39,7 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
             if (!hasAutoReloaded) {
                 sessionStorage.setItem('chunk_reload_once', 'true');
                 console.warn('Stale chunk detected after deployment. Auto-reloading page...');
-                window.location.reload();
+                window.location.href = window.location.pathname + '?v=' + Date.now();
             }
         }
     }
@@ -87,7 +87,7 @@ export class ErrorBoundary extends Component<Props, State> {
                             <Button
                                 onClick={() => {
                                     sessionStorage.removeItem('chunk_reload_once');
-                                    window.location.reload();
+                                    window.location.href = window.location.pathname + '?v=' + Date.now();
                                 }}
                                 className="w-full font-bold"
                             >
@@ -96,7 +96,8 @@ export class ErrorBoundary extends Component<Props, State> {
                             <Button
                                 variant="outline"
                                 onClick={() => {
-                                    window.location.href = '/';
+                                    sessionStorage.removeItem('chunk_reload_once');
+                                    window.location.href = '/?v=' + Date.now();
                                 }}
                                 className="w-full text-xs"
                             >
