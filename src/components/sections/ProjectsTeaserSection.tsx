@@ -29,7 +29,7 @@ const practicalModules = [
 
 export function ProjectsTeaserSection() {
   return (
-    <section id="projects" className="scroll-mt-24 py-20 lg:py-24 border-b border-border/40">
+    <section id="projects" className="scroll-mt-24 pt-12 pb-20 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 border-b border-border/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="max-w-2xl">

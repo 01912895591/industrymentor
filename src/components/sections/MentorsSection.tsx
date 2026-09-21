@@ -34,7 +34,7 @@ export function MentorsSection() {
 
   if (loading) {
     return (
-      <section id="mentors" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-20 sm:px-6">
+      <section id="mentors" className="scroll-mt-24 mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 sm:pt-20 sm:pb-14 lg:pt-24 lg:pb-16">
         <div className="flex h-60 items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -43,7 +43,7 @@ export function MentorsSection() {
   }
 
   return (
-    <section id="mentors" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-20 lg:py-24 sm:px-6">
+    <section id="mentors" className="scroll-mt-24 mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 sm:pt-20 sm:pb-14 lg:pt-24 lg:pb-16">
       <header className="text-center mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider mb-3">
           VERIFIED INDUSTRY PRACTITIONERS

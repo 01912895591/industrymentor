@@ -32,7 +32,7 @@ export function FeaturedCoursesSection() {
   }, []);
 
   return (
-    <section id="courses" className="scroll-mt-24 py-20 lg:py-24 border-b border-border/40">
+    <section id="courses" className="scroll-mt-24 pt-20 pb-8 sm:pb-10 lg:pt-24 lg:pb-8 border-b border-border/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="text-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wider mb-3">
