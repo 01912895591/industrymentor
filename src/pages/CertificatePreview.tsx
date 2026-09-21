@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { CertificateGenerator } from "@/features/certificates/CertificateGenerator";
 import { CertificateVector } from "@/features/certificates/CertificateVector";
 import { Button } from "@/components/ui/button";
+
+const CertificateGenerator = lazy(() =>
+  import("@/features/certificates/CertificateGenerator").then((m) => ({
+    default: m.CertificateGenerator,
+  }))
+);
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShieldCheck, ExternalLink, ArrowLeft, RefreshCw, Eye, Download, FileText } from "lucide-react";
@@ -126,13 +131,15 @@ export default function CertificatePreview() {
             <FileText className="h-4 w-4 text-primary" />
             <span>Generate dynamic print-ready <strong>300 DPI A4 Landscape PDF</strong> or <strong>PNG</strong>:</span>
           </div>
-          <CertificateGenerator
-            studentName={studentName}
-            courseTitle={courseTitle}
-            issueDate={issueDate}
-            certificateId={certificateId}
-            trainingHours={trainingHours}
-          />
+          <Suspense fallback={<div className="h-9 w-36 rounded-md bg-muted/40 animate-pulse" />}>
+            <CertificateGenerator
+              studentName={studentName}
+              courseTitle={courseTitle}
+              issueDate={issueDate}
+              certificateId={certificateId}
+              trainingHours={trainingHours}
+            />
+          </Suspense>
         </div>
 
         {/* Visual Certificate Frame */}

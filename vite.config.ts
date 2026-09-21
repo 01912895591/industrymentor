@@ -14,6 +14,19 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   build: {
+    modulePreload: {
+      resolveDependencies: (filename, deps, { hostType }) => {
+        if (hostType === "html") {
+          return deps.filter(
+            (dep) =>
+              !dep.includes("vendor-pdf") &&
+              !dep.includes("vendor-charts") &&
+              !dep.includes("signatureAsset")
+          );
+        }
+        return deps;
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {

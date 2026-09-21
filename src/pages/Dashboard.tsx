@@ -40,7 +40,7 @@ import {
   PlayCircle,
   Share2,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfileEditForm } from "@/features/dashboard/ProfileEditForm";
@@ -48,7 +48,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { CertificateGenerator } from "@/features/certificates/CertificateGenerator";
+
+const CertificateGenerator = lazy(() =>
+  import("@/features/certificates/CertificateGenerator").then((m) => ({
+    default: m.CertificateGenerator,
+  }))
+);
 
 // Sub-component: Certificates Section
 function CertificatesSection({
@@ -308,12 +313,14 @@ function CertificatesSection({
                       </Link>
                     </Button>
 
-                    <CertificateGenerator
-                      studentName={studentDisplayName}
-                      courseTitle={cert.courses?.title || "Industry Specialization"}
-                      issueDate={new Date(cert.issued_at || Date.now()).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-                      certificateId={cert.id}
-                    />
+                    <Suspense fallback={<div className="h-9 w-32 rounded-md bg-muted/40 animate-pulse" />}>
+                      <CertificateGenerator
+                        studentName={studentDisplayName}
+                        courseTitle={cert.courses?.title || "Industry Specialization"}
+                        issueDate={new Date(cert.issued_at || Date.now()).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                        certificateId={cert.id}
+                      />
+                    </Suspense>
                   </div>
                 </CardContent>
               </Card>
