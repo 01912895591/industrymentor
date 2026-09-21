@@ -1,4 +1,5 @@
 import { NavLink } from "@/components/NavLink";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useIsAdmin } from "@/components/auth/useIsAdmin";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,20 @@ export function SiteNavbar() {
   const [contactPhone, setContactPhone] = useState("+8801912895591");
   const [isScrolled, setIsScrolled] = useState(false);
   const { logoUrl, isLoading } = useLogo();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (location.pathname === "/") {
+      e.preventDefault();
+      if (location.hash) {
+        navigate("/", { replace: true });
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +76,7 @@ export function SiteNavbar() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-4 lg:gap-6">
-          <NavLink to="/" className="flex items-center gap-3 shrink-0">
+          <NavLink to="/" onClick={handleLogoClick} className="flex items-center gap-3 shrink-0">
             {isLoading ? (
               // Placeholder while loading to prevent layout shift & flash
               <div className="h-16 w-32" />

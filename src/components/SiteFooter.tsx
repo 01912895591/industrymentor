@@ -1,13 +1,30 @@
 import { NavLink } from "@/components/NavLink";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useLogo } from "@/hooks/useLogo";
 
-import { Facebook, Linkedin, Instagram, Youtube, Globe, MessageCircleQuestion, Video, Pin, MapPin } from "lucide-react";
+import { Facebook, Linkedin, Instagram, Youtube, Globe, MessageCircleQuestion, Video, Pin, MapPin, ArrowUp } from "lucide-react";
 
 export function SiteFooter() {
   const [contactPhone, setContactPhone] = useState("+8801912895591");
   const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string }[]>([]);
   const [location, setLocation] = useState({ address: "", mapUrl: "" });
+  const { logoUrl } = useLogo();
+  const routerLocation = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (routerLocation.pathname === "/") {
+      e.preventDefault();
+      if (routerLocation.hash) {
+        navigate("/", { replace: true });
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     const fetchPhone = async () => {
@@ -66,10 +83,25 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row">
           <div className="max-w-md">
-            <div className="text-base xs:text-lg font-bold tracking-tight">
-              About <span className="text-primary">Us</span>
-            </div>
-            <p className="mt-3 text-xs xs:text-sm leading-relaxed text-muted-foreground">
+            <NavLink
+              to="/"
+              onClick={handleLogoClick}
+              className="inline-flex items-center gap-2.5 mb-3 group transition-opacity hover:opacity-90"
+              title="IndustryMentor Home"
+            >
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt="IndustryMentor Logo"
+                  className="h-9 sm:h-10 max-w-[170px] object-contain"
+                />
+              ) : (
+                <div className="text-base xs:text-lg font-bold tracking-tight">
+                  Industry<span className="text-primary">Mentor</span>
+                </div>
+              )}
+            </NavLink>
+            <p className="text-xs xs:text-sm leading-relaxed text-muted-foreground">
               IndustryMentor is a premium e-learning platform dedicated to bridging the gap between students and industry experts. We provide curated courses, SOPs, and mentorship to help you scale your skills and career.
             </p>
             <div className="mt-6 flex gap-4">
@@ -185,7 +217,18 @@ export function SiteFooter() {
             <span>•</span>
             <NavLink to="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</NavLink>
           </div>
-          <div className="tabular-nums">Support: {contactPhone}</div>
+          <div className="flex items-center gap-4">
+            <div className="tabular-nums">Support: {contactPhone}</div>
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "smooth" })}
+              className="inline-flex items-center gap-1 font-medium text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              title="Scroll to Top"
+            >
+              <ArrowUp className="h-3.5 w-3.5" />
+              <span>Top</span>
+            </button>
+          </div>
         </div>
       </div>
     </footer>
