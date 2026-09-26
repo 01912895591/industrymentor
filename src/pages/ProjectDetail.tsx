@@ -129,17 +129,43 @@ export default function ProjectDetail() {
           "Practical industry project and real factory execution challenge with deliverable verification on IndustryMentor."
         }
         canonicalUrl={`https://industrymentor.net/projects/${slug}`}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "CreativeWork",
-          name: project.title,
-          description: project.short_description || undefined,
-          creator: {
-            "@type": "Organization",
-            name: "IndustryMentor",
-            url: "https://industrymentor.net",
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            name: project.title,
+            description: project.short_description || undefined,
+            creator: {
+              "@type": "Organization",
+              name: "IndustryMentor",
+              url: "https://industrymentor.net",
+            },
           },
-        }}
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://industrymentor.net/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Projects",
+                item: "https://industrymentor.net/projects",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: project.title,
+                item: `https://industrymentor.net/projects/${slug}`,
+              },
+            ],
+          },
+        ]}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Breadcrumb Navigation */}

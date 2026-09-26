@@ -53,7 +53,7 @@ export function BlogCTASection() {
                         </p>
                     </div>
                     <Button variant="soft" size="lg" asChild className="hidden md:flex">
-                        <Link to="/blog">
+                        <Link to="/blogs">
                             View All Posts
                             <ChevronRight className="ml-2 h-4 w-4" />
                         </Link>
@@ -71,8 +71,11 @@ export function BlogCTASection() {
                                 <div className="aspect-video overflow-hidden">
                                     <img
                                         src={blog.cover_image_url || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80"}
-                                        alt={blog.title}
+                                        alt={blog.title || "IndustryMentor Blog Post"}
                                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        loading="lazy"
+                                        width={400}
+                                        height={225}
                                     />
                                 </div>
                                 <CardHeader className="p-6">
@@ -104,7 +107,7 @@ export function BlogCTASection() {
 
                 <div className="mt-12 flex justify-center md:hidden">
                     <Button variant="soft" size="lg" asChild className="w-full sm:w-auto">
-                        <Link to="/blog">
+                        <Link to="/blogs">
                             View All Posts
                             <ChevronRight className="ml-2 h-4 w-4" />
                         </Link>

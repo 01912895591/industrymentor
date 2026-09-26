@@ -57,6 +57,8 @@ export function CourseCard({ course, showEnrollButton = true }: CourseCardProps)
               alt={`Cover image for ${displayTitle}`}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-102"
               loading="lazy"
+              width={400}
+              height={250}
             />
             <div className="absolute left-3 top-3 flex items-center gap-1.5">
               <span className="rounded-md border border-border/70 bg-background/85 px-2 py-0.5 text-[11px] font-semibold text-foreground backdrop-blur-sm">

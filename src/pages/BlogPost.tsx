@@ -49,7 +49,7 @@ export default function BlogPost() {
                 <h1 className="text-4xl font-black mb-4">Post Not Found</h1>
                 <p className="text-muted-foreground mb-8 text-lg">The blog post you're looking for doesn't exist or has been removed.</p>
                 <Button variant="hero" asChild>
-                    <Link to="/blog">Back to Blog</Link>
+                    <Link to="/blogs">Back to Blog</Link>
                 </Button>
             </div>
         );
@@ -63,26 +63,52 @@ export default function BlogPost() {
                 canonicalUrl={`https://industrymentor.net/blog/${blog.slug}`}
                 ogType="article"
                 ogImage={blog.cover_image_url || undefined}
-                jsonLd={{
-                    "@context": "https://schema.org",
-                    "@type": "BlogPosting",
-                    headline: blog.title,
-                    datePublished: blog.created_at,
-                    image: blog.cover_image_url || undefined,
-                    author: {
-                        "@type": "Organization",
-                        name: "IndustryMentor",
+                jsonLd={[
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "BlogPosting",
+                        headline: blog.title,
+                        datePublished: blog.created_at,
+                        image: blog.cover_image_url || undefined,
+                        author: {
+                            "@type": "Organization",
+                            name: "IndustryMentor",
+                        },
+                        publisher: {
+                            "@type": "Organization",
+                            name: "IndustryMentor",
+                            url: "https://industrymentor.net",
+                        },
                     },
-                    publisher: {
-                        "@type": "Organization",
-                        name: "IndustryMentor",
-                        url: "https://industrymentor.net",
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "BreadcrumbList",
+                        itemListElement: [
+                            {
+                                "@type": "ListItem",
+                                position: 1,
+                                name: "Home",
+                                item: "https://industrymentor.net/",
+                            },
+                            {
+                                "@type": "ListItem",
+                                position: 2,
+                                name: "Blogs",
+                                item: "https://industrymentor.net/blogs",
+                            },
+                            {
+                                "@type": "ListItem",
+                                position: 3,
+                                name: blog.title,
+                                item: `https://industrymentor.net/blog/${blog.slug}`,
+                            },
+                        ],
                     },
-                }}
+                ]}
             />
             <article className="mx-auto max-w-4xl">
                 <Button variant="ghost" className="mb-8 p-0 hover:bg-transparent hover:text-primary transition-colors" asChild>
-                    <Link to="/blog">
+                    <Link to="/blogs">
                         <ChevronLeft className="mr-2 h-4 w-4" />
                         Back to Blog
                     </Link>
@@ -112,7 +138,7 @@ export default function BlogPost() {
                 <div className="aspect-[21/9] w-full overflow-hidden rounded-3xl mb-12 shadow-elev">
                     <img
                         src={blog.cover_image_url || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1200&q=80"}
-                        alt={blog.title}
+                        alt={blog.title || "IndustryMentor Blog Post Cover"}
                         className="h-full w-full object-cover"
                     />
                 </div>

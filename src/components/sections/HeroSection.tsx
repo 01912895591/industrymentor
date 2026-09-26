@@ -251,6 +251,9 @@ export function HeroSection() {
                       alt={`Course banner ad slide ${index + 1}`}
                       className="aspect-[3/2] w-full object-cover object-center select-none"
                       loading={index === 0 ? "eager" : "lazy"}
+                      fetchPriority={index === 0 ? "high" : "low"}
+                      width={600}
+                      height={400}
                       draggable={false}
                     />
                   </div>

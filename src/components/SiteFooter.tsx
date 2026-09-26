@@ -149,7 +149,7 @@ export function SiteFooter() {
               <div className="flex flex-col gap-1.5 text-muted-foreground">
                 <NavLink to="/contact-us" className="hover:text-foreground transition-colors">About Us</NavLink>
                 <NavLink to="/contact-us" className="hover:text-foreground transition-colors">Contact Us</NavLink>
-                <NavLink to="/blog" className="hover:text-foreground transition-colors">Blog &amp; Insights</NavLink>
+                <NavLink to="/blogs" className="hover:text-foreground transition-colors">Blog &amp; Insights</NavLink>
                 <NavLink to="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</NavLink>
                 <NavLink to="/terms-of-service" className="hover:text-foreground transition-colors">Terms of Service</NavLink>
                 <NavLink to="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</NavLink>

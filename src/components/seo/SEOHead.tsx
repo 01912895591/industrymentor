@@ -27,13 +27,23 @@ function setMetaTag(attributeName: "name" | "property", attributeValue: string, 
 }
 
 function setCanonicalLink(href: string) {
-  let element = document.querySelector('link[rel="canonical"]');
-  if (!element) {
-    element = document.createElement("link");
+  let absoluteHref = href;
+  if (href.startsWith("/")) {
+    absoluteHref = `https://industrymentor.net${href}`;
+  }
+
+  const existingLinks = document.querySelectorAll('link[rel="canonical"]');
+  if (existingLinks.length > 0) {
+    existingLinks[0].setAttribute("href", absoluteHref);
+    for (let i = 1; i < existingLinks.length; i++) {
+      existingLinks[i].remove();
+    }
+  } else {
+    const element = document.createElement("link");
     element.setAttribute("rel", "canonical");
+    element.setAttribute("href", absoluteHref);
     document.head.appendChild(element);
   }
-  element.setAttribute("href", href);
 }
 
 export function SEOHead({
@@ -69,6 +79,9 @@ export function SEOHead({
     setMetaTag("name", "twitter:image", activeImage);
     setMetaTag("property", "og:type", ogType);
 
+    const activeImageAlt = ogImage ? activeTitle : "IndustryMentor";
+    setMetaTag("property", "og:image:alt", activeImageAlt);
+
     // 5. Robots Noindex directive
     if (noindex) {
       setMetaTag("name", "robots", "noindex, nofollow");
@@ -101,6 +114,7 @@ export function SEOHead({
       setMetaTag("property", "og:description", DEFAULT_DESCRIPTION);
       setMetaTag("property", "og:url", DEFAULT_CANONICAL);
       setMetaTag("property", "og:image", DEFAULT_OG_IMAGE);
+      setMetaTag("property", "og:image:alt", "IndustryMentor");
       setMetaTag("name", "twitter:title", DEFAULT_TITLE);
       setMetaTag("name", "twitter:description", DEFAULT_DESCRIPTION);
       setMetaTag("name", "twitter:image", DEFAULT_OG_IMAGE);

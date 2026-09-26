@@ -239,23 +239,54 @@ export default function CourseDetail() {
         }
         canonicalUrl={`https://industrymentor.net/courses/${course.slug || course.id}`}
         ogImage={coverUrl.startsWith("http") ? coverUrl : `https://industrymentor.net${coverUrl}`}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Course",
-          name: displayTitle,
-          description: course.description || undefined,
-          provider: {
-            "@type": "Organization",
-            name: "IndustryMentor",
-            sameAs: "https://industrymentor.net",
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: displayTitle,
+            description: course.description || undefined,
+            url: `https://industrymentor.net/courses/${course.slug || course.id}`,
+            image: coverUrl.startsWith("http") ? coverUrl : `https://industrymentor.net${coverUrl}`,
+            courseMode: course.mode || undefined,
+            provider: {
+              "@type": "Organization",
+              name: "IndustryMentor",
+              sameAs: "https://industrymentor.net",
+            },
+            offers: {
+              "@type": "Offer",
+              category: "Paid",
+              price: (course.price_cents / 100).toFixed(2),
+              priceCurrency: "BDT",
+              url: `https://industrymentor.net/courses/${course.slug || course.id}`,
+              availability: "https://schema.org/InStock",
+            },
           },
-          offers: {
-            "@type": "Offer",
-            category: "Paid",
-            price: (course.price_cents / 100).toFixed(2),
-            priceCurrency: "BDT",
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://industrymentor.net/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Courses",
+                item: "https://industrymentor.net/courses",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: displayTitle,
+                item: `https://industrymentor.net/courses/${course.slug || course.id}`,
+              },
+            ],
           },
-        }}
+        ]}
       />
       {/* Top Breadcrumb Navigation */}
       <div className="border-b border-border/40 bg-surface/30">
@@ -450,7 +481,7 @@ export default function CourseDetail() {
                     The detailed syllabus breakdown for this course is being finalized with our industrial advisory panel. All registered learners receive complete curriculum handouts and session schedules upon enrollment.
                   </p>
                   <Button variant="outline" size="sm" className="mt-4 text-xs" asChild>
-                    <Link to="/contact">Contact Academic Desk for Syllabus</Link>
+                    <Link to="/contact-us">Contact Academic Desk for Syllabus</Link>
                   </Button>
                 </div>
               )}

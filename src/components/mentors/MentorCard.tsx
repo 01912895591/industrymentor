@@ -38,6 +38,8 @@ export function MentorCard({ mentor, className = "" }: MentorCardProps) {
               alt={mentor.name}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
+              width={96}
+              height={96}
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center bg-primary/10">

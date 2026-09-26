@@ -20,7 +20,7 @@ const navItems = [
   { to: "/#library", label: "Resources" },
   { to: "/projects", label: "Projects" },
   { to: "/career", label: "Career" },
-  { to: "/blog", label: "Blog" },
+  { to: "/blogs", label: "Blog" },
   { to: "/contact-us", label: "Contact" },
 ];
 

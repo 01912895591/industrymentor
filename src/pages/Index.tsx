@@ -19,22 +19,30 @@ const Index = () => {
         title="IndustryMentor — Bridge Education & Real-World Industry Knowledge"
         description="Empowering emerging professionals with practitioner-led training, 1:1 expert mentorship, production-ready resources, and verified credentials in Garment Merchandising and Industrial Engineering."
         canonicalUrl="https://industrymentor.net/"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "EducationalOrganization",
-          name: "IndustryMentor",
-          url: "https://industrymentor.net",
-          logo: "https://industrymentor.net/logo.png",
-          description:
-            "Empowering emerging professionals with practitioner-led training, 1:1 expert mentorship, production-ready resources, and verified credentials in Garment Merchandising and Industrial Engineering.",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "25/2, Salimuddin Market Road, Mirpur-1",
-            addressLocality: "Dhaka",
-            addressCountry: "Bangladesh",
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "IndustryMentor",
+            url: "https://industrymentor.net/",
           },
-          sameAs: ["https://www.linkedin.com/company/industrymentor"],
-        }}
+          {
+            "@context": "https://schema.org",
+            "@type": "EducationalOrganization",
+            name: "IndustryMentor",
+            url: "https://industrymentor.net",
+            logo: "https://industrymentor.net/logo.png",
+            description:
+              "Empowering emerging professionals with practitioner-led training, 1:1 expert mentorship, production-ready resources, and verified credentials in Garment Merchandising and Industrial Engineering.",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "25/2, Salimuddin Market Road, Mirpur-1",
+              addressLocality: "Dhaka",
+              addressCountry: "Bangladesh",
+            },
+            sameAs: ["https://www.linkedin.com/company/industrymentor"],
+          },
+        ]}
       />
       <main className="overflow-x-hidden">
         <HeroSection />

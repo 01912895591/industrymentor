@@ -43,7 +43,7 @@ export default function Blogs() {
             <SEOHead
                 title="Industry Insights & Articles | IndustryMentor Blog"
                 description="Stay updated with the latest insights, trends, and tutorials from industry mentors."
-                canonicalUrl="https://industrymentor.net/blog"
+                canonicalUrl="https://industrymentor.net/blogs"
             />
             <div className="mx-auto max-w-7xl">
                 <div className="text-center mb-8 sm:mb-16">
@@ -73,7 +73,7 @@ export default function Blogs() {
                                 <div className="aspect-video overflow-hidden">
                                     <img
                                         src={blog.cover_image_url || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80"}
-                                        alt={blog.title}
+                                        alt={blog.title || "IndustryMentor Blog Post"}
                                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
                                 </div>

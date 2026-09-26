@@ -14,6 +14,7 @@ const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   "/projects": () => import("@/pages/Projects"),
   "/career": () => import("@/pages/Career"),
   "/blog": () => import("@/pages/Blogs"),
+  "/blogs": () => import("@/pages/Blogs"),
   "/contact-us": () => import("@/pages/Contact"),
   "/dashboard": () => import("@/pages/Dashboard"),
   "/verify": () => import("@/pages/VerifyCertificate"),

@@ -253,20 +253,46 @@ export default function MentorProfile() {
         canonicalUrl={`https://industrymentor.net/mentors/${mentor.id}`}
         ogType="profile"
         ogImage={mentor.image_path?.startsWith("http") ? mentor.image_path : mentor.image_path ? `https://industrymentor.net${mentor.image_path}` : undefined}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Person",
-          name: mentor.name,
-          jobTitle: mentor.title,
-          description: mentor.bio || undefined,
-          image: mentor.image_path || undefined,
-          sameAs: mentor.linkedin_url ? [mentor.linkedin_url] : undefined,
-          worksFor: {
-            "@type": "Organization",
-            name: "IndustryMentor",
-            url: "https://industrymentor.net",
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: mentor.name,
+            jobTitle: mentor.title,
+            description: mentor.bio || undefined,
+            image: mentor.image_path || undefined,
+            sameAs: mentor.linkedin_url ? [mentor.linkedin_url] : undefined,
+            worksFor: {
+              "@type": "Organization",
+              name: "IndustryMentor",
+              url: "https://industrymentor.net",
+            },
           },
-        }}
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://industrymentor.net/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Mentors",
+                item: "https://industrymentor.net/mentors",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: mentor.name,
+                item: `https://industrymentor.net/mentors/${mentor.id}`,
+              },
+            ],
+          },
+        ]}
       />
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Breadcrumb Navigation */}

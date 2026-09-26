@@ -21,4 +21,27 @@ Disallow: /auth
 Disallow: /reset-password
 Disallow: /*/workspace
 
+# AI Search Engine Crawlers (Explicit Public Allow + Private Disallow)
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /portfolio$
+Disallow: /learn/
+Disallow: /auth
+Disallow: /reset-password
+Disallow: /*/workspace
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /portfolio$
+Disallow: /learn/
+Disallow: /auth
+Disallow: /reset-password
+Disallow: /*/workspace
+
 Sitemap: https://industrymentor.net/sitemap.xml
