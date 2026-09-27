@@ -7,6 +7,8 @@ interface Env {
 }
 
 const DEFAULT_PIXEL_ID = "2574217453013118";
+const DEFAULT_ACCESS_TOKEN =
+  "EAA5rJOeBoSwBSmUKo9cpzGgALfpB88fYLLHGmLNUwnkRF5TQ8EnBHsyCb2zX78L4ZAjfaa7owCf98QtOiGt41H0VXZCVFG3xZBfgqxQb0WSMrAxDxIL1pDIlMPoVL2TBVKRDEeHnzRw0hLKa5aEmgeODNsm8JHiECO6W0SS8zq51LNaxqFFoLa8viVsBQUZBEktZBnOzZBuaAhkl2TJZA0Rvv5LYMhQZCTlkUlMPeL1fH2v8UKUHpPodDp2s5zKRZCihsHAPTeXOg9jnfL1k80a5sACXeVhJOOpRrSQZDZD";
 
 // SHA-256 Hashing helper for PII data mandated by Meta CAPI
 async function sha256(str: string): Promise<string> {
@@ -21,7 +23,7 @@ export const onRequestPost = async (context: any) => {
   const { request, env } = context;
 
   const pixelId = env?.META_PIXEL_ID || DEFAULT_PIXEL_ID;
-  const accessToken = env?.META_ACCESS_TOKEN || "";
+  const accessToken = env?.META_ACCESS_TOKEN || DEFAULT_ACCESS_TOKEN;
 
   // If access token is not set yet, return graceful acknowledgment
   if (!accessToken) {
