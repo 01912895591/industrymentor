@@ -167,6 +167,15 @@ export default function CourseEnrollment() {
                 }
             }
 
+            // 1b. Duplicate Transaction ID Fraud Check:
+            const { data: duplicateTx } = await (supabase as any)
+                .from("course_enrollments")
+                .select("id, user_id, transaction_id")
+                .eq("transaction_id", trimmedTxId)
+                .maybeSingle();
+
+            const isDuplicateTx = Boolean(duplicateTx);
+
             // 2. Create or verify Purchase Record
             let purchaseId: string | null = null;
             const { data: purchase, error: purchaseError } = await (supabase as any)
@@ -232,6 +241,11 @@ export default function CourseEnrollment() {
             const formattedPrice = (course.price_cents / 100).toLocaleString("en-BD");
 
             const enrollmentAlertText = [
+                ...(isDuplicateTx ? [
+                    `🚨 ⚠️ *সতর্কতা: ডুপ্লিকেট ট্রানজেকশন ID পাওয়া গেছে!*`,
+                    `⚠️ *এই ট্রানজেকশন ID-টি ইতিমধ্যে পূর্বে ব্যবহৃত হয়েছে!*`,
+                    ``,
+                ] : []),
                 `🎓 *নতুন কোর্স এনরোলমেন্ট!* (IndustryMentor.net)`,
                 ``,
                 `👤 *নাম:* ${studentName}`,
@@ -239,9 +253,9 @@ export default function CourseEnrollment() {
                 `📞 *ফোন (Sender):* ${trimmedPhone}`,
                 `📘 *কোর্স:* ${course.title}`,
                 `💳 *পেমেন্ট মেথড:* ${values.paymentMethod.toUpperCase()}`,
-                `🆔 *ট্রানজেকশন ID:* ${trimmedTxId}`,
+                `🆔 *ট্রানজেকশন ID:* ${trimmedTxId} ${isDuplicateTx ? "(ইতিমধ্যে ব্যবহৃত)" : ""}`,
                 `💰 *কোর্স ফি:* ৳${formattedPrice}`,
-                `📝 *স্ট্যাটাস:* Pending Approval`,
+                `📝 *স্ট্যাটাস:* ${isDuplicateTx ? "⚠️ FRAUD ALERT / Duplicate Tx" : "Pending Approval"}`,
             ].join("\n");
 
             fetch("/api/contact", {
