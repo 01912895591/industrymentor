@@ -53,6 +53,34 @@ export const onRequest = async (context: any) => {
   try {
     const update = (await request.json().catch(() => ({}))) as any;
 
+    // Handle Direct Bot Commands (e.g. /status, /health, uptime, /digest)
+    if (update && update.message && !update.message.reply_to_message) {
+      const msgText = (update.message.text || update.message.caption || "").trim().toLowerCase();
+      const chatId = update.message.chat.id;
+      const messageId = update.message.message_id;
+
+      if (/^\/?(status|health|uptime|check|সিস্টেম|হেলথ)/i.test(msgText)) {
+        const origin = new URL(request.url).origin;
+        const healthRes = await fetch(`${origin}/api/uptime-health-guard?notify=true`);
+        const healthData = (await healthRes.json().catch(() => ({}))) as any;
+
+        const isOk = healthData.status === "healthy";
+        const msg = isOk
+          ? `🟢 *Uptime Health Guard Check*\n\n✅ *Status:* All Systems Operational!\n🌐 *Website:* ${healthData.components?.website?.status?.toUpperCase()} (${healthData.components?.website?.latencyMs}ms)\n🗄️ *Supabase DB:* ${healthData.components?.database?.status?.toUpperCase()} (${healthData.components?.database?.latencyMs}ms)\n🎯 *Meta CAPI:* ${healthData.components?.metaCapi?.status?.toUpperCase()} (${healthData.components?.metaCapi?.latencyMs}ms)`
+          : `🔴 Alert: Website Uptime Warning! System is currently offline.\n\n⚠️ *Uptime Health Guard Alert*\n🌐 *Website:* ${healthData.components?.website?.status?.toUpperCase()}\n🗄️ *Supabase DB:* ${healthData.components?.database?.status?.toUpperCase()}\n🎯 *Meta CAPI:* ${healthData.components?.metaCapi?.status?.toUpperCase()}`;
+
+        await sendTelegramReply(chatId, msg, messageId);
+        return new Response(JSON.stringify({ ok: true, status: "health_checked" }), { status: 200 });
+      }
+
+      if (/^\/?(digest|report|রিপোর্ট|ডেইলি)/i.test(msgText)) {
+        const origin = new URL(request.url).origin;
+        await fetch(`${origin}/api/cron-daily-digest`);
+        await sendTelegramReply(chatId, "📊 *দৈনিক সামারি রিপোর্ট সেন্ড করা হয়েছে!*", messageId);
+        return new Response(JSON.stringify({ ok: true, status: "digest_sent" }), { status: 200 });
+      }
+    }
+
     // Check if the update is a message reply
     if (update && update.message && update.message.reply_to_message) {
       const replyMessage = update.message;
