@@ -182,6 +182,18 @@ export default function MentorProfile() {
 
       if (error) throw error;
 
+      // Dispatch Telegram Instant Notification via Cloudflare Pages Function
+      fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          subject: `Mentorship Inquiry: ${mentor.name}`,
+          message: structuredMessage,
+        }),
+      }).catch((err) => console.error("Server-side Telegram notification failed:", err));
+
       setSubmittedData(values);
       setSubmittedSuccess(true);
       toast.success("Mentorship inquiry submitted!");
