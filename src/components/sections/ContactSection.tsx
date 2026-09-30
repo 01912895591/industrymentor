@@ -29,6 +29,26 @@ export function ContactSection() {
     try {
       const { error } = await supabase.from("messages").insert([values as any]);
       if (error) throw error;
+
+      // Dispatch Telegram Instant Notification
+      try {
+        const botToken = "8928205754:AAFMbBkrj7gSLgyJXrXW3I8nVFCt8s5CzR0";
+        const chatId = "8049241063";
+        const telegramText = `🔔 *নতুন মেসেজ এসেছে!* (IndustryMentor.net)\n\n👤 *নাম:* ${values.name}\n📧 *ইমেইল:* ${values.email}\n📌 *বিষয়:* ${values.subject}\n\n📝 *মেসেজ:*\n${values.message}`;
+
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: telegramText,
+            parse_mode: "Markdown",
+          }),
+        }).catch((err) => console.error("Telegram notify failed:", err));
+      } catch (tgError) {
+        console.error("Telegram notify error:", tgError);
+      }
+
       toast({ title: "Message sent", description: "Thanks! We'll get back to you shortly." });
       form.reset();
     } catch (e: any) {
