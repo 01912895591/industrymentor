@@ -59,7 +59,16 @@ const CareerSkillsAdmin = lazy(() => import("@/features/admin/career-skills/Care
 const ProjectsAdmin = lazy(() => import("@/features/admin/projects/ProjectsAdmin").then(module => ({ default: module.ProjectsAdmin })));
 const ProjectSubmissionsAdmin = lazy(() => import("@/features/admin/project-submissions/ProjectSubmissionsAdmin").then(module => ({ default: module.ProjectSubmissionsAdmin })));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const Loading = () => (
   <div className="flex h-screen w-full items-center justify-center bg-background">
