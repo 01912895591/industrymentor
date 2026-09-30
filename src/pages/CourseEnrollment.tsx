@@ -227,6 +227,34 @@ export default function CourseEnrollment() {
                 throw new Error("Failed to process enrollment submission.");
             }
 
+            // Dispatch Instant Telegram Course Enrollment Push Notification
+            const studentName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Student";
+            const formattedPrice = (course.price_cents / 100).toLocaleString("en-BD");
+
+            const enrollmentAlertText = [
+                `🎓 *নতুন কোর্স এনরোলমেন্ট!* (IndustryMentor.net)`,
+                ``,
+                `👤 *নাম:* ${studentName}`,
+                `📧 *ইমেইল:* ${user.email}`,
+                `📞 *ফোন (Sender):* ${trimmedPhone}`,
+                `📘 *কোর্স:* ${course.title}`,
+                `💳 *পেমেন্ট মেথড:* ${values.paymentMethod.toUpperCase()}`,
+                `🆔 *ট্রানজেকশন ID:* ${trimmedTxId}`,
+                `💰 *কোর্স ফি:* ৳${formattedPrice}`,
+                `📝 *স্ট্যাটাস:* Pending Approval`,
+            ].join("\n");
+
+            fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: studentName,
+                    email: user.email,
+                    subject: `🎓 কোর্স এনরোলমেন্ট: ${course.title}`,
+                    message: enrollmentAlertText,
+                }),
+            }).catch((err) => console.error("Course enrollment Telegram push failed:", err));
+
             toast.success("Enrollment request submitted! Verification in progress.");
             setEnrollStep("confirm");
         } catch (error: any) {
