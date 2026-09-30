@@ -664,6 +664,12 @@ export default function CourseLearning() {
             </Sheet>
           </div>
 
+          <Button size="sm" asChild className="h-9 text-xs font-bold bg-[#0088cc] hover:bg-[#0077b5] text-white gap-1.5 shadow-sm">
+            <a href="https://t.me/+qOtoC46eDDcwODE1" target="_blank" rel="noreferrer">
+              <span>💬 Telegram Group</span>
+            </a>
+          </Button>
+
           <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex h-9 text-xs font-semibold">
             <Link to="/dashboard">
               <LayoutDashboard className="h-3.5 w-3.5 mr-1.5 text-primary" /> Dashboard
@@ -780,6 +786,22 @@ export default function CourseLearning() {
                 </div>
               </div>
             )}
+
+            {/* Official Student Community Telegram Banner */}
+            <div className="mt-3 p-3.5 rounded-xl border border-sky-500/20 bg-sky-500/10 text-center space-y-2">
+              <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-sky-400">
+                <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
+                Student Support Community
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                Connect with your batch mates & mentors in our Telegram group!
+              </p>
+              <Button size="sm" asChild className="w-full text-xs h-8 font-bold bg-[#0088cc] hover:bg-[#0077b5] text-white">
+                <a href="https://t.me/+qOtoC46eDDcwODE1" target="_blank" rel="noreferrer">
+                  💬 Join Telegram Group
+                </a>
+              </Button>
+            </div>
           </div>
         </aside>
 

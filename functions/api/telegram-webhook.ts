@@ -180,6 +180,12 @@ export const onRequest = async (context: any) => {
                       Access Your Classroom Now →
                     </a>
                   </div>
+                  <div style="margin: 20px 0; padding: 16px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; text-align: center;">
+                    <p style="margin: 0 0 10px 0; font-weight: bold; color: #0369a1; font-size: 14px;">💬 অফিশিয়াল স্টুডেন্ট সাপোর্ট টেলিগ্রাম গ্রুপে যুক্ত হন:</p>
+                    <a href="https://t.me/+qOtoC46eDDcwODE1" style="background-color: #0088cc; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                      👉 Join Official Student Telegram Group 🚀
+                    </a>
+                  </div>
                   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 16px 0;" />
                   <p style="font-size: 12px; color: #94a3b8; text-align: center;">IndustryMentor.net — Empowering Industry Leaders</p>
                 </div>`,
