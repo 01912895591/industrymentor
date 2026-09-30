@@ -93,7 +93,7 @@ export const onRequest = async (context: any) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "IndustryMentor Support <onboarding@resend.dev>",
+          from: "IndustryMentor Support <support@industrymentor.net>",
           to: [recipientEmail],
           subject: "Re: Your Inquiry at IndustryMentor.net",
           html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
