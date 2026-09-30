@@ -125,7 +125,7 @@ export const onRequest = async (context: any) => {
         const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
 
-        let queryUrl = `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,courses(title)&status=eq.pending`;
+        let queryUrl = `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,payment_method,sender_phone,created_at,courses(title,price_cents),purchases(amount_cents)&status=eq.pending`;
         if (txId) {
           queryUrl += `&transaction_id=eq.${encodeURIComponent(txId)}`;
         }
@@ -142,6 +142,12 @@ export const onRequest = async (context: any) => {
         if (Array.isArray(enrollRecords) && enrollRecords.length > 0) {
           const targetEnroll = enrollRecords[0];
           const courseTitle = targetEnroll.courses?.title || "your course";
+          const priceCents = targetEnroll.purchases?.amount_cents || targetEnroll.courses?.price_cents || 350000;
+          const formattedAmount = (priceCents / 100).toLocaleString("en-BD");
+          const invoiceNum = `INV-IM-${Date.now().toString().slice(-8)}`;
+          const paymentMethodName = (targetEnroll.payment_method || "bKash / Mobile Banking").toUpperCase();
+          const transactionIdStr = targetEnroll.transaction_id || txId || "VERIFIED-TX";
+          const currentDateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
           if (isApprovalCmd) {
             // Execute atomic approval RPC
@@ -155,7 +161,7 @@ export const onRequest = async (context: any) => {
               body: JSON.stringify({ p_enrollment_id: targetEnroll.id }),
             });
 
-            // Send confirmation email to student via Resend
+            // Send Official Payment Receipt & Course Invoice email to student via Resend
             await fetch("https://api.resend.com/emails", {
               method: "POST",
               headers: {
@@ -165,37 +171,97 @@ export const onRequest = async (context: any) => {
               body: JSON.stringify({
                 from: "IndustryMentor Support <support@industrymentor.net>",
                 to: [recipientEmail],
-                subject: `🎉 Course Unlocked: Your enrollment in ${courseTitle} is Approved!`,
-                html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-                  <div style="margin-bottom: 20px; border-bottom: 2px solid #16a34a; padding-bottom: 12px;">
-                    <h2 style="color: #16a34a; margin: 0; font-size: 20px;">🎉 Payment Verified & Course Unlocked!</h2>
-                    <p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">IndustryMentor.net — Official Learning Hub</p>
+                subject: `📄 Payment Receipt & Invoice (${invoiceNum}) — ${courseTitle}`,
+                html: `<div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 24px; border: 1px solid #cbd5e1; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                  <div style="border-bottom: 2px solid #0284c7; padding-bottom: 16px; margin-bottom: 20px;">
+                    <div style="float: right;">
+                      <span style="background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">
+                        ✓ PAID & VERIFIED
+                      </span>
+                    </div>
+                    <h1 style="color: #0f172a; margin: 0; font-size: 22px; font-weight: 800;">IndustryMentor.net</h1>
+                    <p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Empowering Industry Leaders & Professional Excellence</p>
+                    <div style="clear: both;"></div>
                   </div>
-                  <p style="font-size: 15px; color: #1e293b;">Hello,</p>
-                  <p style="font-size: 15px; line-height: 1.6; color: #334155;">
-                    Your payment for <strong>${escapeHtml(courseTitle)}</strong> has been successfully verified! You now have full access to your classroom.
-                  </p>
+
+                  <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                    <h2 style="margin: 0 0 8px 0; color: #0284c7; font-size: 18px;">📄 Official Payment Receipt & Course Invoice</h2>
+                    <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.5;">
+                      আপনার <strong>${escapeHtml(courseTitle)}</strong> কোর্সের পেমেন্ট ভেরিফিকেশন সফলভাবে সম্পন্ন হয়েছে এবং ক্লাসরুম আনলক করা হয়েছে। নিচে আপনার অফিসিয়াল ইনভয়েস ও রসিদের কপি প্রদান করা হলো।
+                    </p>
+                  </div>
+
+                  <table style="width: 100%; margin-bottom: 24px; font-size: 14px; border-collapse: collapse;">
+                    <tr>
+                      <td style="padding: 6px 0; color: #64748b; width: 40%;"><strong>Invoice Number:</strong></td>
+                      <td style="padding: 6px 0; color: #0f172a; font-family: monospace; font-weight: bold; text-align: right;">${invoiceNum}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: #64748b;"><strong>Issue Date:</strong></td>
+                      <td style="padding: 6px 0; color: #0f172a; text-align: right;">${currentDateStr}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: #64748b;"><strong>Student Email:</strong></td>
+                      <td style="padding: 6px 0; color: #0f172a; text-align: right;">${escapeHtml(recipientEmail)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: #64748b;"><strong>Payment Method:</strong></td>
+                      <td style="padding: 6px 0; color: #0f172a; text-align: right;">${escapeHtml(paymentMethodName)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: #64748b;"><strong>Transaction ID (TrxID):</strong></td>
+                      <td style="padding: 6px 0; color: #0284c7; font-family: monospace; font-weight: bold; text-align: right;">${escapeHtml(transactionIdStr)}</td>
+                    </tr>
+                  </table>
+
+                  <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                    <thead>
+                      <tr style="background-color: #0284c7; color: #ffffff; font-size: 13px; text-transform: uppercase;">
+                        <th style="padding: 10px 12px; text-align: left; border-top-left-radius: 8px;">Description</th>
+                        <th style="padding: 10px 12px; text-align: right; border-top-right-radius: 8px;">Amount (BDT)</th>
+                      </tr>
+                    </thead>
+                    <tbody style="font-size: 14px; color: #334155;">
+                      <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px;">
+                          <strong>${escapeHtml(courseTitle)}</strong><br />
+                          <span style="font-size: 12px; color: #64748b;">Full Lifetime LMS Access + SOPs + Certificate</span>
+                        </td>
+                        <td style="padding: 12px; text-align: right; font-weight: bold;">৳${formattedAmount}</td>
+                      </tr>
+                      <tr style="background-color: #f8fafc; font-weight: bold; font-size: 15px; color: #0f172a;">
+                        <td style="padding: 12px; text-align: right;">Total Paid:</td>
+                        <td style="padding: 12px; text-align: right; color: #16a34a;">৳${formattedAmount} BDT</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
                   <div style="margin: 24px 0; text-align: center;">
-                    <a href="https://industrymentor.net/dashboard" style="background-color: #0284c7; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                      Access Your Classroom Now →
+                    <a href="https://industrymentor.net/dashboard" style="background-color: #0284c7; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 15px;">
+                      🎓 Access Your Classroom Now →
                     </a>
                   </div>
+
                   <div style="margin: 20px 0; padding: 16px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; text-align: center;">
                     <p style="margin: 0 0 10px 0; font-weight: bold; color: #0369a1; font-size: 14px;">💬 অফিশিয়াল স্টুডেন্ট সাপোর্ট টেলিগ্রাম গ্রুপে যুক্ত হন:</p>
                     <a href="https://t.me/+qOtoC46eDDcwODE1" style="background-color: #0088cc; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                       👉 Join Official Student Telegram Group 🚀
                     </a>
                   </div>
+
                   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 16px 0;" />
-                  <p style="font-size: 12px; color: #94a3b8; text-align: center;">IndustryMentor.net — Empowering Industry Leaders</p>
+                  <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
+                    IndustryMentor.net — Official Payment Receipt & Course Enrollment Invoice<br />
+                    Need help? Contact support at <a href="mailto:support@industrymentor.net" style="color: #0284c7; text-decoration: none;">support@industrymentor.net</a>
+                  </p>
                 </div>`,
               }),
             });
 
-            // Reply back in Telegram confirming course unlock
+            // Reply back in Telegram confirming course unlock and invoice generation
             await sendTelegramReply(
               replyMessage.chat.id,
-              `🎉 *কোর্স সফলভাবে আনলক ও অ্যাক্টিভেট করা হয়েছে!*\n\n📧 *স্টুডেন্ট ইমেইল:* \`${recipientEmail}\`\n📘 *কোর্স:* ${courseTitle}\n🆔 *ট্রানজেকশন ID:* \`${targetEnroll.transaction_id || txId || "N/A"}\`\n✅ *স্ট্যাটাস:* ACTIVE (Classroom Unlocked)`,
+              `🎉 *কোর্স সফলভাবে আনলক ও ইনভয়েস জেনারেট করা হয়েছে!*\n\n📧 *স্টুডেন্ট ইমেইল:* \`${recipientEmail}\`\n📄 *ইনভয়েস নং:* \`${invoiceNum}\`\n📘 *কোর্স:* ${courseTitle}\n💳 *পেমেন্ট:* ৳${formattedAmount} BDT (${paymentMethodName})\n🆔 *ট্রানজেকশন ID:* \`${transactionIdStr}\`\n✅ *স্ট্যাটাস:* ACTIVE & INVOICE SENT`,
               replyMessage.message_id
             );
             return new Response(JSON.stringify({ ok: true, status: "approved" }), { status: 200 });
