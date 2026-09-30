@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: /api/telegram-webhook
-// Automated Telegram-to-Email Two-Way Reply Gateway using Resend API
+// Automated Telegram-to-Email Two-Way Reply & 1-Click Course Approval Gateway
 
 function escapeHtml(str: string = ""): string {
   return String(str)
@@ -85,7 +85,90 @@ export const onRequest = async (context: any) => {
         return new Response(JSON.stringify({ ok: true, status: "resend_key_missing" }), { status: 200 });
       }
 
-      // Send email to recipient via Resend API
+      // Check if reply is a 1-Click Course Approval Command
+      const replyTrim = replyText.trim().toLowerCase();
+      const isApprovalCmd = /^(ok|approve|approved|অ্যাপ্রুভ|এপ্রুভ|done|yes|1)$/i.test(replyTrim);
+
+      if (isApprovalCmd) {
+        const txMatch = originalText.match(/(?:ID|ট্রানজেকশন|TxID):\s*([a-zA-Z0-9_-]+)/i);
+        const txId = txMatch ? txMatch[1].trim() : null;
+
+        const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+
+        let queryUrl = `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,courses(title)&status=eq.pending`;
+        if (txId) {
+          queryUrl += `&transaction_id=eq.${encodeURIComponent(txId)}`;
+        }
+
+        const fetchEnrollRes = await fetch(queryUrl, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+          },
+        });
+
+        const enrollRecords = (await fetchEnrollRes.json().catch(() => [])) as any[];
+
+        if (Array.isArray(enrollRecords) && enrollRecords.length > 0) {
+          const targetEnroll = enrollRecords[0];
+          const courseTitle = targetEnroll.courses?.title || "your course";
+
+          // Execute atomic approval RPC
+          const rpcRes = await fetch(`${supabaseUrl}/rest/v1/rpc/approve_enrollment_by_id`, {
+            method: "POST",
+            headers: {
+              apikey: supabaseKey,
+              Authorization: `Bearer ${supabaseKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ p_enrollment_id: targetEnroll.id }),
+          });
+
+          await rpcRes.json().catch(() => ({}));
+
+          // Send confirmation email to student via Resend
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${resendApiKey.trim()}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "IndustryMentor Support <support@industrymentor.net>",
+              to: [recipientEmail],
+              subject: `🎉 Course Unlocked: Your enrollment in ${courseTitle} is Approved!`,
+              html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+                <div style="margin-bottom: 20px; border-bottom: 2px solid #16a34a; padding-bottom: 12px;">
+                  <h2 style="color: #16a34a; margin: 0; font-size: 20px;">🎉 Payment Verified & Course Unlocked!</h2>
+                  <p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">IndustryMentor.net — Official Learning Hub</p>
+                </div>
+                <p style="font-size: 15px; color: #1e293b;">Hello,</p>
+                <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+                  Your payment for <strong>${escapeHtml(courseTitle)}</strong> has been successfully verified! You now have full access to your classroom.
+                </p>
+                <div style="margin: 24px 0; text-align: center;">
+                  <a href="https://industrymentor.net/dashboard" style="background-color: #0284c7; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    Access Your Classroom Now →
+                  </a>
+                </div>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 16px 0;" />
+                <p style="font-size: 12px; color: #94a3b8; text-align: center;">IndustryMentor.net — Empowering Industry Leaders</p>
+              </div>`,
+            }),
+          });
+
+          // Reply back in Telegram confirming course unlock
+          await sendTelegramReply(
+            replyMessage.chat.id,
+            `🎉 *কোর্স সফলভাবে আনলক ও অ্যাক্টিভেট করা হয়েছে!*\n\n📧 *স্টুডেন্ট ইমেইল:* \`${recipientEmail}\`\n📘 *কোর্স:* ${courseTitle}\n🆔 *ট্রানজেকশন ID:* \`${targetEnroll.transaction_id || txId || "N/A"}\`\n✅ *স্ট্যাটাস:* ACTIVE (Classroom Unlocked)`,
+            replyMessage.message_id
+          );
+          return new Response(JSON.stringify({ ok: true, status: "approved" }), { status: 200 });
+        }
+      }
+
+      // Send standard email response for normal replies
       const resendRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
