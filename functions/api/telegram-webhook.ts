@@ -74,9 +74,24 @@ export const onRequest = async (context: any) => {
       }
 
       if (/^\/?(digest|report|রিপোর্ট|ডেইলি)/i.test(msgText)) {
-        const origin = new URL(request.url).origin;
-        await fetch(`${origin}/api/cron-daily-digest`);
-        await sendTelegramReply(chatId, "📊 *দৈনিক সামারি রিপোর্ট সেন্ড করা হয়েছে!*", messageId);
+        const origin = new URL(request.url).origin || "https://industrymentor.net";
+        const digestRes = await fetch(`${origin}/api/cron-daily-digest`).catch(() => null);
+        let digestData: any = {};
+        if (digestRes && digestRes.ok) {
+          digestData = (await digestRes.json().catch(() => ({}))) as any;
+        } else {
+          // Fallback to absolute domain
+          const fallbackRes = await fetch("https://industrymentor.net/api/cron-daily-digest").catch(() => null);
+          if (fallbackRes && fallbackRes.ok) {
+            digestData = (await fallbackRes.json().catch(() => ({}))) as any;
+          }
+        }
+
+        if (digestData?.success) {
+          await sendTelegramReply(chatId, "📊 *দৈনিক গ্রোথ, SEO ও ইনকাম সামারি রিপোর্ট সফলভাবে সেন্ড করা হয়েছে!*", messageId);
+        } else {
+          await sendTelegramReply(chatId, `⚠️ *রিপোর্ট জেনারেট করতে সমস্যা হয়েছে:* ${digestData?.error || "Endpoint fetch error"}`, messageId);
+        }
         return new Response(JSON.stringify({ ok: true, status: "digest_sent" }), { status: 200 });
       }
     }
