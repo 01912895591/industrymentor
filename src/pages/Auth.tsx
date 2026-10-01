@@ -242,37 +242,37 @@ export default function Auth() {
   return (
     <AmbientSpotlight>
       <SEOHead title="Sign In & Register | IndustryMentor" noindex={true} />
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14">
-        <div className="mx-auto max-w-md overflow-hidden rounded-2xl border border-border/60 bg-card/25 shadow-elev sm:rounded-3xl">
-          <div className="p-5 sm:p-8">
-            <Link to="/" className="flex items-center justify-center gap-3 min-h-[96px] transition-opacity hover:opacity-80">
+      <main className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-7xl items-center justify-center px-4 py-2 sm:px-6 sm:py-4">
+        <div className="mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-border/60 bg-card/25 shadow-elev sm:rounded-3xl">
+          <div className="p-4 sm:p-6">
+            <Link to="/" className="flex items-center justify-center gap-2 min-h-[52px] transition-opacity hover:opacity-80">
               {isLogoLoading ? (
-                <div className="h-24 w-40" />
+                <div className="h-12 w-32" />
               ) : logoUrl ? (
                 <img
                   src={logoUrl}
                   alt="Logo"
-                  className="h-24 object-contain"
+                  className="h-12 sm:h-14 object-contain"
                   loading="eager"
                   // @ts-ignore
                   fetchPriority="high"
                 />
               ) : (
                 <>
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand shadow-glow">
+                  <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-brand shadow-glow">
                     <span className="text-xs font-black tracking-tight text-primary-foreground">IM</span>
                   </div>
-                  <div className="text-base font-semibold tracking-tight">
+                  <div className="text-sm font-semibold tracking-tight">
                     Industry<span className="text-primary">Mentor</span>
                   </div>
                 </>
               )}
             </Link>
 
-            <h1 className="mt-4 text-center text-2xl font-black tracking-tight sm:mt-6 sm:text-4xl">
+            <h1 className="mt-2 text-center text-xl font-black tracking-tight sm:mt-3 sm:text-2xl">
               {mode === "login" ? "Sign In" : mode === "reset" ? "Reset Password" : "Create Account"}
             </h1>
-            <p className="mt-3 text-center text-sm text-muted-foreground">
+            <p className="mt-1 text-center text-xs text-muted-foreground">
               {mode === "login"
                 ? "Sign in to continue your learning journey."
                 : mode === "reset"
@@ -281,14 +281,14 @@ export default function Auth() {
             </p>
 
             {mode !== "reset" && (
-              <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl border border-border/60 bg-background/20 p-1">
+              <div className="mt-3 grid grid-cols-2 gap-1.5 rounded-xl border border-border/60 bg-background/20 p-1">
                 <button
                   type="button"
                   onClick={() => setMode("login")}
                   className={
                     mode === "login"
-                      ? "rounded-xl bg-background/40 px-3 py-2 text-sm font-semibold text-foreground shadow-sm"
-                      : "rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
+                      ? "rounded-lg bg-background/40 px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm"
+                      : "rounded-lg px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
                   }
                 >
                   Sign In
@@ -298,8 +298,8 @@ export default function Auth() {
                   onClick={() => setMode("signup")}
                   className={
                     mode === "signup"
-                      ? "rounded-xl bg-background/40 px-3 py-2 text-sm font-semibold text-foreground shadow-sm"
-                      : "rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
+                      ? "rounded-lg bg-background/40 px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm"
+                      : "rounded-lg px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
                   }
                 >
                   Create Account
@@ -307,75 +307,75 @@ export default function Auth() {
               </div>
             )}
 
-            <div className="mt-6 h-px w-full bg-border/60" />
+            <div className="mt-3 h-px w-full bg-border/60" />
 
             {mode === "signup" ? (
-              <form className="mt-8 space-y-5" onSubmit={signupForm.handleSubmit(onSignup)}>
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input id="fullName" autoComplete="name" {...signupForm.register("fullName")} />
+              <form className="mt-4 space-y-3" onSubmit={signupForm.handleSubmit(onSignup)}>
+                <div className="space-y-1.5">
+                  <Label htmlFor="fullName" className="text-xs">Full Name</Label>
+                  <Input id="fullName" className="h-9 text-xs" autoComplete="name" {...signupForm.register("fullName")} />
                   {signupForm.formState.errors.fullName && (
-                    <p className="text-xs text-destructive">{signupForm.formState.errors.fullName.message}</p>
+                    <p className="text-[11px] text-destructive">{signupForm.formState.errors.fullName.message}</p>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" type="tel" autoComplete="tel" {...signupForm.register("phone")} />
+                <div className="space-y-1.5">
+                  <Label htmlFor="phone" className="text-xs">Phone Number</Label>
+                  <Input id="phone" type="tel" className="h-9 text-xs" autoComplete="tel" {...signupForm.register("phone")} />
                   {signupForm.formState.errors.phone && (
-                    <p className="text-xs text-destructive">{signupForm.formState.errors.phone.message}</p>
+                    <p className="text-[11px] text-destructive">{signupForm.formState.errors.phone.message}</p>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" autoComplete="email" {...signupForm.register("email")} />
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs">Email Address</Label>
+                  <Input id="email" type="email" className="h-9 text-xs" autoComplete="email" {...signupForm.register("email")} />
                   {signupForm.formState.errors.email && (
-                    <p className="text-xs text-destructive">{signupForm.formState.errors.email.message}</p>
+                    <p className="text-[11px] text-destructive">{signupForm.formState.errors.email.message}</p>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="password" className="text-xs">Password</Label>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showSignupPassword ? "text" : "password"}
                       autoComplete="new-password"
-                      className="pr-10"
+                      className="h-9 pr-10 text-xs"
                       {...signupForm.register("password")}
                     />
                     <button
                       type="button"
                       onClick={() => setShowSignupPassword((v) => !v)}
                       aria-label={showSignupPassword ? "Hide password" : "Show password"}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showSignupPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                     </button>
                   </div>
                   {signupForm.formState.errors.password && (
-                    <p className="text-xs text-destructive">{signupForm.formState.errors.password.message}</p>
+                    <p className="text-[11px] text-destructive">{signupForm.formState.errors.password.message}</p>
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword" className="text-xs">Confirm Password</Label>
                   <div className="relative">
                     <Input
                       id="confirmPassword"
                       type={showSignupConfirmPassword ? "text" : "password"}
                       autoComplete="new-password"
-                      className="pr-10"
+                      className="h-9 pr-10 text-xs"
                       {...signupForm.register("confirmPassword")}
                     />
                     <button
                       type="button"
                       onClick={() => setShowSignupConfirmPassword((v) => !v)}
                       aria-label={showSignupConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      {showSignupConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showSignupConfirmPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                     </button>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-[11px]">
                     <span className="text-muted-foreground">Match</span>
                     <span
                       className={
@@ -390,15 +390,15 @@ export default function Auth() {
                     </span>
                   </div>
                   {signupForm.formState.errors.confirmPassword && (
-                    <p className="text-xs text-destructive">{signupForm.formState.errors.confirmPassword.message}</p>
+                    <p className="text-[11px] text-destructive">{signupForm.formState.errors.confirmPassword.message}</p>
                   )}
                 </div>
 
-                <Button className="w-full" variant="hero" disabled={busy}>
+                <Button className="h-9 w-full text-xs font-semibold" variant="hero" disabled={busy}>
                   {busy ? "Creating…" : "Create Account"}
                 </Button>
 
-                <p className="text-center text-xs text-muted-foreground leading-relaxed">
+                <p className="text-center text-[11px] text-muted-foreground leading-tight">
                   By registering, you agree to our{" "}
                   <Link to="/terms-of-service" className="text-primary underline-offset-4 hover:underline">
                     Terms of Service
@@ -409,7 +409,7 @@ export default function Auth() {
                   </Link>.
                 </p>
 
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-xs text-muted-foreground">
                   Already have an account?{" "}
                   <button
                     type="button"
@@ -421,18 +421,18 @@ export default function Auth() {
                 </p>
               </form>
             ) : mode === "reset" ? (
-              <form className="mt-8 space-y-5" onSubmit={resetForm.handleSubmit(onReset)}>
-                <div className="space-y-2">
-                  <Label htmlFor="resetEmail">Email Address</Label>
-                  <Input id="resetEmail" type="email" autoComplete="email" {...resetForm.register("email")} />
+              <form className="mt-4 space-y-3" onSubmit={resetForm.handleSubmit(onReset)}>
+                <div className="space-y-1.5">
+                  <Label htmlFor="resetEmail" className="text-xs">Email Address</Label>
+                  <Input id="resetEmail" type="email" className="h-9 text-xs" autoComplete="email" {...resetForm.register("email")} />
                   {resetForm.formState.errors.email && (
-                    <p className="text-xs text-destructive">{resetForm.formState.errors.email.message}</p>
+                    <p className="text-[11px] text-destructive">{resetForm.formState.errors.email.message}</p>
                   )}
                 </div>
-                <Button className="w-full" variant="hero" disabled={busy}>
+                <Button className="h-9 w-full text-xs font-semibold" variant="hero" disabled={busy}>
                   {busy ? "Sending…" : "Send reset link"}
                 </Button>
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-xs text-muted-foreground">
                   <button
                     type="button"
                     className="text-primary underline-offset-4 hover:underline"
@@ -443,25 +443,26 @@ export default function Auth() {
                 </p>
               </form>
             ) : (
-              <form className="mt-8 space-y-5" onSubmit={loginForm.handleSubmit(onLogin)}>
-                <div className="space-y-2">
-                  <Label htmlFor="loginIdentifier">Email or Phone Number</Label>
+              <form className="mt-4 space-y-3.5" onSubmit={loginForm.handleSubmit(onLogin)}>
+                <div className="space-y-1.5">
+                  <Label htmlFor="loginIdentifier" className="text-xs">Email or Phone Number</Label>
                   <Input
                     id="loginIdentifier"
                     placeholder="Enter your email or phone"
                     autoComplete="username"
+                    className="h-9 text-xs"
                     {...loginForm.register("identifier")}
                   />
                   {loginForm.formState.errors.identifier && (
-                    <p className="text-xs text-destructive">{loginForm.formState.errors.identifier.message}</p>
+                    <p className="text-[11px] text-destructive">{loginForm.formState.errors.identifier.message}</p>
                   )}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="loginPassword">Password</Label>
+                    <Label htmlFor="loginPassword" className="text-xs">Password</Label>
                     <button
                       type="button"
-                      className="text-xs text-primary underline-offset-4 hover:underline"
+                      className="text-[11px] text-primary underline-offset-4 hover:underline"
                       onClick={() => setMode("reset")}
                     >
                       Forgot password?
@@ -472,26 +473,26 @@ export default function Auth() {
                       id="loginPassword"
                       type={showLoginPassword ? "text" : "password"}
                       autoComplete="current-password"
-                      className="pr-10"
+                      className="h-9 pr-10 text-xs"
                       {...loginForm.register("password")}
                     />
                     <button
                       type="button"
                       onClick={() => setShowLoginPassword((v) => !v)}
                       aria-label={showLoginPassword ? "Hide password" : "Show password"}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showLoginPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                     </button>
                   </div>
                   {loginForm.formState.errors.password && (
-                    <p className="text-xs text-destructive">{loginForm.formState.errors.password.message}</p>
+                    <p className="text-[11px] text-destructive">{loginForm.formState.errors.password.message}</p>
                   )}
                 </div>
-                <Button className="w-full" variant="hero" disabled={busy}>
+                <Button className="h-9 w-full text-xs font-semibold" variant="hero" disabled={busy}>
                   {busy ? "Signing in…" : "Sign In"}
                 </Button>
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-xs text-muted-foreground">
                   Don't have an account?{" "}
                   <button
                     type="button"
