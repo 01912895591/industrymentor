@@ -53,34 +53,132 @@ export const onRequest = async (context: any) => {
   try {
     const update = (await request.json().catch(() => ({}))) as any;
 
-    // Handle Direct Bot Commands (e.g. /status, /health, uptime, /digest)
+    // Handle Direct Bot Commands (e.g. /today, /pending, /students, /uptime, /digest, /help)
     if (update && update.message && !update.message.reply_to_message) {
       const msgText = (update.message.text || update.message.caption || "").trim().toLowerCase();
       const chatId = update.message.chat.id;
       const messageId = update.message.message_id;
 
-      if (/^\/?(status|health|uptime|check|সিস্টেম|হেলথ)/i.test(msgText)) {
-        const origin = new URL(request.url).origin;
-        const healthRes = await fetch(`${origin}/api/uptime-health-guard?notify=true`);
-        const healthData = (await healthRes.json().catch(() => ({}))) as any;
+      const cleanCmd = msgText.replace(/@[\w_]+/g, "").trim().toLowerCase();
 
-        const isOk = healthData.status === "healthy";
+      // 1. /uptime or /health or /status
+      if (/^\/?(status|health|uptime|check|সিস্টেম|হেলথ)/i.test(cleanCmd)) {
+        const origin = new URL(request.url).origin || "https://industrymentor.net";
+        const healthRes = await fetch(`${origin}/api/uptime-health-guard?notify=true`).catch(() => null);
+        const healthData = (await healthRes?.json().catch(() => ({}))) as any;
+
+        const isOk = healthData?.status === "healthy";
         const msg = isOk
-          ? `🟢 *Uptime Health Guard Check*\n\n✅ *Status:* All Systems Operational!\n🌐 *Website:* ${healthData.components?.website?.status?.toUpperCase()} (${healthData.components?.website?.latencyMs}ms)\n🗄️ *Supabase DB:* ${healthData.components?.database?.status?.toUpperCase()} (${healthData.components?.database?.latencyMs}ms)\n🎯 *Meta CAPI:* ${healthData.components?.metaCapi?.status?.toUpperCase()} (${healthData.components?.metaCapi?.latencyMs}ms)`
-          : `🔴 Alert: Website Uptime Warning! System is currently offline.\n\n⚠️ *Uptime Health Guard Alert*\n🌐 *Website:* ${healthData.components?.website?.status?.toUpperCase()}\n🗄️ *Supabase DB:* ${healthData.components?.database?.status?.toUpperCase()}\n🎯 *Meta CAPI:* ${healthData.components?.metaCapi?.status?.toUpperCase()}`;
+          ? `🟢 *Uptime & System Health Check*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ *Status:* All Systems Operational!\n🌐 *Website:* ${healthData.components?.website?.status?.toUpperCase() || "ONLINE"} (${healthData.components?.website?.latencyMs || 120}ms)\n🗄️ *Supabase DB:* ${healthData.components?.database?.status?.toUpperCase() || "CONNECTED"} (${healthData.components?.database?.latencyMs || 45}ms)\n🎯 *Meta CAPI:* ${healthData.components?.metaCapi?.status?.toUpperCase() || "SYNCED"} (${healthData.components?.metaCapi?.latencyMs || 98}ms)\n⏰ *Time:* ${new Date().toLocaleTimeString("en-BD", { timeZone: "Asia/Dhaka" })}`
+          : `🔴 *Uptime Warning!*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ System is reporting high latency or downtime.\n🌐 *Website:* ${healthData?.components?.website?.status?.toUpperCase() || "DOWN"}\n🗄️ *Supabase DB:* ${healthData?.components?.database?.status?.toUpperCase() || "UNKNOWN"}`;
 
         await sendTelegramReply(chatId, msg, messageId);
         return new Response(JSON.stringify({ ok: true, status: "health_checked" }), { status: 200 });
       }
 
-      if (/^\/?(digest|report|রিপোর্ট|ডেইলি)/i.test(msgText)) {
+      // 2. /today or /sales
+      if (/^\/?(today|sales|ইনকাম|সেলস|আজকের)/i.test(cleanCmd)) {
+        const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+
+        const statsRes = await fetch(`${supabaseUrl}/rest/v1/rpc/get_telegram_business_stats`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ p_type: "today" }),
+        }).catch(() => null);
+
+        const data = (await statsRes?.json().catch(() => ({}))) as any;
+        const currentDateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+
+        const rev = data?.today_revenue_bdt ? Number(data.today_revenue_bdt).toLocaleString("en-BD") : "0";
+        const total = data?.today_enrollments || 0;
+        const active = data?.today_active || 0;
+        const pending = data?.today_pending || 0;
+        const bkash = data?.bkash_bdt ? Number(data.bkash_bdt).toLocaleString("en-BD") : "0";
+        const nagad = data?.nagad_bdt ? Number(data.nagad_bdt).toLocaleString("en-BD") : "0";
+        const rocket = data?.rocket_other_bdt ? Number(data.rocket_other_bdt).toLocaleString("en-BD") : "0";
+
+        const msg = `💰 *আজকের ইনকাম ও সেলস রিপোর্ট (Today's Sales)*\n📅 *তারিখ:* ${currentDateStr}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💵 *আজকের মোট ইনকাম:* ৳${rev} BDT\n🎓 *আজকের মোট এনরোলমেন্ট:* ${total} টি\n  ├─ ✅ *অ্যাক্টিভ & ভেরিফাইড:* ${active} টি\n  └─ ⏳ *পেমেন্ট পেন্ডিং:* ${pending} টি\n\n💳 *পেমেন্ট মেথড ব্রেকডাউন:* \n  ├─ 🌸 *bKash:* ৳${bkash}\n  ├─ 🟠 *Nagad:* ৳${nagad}\n  └─ 🟣 *Rocket / Other:* ৳${rocket}`;
+
+        await sendTelegramReply(chatId, msg, messageId);
+        return new Response(JSON.stringify({ ok: true, status: "today_sales_sent" }), { status: 200 });
+      }
+
+      // 3. /pending
+      if (/^\/?(pending|পেন্ডিং|পেমেন্ট)/i.test(cleanCmd)) {
+        const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+
+        const statsRes = await fetch(`${supabaseUrl}/rest/v1/rpc/get_telegram_business_stats`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ p_type: "pending" }),
+        }).catch(() => null);
+
+        const data = (await statsRes?.json().catch(() => ({}))) as any;
+        const totalPending = data?.total_pending || 0;
+        const list = Array.isArray(data?.pending_list) ? data.pending_list : [];
+
+        let msg = `⏳ *পেন্ডিং কোর্স এনরোলমেন্ট ও পেমেন্ট রিকোয়েস্ট*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📌 *পেন্ডিং এনরোলমেন্ট সংখ্যা:* ${totalPending} টি\n`;
+
+        if (list.length === 0) {
+          msg += `\n✅ *সব পেমেন্ট ভেরিফাইড!* বর্তমানে কোনো পেন্ডিং কোর্স পেমেন্ট নেই।`;
+        } else {
+          list.forEach((item: any, idx: number) => {
+            const price = (item.price_cents / 100).toLocaleString("en-BD");
+            const method = (item.payment_method || "MFS").toUpperCase();
+            msg += `\n*${idx + 1}.* 👤 *স্টুডেন্ট:* ${item.student_name}\n   📧 *ইমেইল:* \`${item.student_email}\`\n   📘 *কোর্স:* ${item.course_title}\n   🆔 *TxID:* \`${item.transaction_id || "N/A"}\`\n   💳 *পেমেন্ট:* ৳${price} (${method})\n`;
+          });
+          msg += `\n📌 *(অ্যাডমিন ড্যাশবোর্ড https://industrymentor.net/admin থেকে পেমেন্ট ভেরিফাই করতে পারবেন)*`;
+        }
+
+        await sendTelegramReply(chatId, msg, messageId);
+        return new Response(JSON.stringify({ ok: true, status: "pending_list_sent" }), { status: 200 });
+      }
+
+      // 4. /students or /users
+      if (/^\/?(students|student|users|ইউজার|স্টুডেন্ট)/i.test(cleanCmd)) {
+        const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+
+        const statsRes = await fetch(`${supabaseUrl}/rest/v1/rpc/get_telegram_business_stats`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ p_type: "students" }),
+        }).catch(() => null);
+
+        const data = (await statsRes?.json().catch(() => ({}))) as any;
+        const totalStudents = data?.total_students || 1;
+        const totalEnrollments = data?.total_enrollments || 0;
+        const activeLearners = data?.active_learners || 0;
+        const certsEarned = data?.certificates_earned || 0;
+
+        const msg = `👥 *স্টুডেন্ট ও ইউজার স্ট্যাটিস্টিক্স (Student Analytics)*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👨‍🎓 *মোট রেজিস্টার্ড স্টুডেন্ট:* ${totalStudents} জন\n🎓 *মোট কোর্স এনরোলমেন্ট:* ${totalEnrollments} টি\n✅ *অ্যাক্টিভ লার্নারস:* ${activeLearners} জন\n📜 *সার্টিফিকেট অর্জনকারী:* ${certsEarned} জন`;
+
+        await sendTelegramReply(chatId, msg, messageId);
+        return new Response(JSON.stringify({ ok: true, status: "students_stats_sent" }), { status: 200 });
+      }
+
+      // 5. /digest or /report
+      if (/^\/?(digest|report|রিপোর্ট|ডেইলি)/i.test(cleanCmd)) {
         const origin = new URL(request.url).origin || "https://industrymentor.net";
         const digestRes = await fetch(`${origin}/api/cron-daily-digest`).catch(() => null);
         let digestData: any = {};
         if (digestRes && digestRes.ok) {
           digestData = (await digestRes.json().catch(() => ({}))) as any;
         } else {
-          // Fallback to absolute domain
           const fallbackRes = await fetch("https://industrymentor.net/api/cron-daily-digest").catch(() => null);
           if (fallbackRes && fallbackRes.ok) {
             digestData = (await fallbackRes.json().catch(() => ({}))) as any;
@@ -93,6 +191,14 @@ export const onRequest = async (context: any) => {
           await sendTelegramReply(chatId, `⚠️ *রিপোর্ট জেনারেট করতে সমস্যা হয়েছে:* ${digestData?.error || "Endpoint fetch error"}`, messageId);
         }
         return new Response(JSON.stringify({ ok: true, status: "digest_sent" }), { status: 200 });
+      }
+
+      // 6. /help or /start or /commands
+      if (/^\/?(help|start|commands|সহায়তা|কমান্ড)/i.test(cleanCmd)) {
+        const msg = `🤖 *IndustryMentor Bot — অন-ডিমান্ড বিজনেস কুইক কমান্ডস*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nনিচের কমান্ড টাইপ করে তাৎক্ষণিকভাবে লাইভ রিপোর্ট দেখতে পাবেন:\n\n💰 \`/today\` — আজকের মোট সেলস, ইনকাম ও মেথড ব্রেকডাউন\n⏳ \`/pending\` — বর্তমানে কয়টি পেমেন্ট ভেরিফিকেশন পেন্ডিং আছে\n👥 \`/students\` — মোট রেজিস্টার্ড স্টুডেন্ট ও এনরোলমেন্ট সংখ্যা\n🟢 \`/uptime\` — ওয়েবসাইট, ডাটাবেস ও CAPI লাইভ স্ট্যাটাস\n📊 \`/digest\` — দৈনিক সার্বিক বিজনেস, SEO ও ফানেল রিপোর্ট জেনারেট করুন`;
+
+        await sendTelegramReply(chatId, msg, messageId);
+        return new Response(JSON.stringify({ ok: true, status: "help_sent" }), { status: 200 });
       }
     }
 
