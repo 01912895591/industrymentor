@@ -115,8 +115,8 @@ export const onRequest = async (context: any) => {
 
       // Check if reply is a 1-Click Course Approval or Rejection Command
       const replyTrim = replyText.trim().toLowerCase();
-      const isApprovalCmd = /^(ok|approve|approved|অ্যাপ্রুভ|এপ্রুভ|done|yes|1)$/i.test(replyTrim);
-      const isRejectCmd = /^(reject|cancel|rejected|cancelled|রিজেক্ট|বাতিল|no|0)$/i.test(replyTrim);
+      const isApprovalCmd = /^(ok|approve|approved|অ্যাপ্রুভ|এপ্রুভ|done|yes|1|\/approve|\/ok)$/i.test(replyTrim) || /^\s*(ok|approve|approved|অ্যাপ্রুভ|এপ্রুভ)\b/i.test(replyTrim);
+      const isRejectCmd = /^(reject|cancel|rejected|cancelled|রিজেক্ট|বাতিল|no|0|\/reject|\/cancel)$/i.test(replyTrim) || /^\s*(reject|cancel|rejected|cancelled|রিজেক্ট|বাতিল)\b/i.test(replyTrim);
 
       if (isApprovalCmd || isRejectCmd) {
         // Robust Transaction ID extraction ignoring markdown asterisks, colons, or Bengali labels
