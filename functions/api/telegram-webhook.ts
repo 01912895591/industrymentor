@@ -119,35 +119,77 @@ export const onRequest = async (context: any) => {
       const isRejectCmd = /^(reject|cancel|rejected|cancelled|রিজেক্ট|বাতিল|no|0)$/i.test(replyTrim);
 
       if (isApprovalCmd || isRejectCmd) {
-        const txMatch = originalText.match(/(?:ID|ট্রানজেকশন|TxID):\s*([a-zA-Z0-9_-]+)/i);
-        const txId = txMatch ? txMatch[1].trim() : null;
+        // Robust Transaction ID extraction ignoring markdown asterisks, colons, or Bengali labels
+        const txMatch = originalText.match(/(?:ID|ট্রানজেকশন|TxID)[^\n\r\w]*\s*([a-zA-Z0-9_-]+)/i) 
+                     || originalText.match(/(?:TRX|TX)[a-zA-Z0-9_-]+/i);
+        const txId = txMatch ? (txMatch[1] || txMatch[0]).trim() : null;
 
         const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+        const headers = { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` };
 
-        let queryUrl = `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,payment_method,sender_phone,created_at,courses(title,price_cents),purchases(amount_cents)&status=eq.pending`;
+        let targetEnroll: any = null;
+
+        // Strategy A: Match by exact or pattern Transaction ID
         if (txId) {
-          queryUrl += `&transaction_id=eq.${encodeURIComponent(txId)}`;
+          const resA = await fetch(
+            `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,payment_method,sender_phone,created_at,courses(title,price_cents),purchases(amount_cents)&status=eq.pending&transaction_id=ilike.${encodeURIComponent(txId)}`,
+            { headers }
+          );
+          const dataA = (await resA.json().catch(() => [])) as any[];
+          if (Array.isArray(dataA) && dataA.length > 0) {
+            targetEnroll = dataA[0];
+          }
         }
 
-        const fetchEnrollRes = await fetch(queryUrl, {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-          },
-        });
+        // Strategy B: If TxID search yielded no result, search by user_id from profiles using recipientEmail
+        if (!targetEnroll && recipientEmail) {
+          const profileRes = await fetch(
+            `${supabaseUrl}/rest/v1/profiles?select=user_id&email=ilike.${encodeURIComponent(recipientEmail.trim())}`,
+            { headers }
+          );
+          const profileData = (await profileRes.json().catch(() => [])) as any[];
+          if (Array.isArray(profileData) && profileData.length > 0 && profileData[0].user_id) {
+            const userId = profileData[0].user_id;
+            const resB = await fetch(
+              `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,payment_method,sender_phone,created_at,courses(title,price_cents),purchases(amount_cents)&status=eq.pending&user_id=eq.${userId}&order=created_at.desc`,
+              { headers }
+            );
+            const dataB = (await resB.json().catch(() => [])) as any[];
+            if (Array.isArray(dataB) && dataB.length > 0) {
+              targetEnroll = dataB[0];
+            }
+          }
+        }
 
-        const enrollRecords = (await fetchEnrollRes.json().catch(() => [])) as any[];
+        // Strategy C: Fallback to most recent pending enrollment if still not found
+        if (!targetEnroll) {
+          const resC = await fetch(
+            `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,payment_method,sender_phone,created_at,courses(title,price_cents),purchases(amount_cents)&status=eq.pending&order=created_at.desc&limit=1`,
+            { headers }
+          );
+          const dataC = (await resC.json().catch(() => [])) as any[];
+          if (Array.isArray(dataC) && dataC.length > 0) {
+            targetEnroll = dataC[0];
+          }
+        }
 
-        if (Array.isArray(enrollRecords) && enrollRecords.length > 0) {
-          const targetEnroll = enrollRecords[0];
-          const courseTitle = targetEnroll.courses?.title || "your course";
-          const priceCents = targetEnroll.purchases?.amount_cents || targetEnroll.courses?.price_cents || 350000;
-          const formattedAmount = (priceCents / 100).toLocaleString("en-BD");
-          const invoiceNum = `INV-IM-${Date.now().toString().slice(-8)}`;
-          const paymentMethodName = (targetEnroll.payment_method || "bKash / Mobile Banking").toUpperCase();
-          const transactionIdStr = targetEnroll.transaction_id || txId || "VERIFIED-TX";
-          const currentDateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+        if (!targetEnroll) {
+          await sendTelegramReply(
+            replyMessage.chat.id,
+            `⚠️ *কোনো পেন্ডিং এনরোলমেন্ট পাওয়া যায়নি!*\n\n📧 *ইমেইল:* \`${recipientEmail}\`\n🆔 *TxID:* \`${txId || "N/A"}\`\n\n📌 *কারণ:* এই স্টুডেন্টের পেমেন্ট এনরোলমেন্ট রেকর্ডটি ইতিমধ্যে অ্যাপ্রুভ বা বাতিল করা হয়ে থাকতে পারে।`,
+            replyMessage.message_id
+          );
+          return new Response(JSON.stringify({ ok: true, status: "pending_enrollment_not_found" }), { status: 200 });
+        }
+
+        const courseTitle = targetEnroll.courses?.title || "your course";
+        const priceCents = targetEnroll.purchases?.amount_cents || targetEnroll.courses?.price_cents || 350000;
+        const formattedAmount = (priceCents / 100).toLocaleString("en-BD");
+        const invoiceNum = `INV-IM-${Date.now().toString().slice(-8)}`;
+        const paymentMethodName = (targetEnroll.payment_method || "bKash / Mobile Banking").toUpperCase();
+        const transactionIdStr = targetEnroll.transaction_id || txId || "VERIFIED-TX";
+        const currentDateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
           if (isApprovalCmd) {
             // Execute atomic approval RPC
