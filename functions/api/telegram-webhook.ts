@@ -128,15 +128,25 @@ export const onRequest = async (context: any) => {
         return new Response(JSON.stringify({ ok: true, status: "resend_key_missing" }), { status: 200 });
       }
 
-      // Check if reply is a 1-Click Course Approval or Rejection Command
-      const replyTrim = replyText.trim().toLowerCase();
-      const isApprovalCmd = /^(ok|approve|approved|অ্যাপ্রুভ|এপ্রুভ|done|yes|1|\/approve|\/ok)$/i.test(replyTrim) || /^\s*(ok|approve|approved|অ্যাপ্রুভ|এপ্রুভ)\b/i.test(replyTrim);
-      const isRejectCmd = /^(reject|cancel|rejected|cancelled|রিজেক্ট|বাতিল|no|0|\/reject|\/cancel)$/i.test(replyTrim) || /^\s*(reject|cancel|rejected|cancelled|রিজেক্ট|বাতিল)\b/i.test(replyTrim);
+      // Check if reply is a 1-Click Course Approval or Rejection Command (Strip Telegram @botname suffix)
+      const cleanCmd = replyText.replace(/@[\w_]+/g, "").trim().toLowerCase();
+      const isApprovalCmd = /^\/?(ok|approve|approved|অ্যাপ্রুভ|এপ্রুভ|done|yes|1)\b/i.test(cleanCmd)
+                         || cleanCmd.includes("approve")
+                         || cleanCmd.includes("অ্যাপ্রুভ")
+                         || cleanCmd.includes("এপ্রুভ")
+                         || cleanCmd === "ok" || cleanCmd === "/ok" || cleanCmd.startsWith("ok") || cleanCmd.startsWith("/ok");
+
+      const isRejectCmd = /^\/?(reject|cancel|rejected|cancelled|রিজেক্ট|বাতিল|no|0)\b/i.test(cleanCmd)
+                       || cleanCmd.includes("reject")
+                       || cleanCmd.includes("cancel")
+                       || cleanCmd.includes("বাতিল")
+                       || cleanCmd.includes("রিজেক্ট");
 
       if (isApprovalCmd || isRejectCmd) {
-        // Robust Transaction ID extraction ignoring markdown asterisks, colons, or Bengali labels
-        const txMatch = originalText.match(/(?:ID|ট্রানজেকশন|TxID)[^\n\r\w]*\s*([a-zA-Z0-9_-]+)/i) 
-                     || originalText.match(/(?:TRX|TX)[a-zA-Z0-9_-]+/i);
+        // Robust Transaction ID extraction across newlines, markdown asterisks, or labels
+        const txMatch = originalText.match(/(?:ID|ট্রানজেকশন|TxID)[\s\S]*?:?\s*\*?\s*([a-zA-Z0-9_-]{5,})/i) 
+                     || originalText.match(/(?:TRX|TX)[a-zA-Z0-9_-]+/i)
+                     || originalText.match(/\b([a-zA-Z0-9]{8,24})\b/);
         const txId = txMatch ? (txMatch[1] || txMatch[0]).trim() : null;
 
         const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
