@@ -184,7 +184,7 @@ export const onRequest = async (context: any) => {
 📈 *গুগল সার্চের মোট ইমপ্রেশন (Search Impressions):* ${searchImpressions} বার
 🖱️ *গুগল সার্চ থেকে অর্গানিক ক্লিক (Google Organic Clicks):* ${organicClicks} জন
 📍 *গুগল সার্চে গড় পজিশন (Average Search Rank):* #${avgRank}
-🏷️ *Google Tag Manager (GTM) ইভেন্ট ফায়ারিং:* ১০০% হেলদি ও সিঙ্কড (GTM-IM.NET)
+🏷️ *Google Analytics GA4 & GTM (G-F4J4R047W4):* ১০০% হেলদি ও সিঙ্কড
 
 🎯 *৩. সেলস ফানেল ও কনভার্সন ইন্টেন্ট (Conversion Funnel):*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
