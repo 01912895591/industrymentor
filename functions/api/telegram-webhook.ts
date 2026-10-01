@@ -80,18 +80,61 @@ export const onRequest = async (context: any) => {
       if (/^\/?(today|sales|ইনকাম|সেলস|আজকের)/i.test(cleanCmd)) {
         const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+        const headers = { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` };
 
+        let data: any = null;
         const statsRes = await fetch(`${supabaseUrl}/rest/v1/rpc/get_telegram_business_stats`, {
           method: "POST",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json",
-          },
+          headers: { ...headers, "Content-Type": "application/json" },
           body: JSON.stringify({ p_type: "today" }),
         }).catch(() => null);
 
-        const data = (await statsRes?.json().catch(() => ({}))) as any;
+        if (statsRes && statsRes.ok) {
+          data = await statsRes.json().catch(() => null);
+        }
+
+        // Direct Fallback if RPC failed or returned no success
+        if (!data || !data.success) {
+          const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+          const [purchasesRes, enrollRes] = await Promise.all([
+            fetch(`${supabaseUrl}/rest/v1/purchases?select=amount_cents,payment_method&created_at=gte.${twentyFourHoursAgo}`, { headers }).catch(() => null),
+            fetch(`${supabaseUrl}/rest/v1/course_enrollments?select=id,status&created_at=gte.${twentyFourHoursAgo}`, { headers }).catch(() => null),
+          ]);
+
+          const purchases = (await purchasesRes?.json().catch(() => [])) as any[];
+          const enrollments = (await enrollRes?.json().catch(() => [])) as any[];
+
+          let bkashCents = 0, nagadCents = 0, rocketCents = 0, totalCents = 0;
+          if (Array.isArray(purchases)) {
+            purchases.forEach((p) => {
+              const amt = Number(p.amount_cents || 0);
+              const m = String(p.payment_method || "").toLowerCase();
+              totalCents += amt;
+              if (m.includes("bkash")) bkashCents += amt;
+              else if (m.includes("nagad")) nagadCents += amt;
+              else rocketCents += amt;
+            });
+          }
+
+          let activeCount = 0, pendingCount = 0;
+          if (Array.isArray(enrollments)) {
+            enrollments.forEach((e) => {
+              if (e.status === "active") activeCount++;
+              else if (e.status === "pending") pendingCount++;
+            });
+          }
+
+          data = {
+            today_revenue_bdt: (totalCents / 100).toFixed(2),
+            today_enrollments: Array.isArray(enrollments) ? enrollments.length : 0,
+            today_active: activeCount,
+            today_pending: pendingCount,
+            bkash_bdt: (bkashCents / 100).toFixed(2),
+            nagad_bdt: (nagadCents / 100).toFixed(2),
+            rocket_other_bdt: (rocketCents / 100).toFixed(2),
+          };
+        }
+
         const currentDateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
         const rev = data?.today_revenue_bdt ? Number(data.today_revenue_bdt).toLocaleString("en-BD") : "0";
@@ -112,18 +155,44 @@ export const onRequest = async (context: any) => {
       if (/^\/?(pending|পেন্ডিং|পেমেন্ট)/i.test(cleanCmd)) {
         const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+        const headers = { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` };
 
+        let data: any = null;
         const statsRes = await fetch(`${supabaseUrl}/rest/v1/rpc/get_telegram_business_stats`, {
           method: "POST",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json",
-          },
+          headers: { ...headers, "Content-Type": "application/json" },
           body: JSON.stringify({ p_type: "pending" }),
         }).catch(() => null);
 
-        const data = (await statsRes?.json().catch(() => ({}))) as any;
+        if (statsRes && statsRes.ok) {
+          data = await statsRes.json().catch(() => null);
+        }
+
+        // Direct Fallback if RPC failed or returned no success
+        if (!data || !data.success) {
+          const enrollRes = await fetch(
+            `${supabaseUrl}/rest/v1/course_enrollments?select=id,transaction_id,payment_method,sender_phone,created_at,courses(title,price_cents),profiles(full_name,email)&status=eq.pending&order=created_at.desc&limit=10`,
+            { headers }
+          ).catch(() => null);
+
+          const listData = (await enrollRes?.json().catch(() => [])) as any[];
+          const list = Array.isArray(listData)
+            ? listData.map((item) => ({
+                student_name: item.profiles?.full_name || "Student",
+                student_email: item.profiles?.email || "N/A",
+                course_title: item.courses?.title || "Course",
+                price_cents: item.courses?.price_cents || 350000,
+                transaction_id: item.transaction_id || "N/A",
+                payment_method: item.payment_method || "MFS",
+              }))
+            : [];
+
+          data = {
+            total_pending: list.length,
+            pending_list: list,
+          };
+        }
+
         const totalPending = data?.total_pending || 0;
         const list = Array.isArray(data?.pending_list) ? data.pending_list : [];
 
@@ -133,7 +202,7 @@ export const onRequest = async (context: any) => {
           msg += `\n✅ *সব পেমেন্ট ভেরিফাইড!* বর্তমানে কোনো পেন্ডিং কোর্স পেমেন্ট নেই।`;
         } else {
           list.forEach((item: any, idx: number) => {
-            const price = (item.price_cents / 100).toLocaleString("en-BD");
+            const price = ((item.price_cents || 350000) / 100).toLocaleString("en-BD");
             const method = (item.payment_method || "MFS").toUpperCase();
             msg += `\n*${idx + 1}.* 👤 *স্টুডেন্ট:* ${item.student_name}\n   📧 *ইমেইল:* \`${item.student_email}\`\n   📘 *কোর্স:* ${item.course_title}\n   🆔 *TxID:* \`${item.transaction_id || "N/A"}\`\n   💳 *পেমেন্ট:* ৳${price} (${method})\n`;
           });
@@ -148,18 +217,46 @@ export const onRequest = async (context: any) => {
       if (/^\/?(students|student|users|ইউজার|স্টুডেন্ট)/i.test(cleanCmd)) {
         const supabaseUrl = "https://fiirnhpsldouvnfvbtun.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaXJuaHBzbGRvdXZuZnZidHVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTkxMjAsImV4cCI6MjA4NDM3NTEyMH0.VSO7B3mcVXjDCSJbllyDLKwyAooUDbFDyRwYExp2LXc";
+        const headers = { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` };
 
+        let data: any = null;
         const statsRes = await fetch(`${supabaseUrl}/rest/v1/rpc/get_telegram_business_stats`, {
           method: "POST",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json",
-          },
+          headers: { ...headers, "Content-Type": "application/json" },
           body: JSON.stringify({ p_type: "students" }),
         }).catch(() => null);
 
-        const data = (await statsRes?.json().catch(() => ({}))) as any;
+        if (statsRes && statsRes.ok) {
+          data = await statsRes.json().catch(() => null);
+        }
+
+        // Direct Fallback if RPC failed or returned no success
+        if (!data || !data.success) {
+          const [profilesRes, enrollRes, certsRes] = await Promise.all([
+            fetch(`${supabaseUrl}/rest/v1/profiles?select=id`, { headers: { ...headers, Prefer: "count=exact" } }).catch(() => null),
+            fetch(`${supabaseUrl}/rest/v1/course_enrollments?select=id,status`, { headers }).catch(() => null),
+            fetch(`${supabaseUrl}/rest/v1/certificates?select=id&status=eq.approved`, { headers }).catch(() => null),
+          ]);
+
+          const profiles = (await profilesRes?.json().catch(() => [])) as any[];
+          const enrollments = (await enrollRes?.json().catch(() => [])) as any[];
+          const certs = (await certsRes?.json().catch(() => [])) as any[];
+
+          let activeCount = 0;
+          if (Array.isArray(enrollments)) {
+            enrollments.forEach((e) => {
+              if (e.status === "active") activeCount++;
+            });
+          }
+
+          data = {
+            total_students: Array.isArray(profiles) && profiles.length > 0 ? profiles.length : 1,
+            total_enrollments: Array.isArray(enrollments) ? enrollments.length : 0,
+            active_learners: activeCount,
+            certificates_earned: Array.isArray(certs) ? certs.length : 0,
+          };
+        }
+
         const totalStudents = data?.total_students || 1;
         const totalEnrollments = data?.total_enrollments || 0;
         const activeLearners = data?.active_learners || 0;
