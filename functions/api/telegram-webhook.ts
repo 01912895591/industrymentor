@@ -155,8 +155,40 @@ export const onRequest = async (context: any) => {
 
         let targetEnroll: any = null;
 
+        // Strategy 0: Security Definer RPC Lookup (Bypasses RLS)
+        const rpcRes = await fetch(`${supabaseUrl}/rest/v1/rpc/get_pending_enrollment_for_telegram`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            p_tx_id: txId,
+            p_user_email: recipientEmail,
+          }),
+        }).catch(() => null);
+
+        if (rpcRes && rpcRes.ok) {
+          const rpcData = (await rpcRes.json().catch(() => ({}))) as any;
+          if (rpcData && rpcData.found && rpcData.id) {
+            targetEnroll = {
+              id: rpcData.id,
+              user_id: rpcData.user_id,
+              course_id: rpcData.course_id,
+              purchase_id: rpcData.purchase_id,
+              status: rpcData.status,
+              transaction_id: rpcData.transaction_id,
+              payment_method: rpcData.payment_method,
+              sender_phone: rpcData.sender_phone,
+              courses: { title: rpcData.course_title, price_cents: rpcData.amount_cents },
+              purchases: { amount_cents: rpcData.amount_cents },
+            };
+          }
+        }
+
         // Strategy A: Match by exact or pattern Transaction ID
-        if (txId) {
+        if (!targetEnroll && txId) {
           const resA = await fetch(
             `${supabaseUrl}/rest/v1/course_enrollments?select=id,user_id,course_id,purchase_id,status,transaction_id,payment_method,sender_phone,created_at,courses(title,price_cents),purchases(amount_cents)&status=eq.pending&transaction_id=ilike.${encodeURIComponent(txId)}`,
             { headers }
