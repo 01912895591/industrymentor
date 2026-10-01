@@ -14,14 +14,16 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   build: {
+    target: "esnext",
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 1000,
     modulePreload: {
       resolveDependencies: (filename, deps, { hostType }) => {
         if (hostType === "html") {
           return deps.filter(
             (dep) =>
               !dep.includes("vendor-pdf") &&
-              !dep.includes("vendor-charts") &&
-              !dep.includes("signatureAsset")
+              !dep.includes("vendor-charts")
           );
         }
         return deps;
@@ -29,21 +31,36 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
-          "vendor-supabase": ["@supabase/supabase-js"],
-          "vendor-icons": ["lucide-react"],
-          "vendor-ui": [
-            "@radix-ui/react-accordion",
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-tabs",
-            "@radix-ui/react-select",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-tooltip",
-          ],
-          "vendor-charts": ["recharts"],
-          "vendor-pdf": ["jspdf", "html2canvas", "qrcode"],
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (
+              id.includes("jspdf") ||
+              id.includes("html2canvas") ||
+              id.includes("qrcode") ||
+              id.includes("bwip-js")
+            ) {
+              return "vendor-pdf";
+            }
+            if (id.includes("recharts")) {
+              return "vendor-charts";
+            }
+            if (id.includes("@supabase")) {
+              return "vendor-supabase";
+            }
+            if (id.includes("lucide-react")) {
+              return "vendor-icons";
+            }
+            if (
+              id.includes("react") ||
+              id.includes("react-dom") ||
+              id.includes("react-router-dom")
+            ) {
+              return "vendor-react";
+            }
+            if (id.includes("@radix-ui")) {
+              return "vendor-ui";
+            }
+          }
         },
       },
     },
