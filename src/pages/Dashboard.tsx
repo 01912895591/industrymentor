@@ -39,6 +39,7 @@ import {
   AlertTriangle,
   PlayCircle,
   Share2,
+  Send,
 } from "lucide-react";
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -803,6 +804,38 @@ export default function Dashboard() {
                   </div>
                 </header>
 
+                {/* Official Student Telegram Community Banner */}
+                <div className="rounded-xl border border-[#0088cc]/30 bg-gradient-to-r from-[#0088cc]/10 via-[#0088cc]/5 to-transparent p-5 sm:p-6 backdrop-blur-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                  <div className="flex items-start gap-3.5">
+                    <div className="h-10 w-10 rounded-xl bg-[#0088cc] flex items-center justify-center text-white shrink-0 shadow-sm mt-0.5">
+                      <MessageCircle className="h-5 w-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-base text-foreground">
+                          অফিশিয়াল স্টুডেন্ট টেলিগ্রাম কম্যুনিটি গ্রুপ
+                        </span>
+                        <Badge className="bg-[#0088cc]/20 text-[#0088cc] border-[#0088cc]/30 text-[10px] font-bold">
+                          Official Community
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+                        আপনার ব্যাচের সহপাঠী ও সিনিয়র মেন্টরদের সাথে সরাসরি যুক্ত থাকতে আমাদের অফিশিয়াল স্টুডেন্ট সাপোর্টিং টেলিগ্রাম গ্রুপে জয়েন করুন।
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    asChild
+                    className="bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold text-xs h-9 px-4 gap-1.5 shrink-0 shadow-xs"
+                  >
+                    <a href="https://t.me/+qOtoC46eDDcwODE1" target="_blank" rel="noopener noreferrer">
+                      <Send className="h-3.5 w-3.5" />
+                      Join Telegram Group →
+                    </a>
+                  </Button>
+                </div>
+
                 {/* Dynamic Next Recommended Action Card */}
                 <div className="rounded-xl border border-primary/25 bg-primary/[0.04] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="space-y-1">
@@ -1120,13 +1153,25 @@ export default function Dashboard() {
             {/* MY COURSES TAB */}
             {active === "courses" && (
               <div className="rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 backdrop-blur-xl shadow-xs space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                    <BookOpen className="h-6 w-6 text-primary" /> My Courses
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Your active classrooms, verification statuses, and completed courses.
-                  </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                      <BookOpen className="h-6 w-6 text-primary" /> My Courses
+                    </h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Your active classrooms, verification statuses, and completed courses.
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    asChild
+                    className="bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold text-xs h-8 px-3.5 gap-1.5 shrink-0 shadow-xs"
+                  >
+                    <a href="https://t.me/+qOtoC46eDDcwODE1" target="_blank" rel="noopener noreferrer">
+                      <Send className="h-3.5 w-3.5" />
+                      Official Telegram Group
+                    </a>
+                  </Button>
                 </div>
 
                 {/* Filter Tabs */}

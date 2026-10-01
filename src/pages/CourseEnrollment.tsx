@@ -393,9 +393,16 @@ export default function CourseEnrollment() {
                                                 We have received your enrollment request. You will be notified once access is granted.
                                             </p>
                                         </div>
-                                        <Button asChild className="w-full" size="lg">
-                                            <Link to="/dashboard">Go to Dashboard</Link>
-                                        </Button>
+                                        <div className="space-y-2 pt-2">
+                                            <Button asChild className="w-full font-bold" size="lg">
+                                                <Link to="/dashboard">Go to Dashboard</Link>
+                                            </Button>
+                                            <Button asChild variant="outline" className="w-full font-bold text-xs bg-[#0088cc]/10 text-[#0088cc] border-[#0088cc]/30 hover:bg-[#0088cc]/20">
+                                                <a href="https://t.me/+qOtoC46eDDcwODE1" target="_blank" rel="noopener noreferrer">
+                                                    💬 Join Official Student Telegram Group
+                                                </a>
+                                            </Button>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             ) : (
