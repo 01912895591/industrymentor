@@ -325,24 +325,24 @@ export default function MentorProfile() {
           {/* Left Column (Sticky Hero & Profile Card - 4 cols on desktop) */}
           <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
             <Card className="rounded-xl border border-border/70 bg-card/40 backdrop-blur-xl shadow-sm overflow-hidden text-center p-6 sm:p-8">
-              {/* Photo & Verified Badge */}
-              <div className="relative mx-auto mb-5 h-32 w-32 shrink-0 overflow-hidden rounded-full border border-border/80 ring-4 ring-primary/20 bg-surface-2 shadow-sm">
+              {/* Photo & Verified Badge - Executive Scale */}
+              <div className="relative mx-auto mb-6 h-44 w-44 sm:h-48 sm:w-48 shrink-0 overflow-hidden rounded-full border-2 border-primary/40 ring-4 ring-primary/25 bg-card/60 shadow-xl">
                 {mentor.image_path ? (
                   <img
                     src={mentor.image_path}
                     alt={mentor.name}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center bg-primary/10">
-                    <span className="text-3xl font-black text-primary">{initials}</span>
+                    <span className="text-4xl font-black text-primary">{initials}</span>
                   </div>
                 )}
                 <div
-                  className="absolute bottom-1 right-1 h-8 w-8 rounded-full bg-background border-2 border-primary/40 flex items-center justify-center text-primary shadow-sm"
+                  className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground border-2 border-background ring-2 ring-primary/30 flex items-center justify-center shadow-md"
                   title="Verified Industry Mentor"
                 >
-                  <ShieldCheck className="h-5 w-5 text-primary" />
+                  <ShieldCheck className="h-5 w-5" />
                 </div>
               </div>
 

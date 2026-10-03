@@ -30,24 +30,24 @@ export function MentorCard({ mentor, className = "" }: MentorCardProps) {
       className={`flex flex-col justify-between text-center p-6 sm:p-7 rounded-xl border-border/60 bg-card/40 hover:bg-card/60 transition-all shadow-sm hover:shadow-md ${className}`}
     >
       <div>
-        {/* Mentor Photo / Avatar */}
-        <div className="relative mx-auto mb-4 h-24 w-24 shrink-0 overflow-hidden rounded-full border border-border/80 ring-2 ring-primary/20 bg-surface-2 shadow-sm group">
+        {/* Mentor Photo / Avatar - Enriched & Enlarged */}
+        <div className="relative mx-auto mb-5 h-36 w-36 sm:h-40 sm:w-40 shrink-0 overflow-hidden rounded-full border-2 border-primary/35 ring-4 ring-primary/20 bg-card/60 shadow-lg group transition-all duration-300 hover:ring-primary/50 hover:border-primary/60">
           {mentor.image_path ? (
             <img
               src={mentor.image_path}
               alt={mentor.name}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
-              width={96}
-              height={96}
+              width={160}
+              height={160}
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center bg-primary/10">
-              <span className="text-2xl font-black text-primary">{initials}</span>
+              <span className="text-3xl font-black text-primary">{initials}</span>
             </div>
           )}
-          <div className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-background border border-border/80 ring-1 ring-primary/30 flex items-center justify-center text-primary" title="Verified Industry Mentor">
-            <ShieldCheck className="h-3.5 w-3.5" />
+          <div className="absolute bottom-1 right-1 h-7 w-7 rounded-full bg-primary text-primary-foreground border-2 border-background ring-1 ring-primary/30 flex items-center justify-center shadow-md" title="Verified Industry Mentor">
+            <ShieldCheck className="h-4 w-4" />
           </div>
         </div>
 
