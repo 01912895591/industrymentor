@@ -8,9 +8,8 @@ import Autoplay from "embla-carousel-autoplay";
 
 const PRIMARY_HERO_SLIDES: string[] = [
   "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/course-cover-1791008434100.webp",
-  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772869711635.webp",
-  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772354426020.webp",
-  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772864274949.webp",
+  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/course-cover-1772869674893.webp",
+  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/course-cover-1772348053034.webp",
 ];
 
 const DYNAMIC_WORDS = ["Lead", "Succeed", "Innovate", "Scale"];
@@ -83,37 +82,20 @@ export function HeroSection() {
           .not("cover_image_path", "is", null)
           .order("created_at", { ascending: false })) as any;
 
-        // Fetch site_settings hero images
-        const { data: settingsData } = await (supabase
-          .from("site_settings" as any)
-          .select("value")
-          .eq("key", "hero_image_url")
-          .single()) as any;
-
         const imgsSet = new Set<string>();
 
-        // Always include the latest uploaded banner image first
-        imgsSet.add("https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/course-cover-1791008434100.webp");
-
-        if (coursesData && Array.isArray(coursesData)) {
+        if (coursesData && Array.isArray(coursesData) && coursesData.length > 0) {
           coursesData.forEach((c) => {
-            if (c.cover_image_path && typeof c.cover_image_path === "string" && !c.cover_image_path.includes("hero-garment")) {
+            if (c.cover_image_path && typeof c.cover_image_path === "string") {
               imgsSet.add(c.cover_image_path);
             }
           });
         }
 
-        if (settingsData?.value) {
-          if (Array.isArray(settingsData.value)) {
-            settingsData.value.forEach((url: any) => {
-              if (typeof url === "string" && !url.includes("hero-garment")) imgsSet.add(url);
-            });
-          } else if (typeof settingsData.value === "string" && !settingsData.value.includes("hero-garment")) {
-            imgsSet.add(settingsData.value);
-          }
+        // If DB has no course covers, use fallback
+        if (imgsSet.size === 0) {
+          PRIMARY_HERO_SLIDES.forEach((url) => imgsSet.add(url));
         }
-
-        PRIMARY_HERO_SLIDES.forEach((url) => imgsSet.add(url));
 
         const allImages = Array.from(imgsSet);
         if (allImages.length > 0) {
