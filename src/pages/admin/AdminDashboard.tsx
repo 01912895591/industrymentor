@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
     Users,
     BookOpen,
@@ -66,11 +66,9 @@ export default function AdminDashboard() {
                     .order("created_at", { ascending: false })
                     .limit(5);
 
-                // If finance_transactions table doesn't exist yet or fails, we fail gracefully
                 if (salesError && salesError.code === "42P01") {
                     console.log("Finance transactions table missing, skipping");
                 }
-
 
                 setStats({
                     revenue: totalRevenue,
@@ -92,90 +90,93 @@ export default function AdminDashboard() {
     }, []);
 
     if (loading) {
-        return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading dashboard data...</div>;
+        return <div className="p-4 text-center text-xs text-muted-foreground animate-pulse">Loading dashboard data...</div>;
     }
 
     return (
-        <div className="space-y-8 animate-fade-in">
+        <div className="space-y-3.5 animate-fade-in">
+            {/* Compact Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                    <p className="text-muted-foreground">Overview of your platform's performance</p>
+                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Dashboard</h2>
+                    <p className="text-xs text-muted-foreground">Overview of your platform's performance</p>
                 </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                        <DollarSign className="h-4 w-4 text-primary" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">৳{stats.revenue.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Lifetime earnings
-                        </p>
-                    </CardContent>
+            {/* Compact Stat Cards Grid */}
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+                <Card className="rounded-xl border border-border/60 bg-card/60 p-3.5 shadow-2xs hover:border-primary/30 transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">Total Revenue</span>
+                        <div className="p-1.5 rounded-lg bg-primary/10">
+                            <DollarSign className="h-4 w-4 text-primary" />
+                        </div>
+                    </div>
+                    <div className="mt-2 flex items-baseline justify-between">
+                        <div className="text-xl font-bold tracking-tight">৳{stats.revenue.toLocaleString()}</div>
+                        <span className="text-[11px] text-muted-foreground">Lifetime</span>
+                    </div>
                 </Card>
 
-                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Students</CardTitle>
-                        <Users className="h-4 w-4 text-blue-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.students}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Registered users
-                        </p>
-                    </CardContent>
+                <Card className="rounded-xl border border-border/60 bg-card/60 p-3.5 shadow-2xs hover:border-primary/30 transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">Active Students</span>
+                        <div className="p-1.5 rounded-lg bg-blue-500/10">
+                            <Users className="h-4 w-4 text-blue-500" />
+                        </div>
+                    </div>
+                    <div className="mt-2 flex items-baseline justify-between">
+                        <div className="text-xl font-bold tracking-tight">{stats.students}</div>
+                        <span className="text-[11px] text-muted-foreground">Registered</span>
+                    </div>
                 </Card>
 
-                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Courses</CardTitle>
-                        <BookOpen className="h-4 w-4 text-emerald-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.courses}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Published courses
-                        </p>
-                    </CardContent>
+                <Card className="rounded-xl border border-border/60 bg-card/60 p-3.5 shadow-2xs hover:border-primary/30 transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">Active Courses</span>
+                        <div className="p-1.5 rounded-lg bg-emerald-500/10">
+                            <BookOpen className="h-4 w-4 text-emerald-500" />
+                        </div>
+                    </div>
+                    <div className="mt-2 flex items-baseline justify-between">
+                        <div className="text-xl font-bold tracking-tight">{stats.courses}</div>
+                        <span className="text-[11px] text-muted-foreground">Published</span>
+                    </div>
                 </Card>
 
-                <Card className="rounded-xl border border-border/60 bg-card/60 shadow-xs hover:border-primary/30 transition-all duration-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
-                        <Activity className="h-4 w-4 text-purple-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.enrollments}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Course signups
-                        </p>
-                    </CardContent>
+                <Card className="rounded-xl border border-border/60 bg-card/60 p-3.5 shadow-2xs hover:border-primary/30 transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">Total Enrollments</span>
+                        <div className="p-1.5 rounded-lg bg-purple-500/10">
+                            <Activity className="h-4 w-4 text-purple-500" />
+                        </div>
+                    </div>
+                    <div className="mt-2 flex items-baseline justify-between">
+                        <div className="text-xl font-bold tracking-tight">{stats.enrollments}</div>
+                        <span className="text-[11px] text-muted-foreground">Signups</span>
+                    </div>
                 </Card>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4 rounded-xl border border-border/60 bg-card/60 shadow-xs">
-                    <CardHeader>
-                        <CardTitle className="text-base font-bold">Revenue Overview</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2">
+            {/* Charts & Recent Activity Section */}
+            <div className="grid gap-3.5 md:grid-cols-2 lg:grid-cols-7">
+                <Card className="col-span-4 rounded-xl border border-border/60 bg-card/60 shadow-2xs p-3.5">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-sm font-bold">Revenue Overview</h3>
+                    </div>
+                    <div>
                         {chartData.length === 0 ? (
-                            <div className="h-[350px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-border/50 rounded-xl mx-4 mb-2">
-                                <TrendingUp className="h-10 w-10 text-muted-foreground/40 mb-3" />
-                                <p className="text-base font-semibold text-foreground">No revenue activity recorded yet</p>
-                                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                                    Revenue trends will automatically populate here as course enrollments and payments are completed.
+                            <div className="h-[210px] flex flex-col items-center justify-center text-center p-3 border border-dashed border-border/40 rounded-lg">
+                                <TrendingUp className="h-7 w-7 text-muted-foreground/40 mb-1.5" />
+                                <p className="text-xs font-semibold text-foreground">No revenue activity recorded yet</p>
+                                <p className="text-[11px] text-muted-foreground mt-0.5 max-w-xs leading-relaxed">
+                                    Revenue trends will automatically populate here as course enrollments are completed.
                                 </p>
                             </div>
                         ) : (
-                            <div className="h-[350px]">
+                            <div className="h-[210px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={chartData}>
+                                    <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
@@ -185,23 +186,24 @@ export default function AdminDashboard() {
                                         <XAxis
                                             dataKey="name"
                                             stroke="#888888"
-                                            fontSize={12}
+                                            fontSize={11}
                                             tickLine={false}
                                             axisLine={false}
                                         />
                                         <YAxis
                                             stroke="#888888"
-                                            fontSize={12}
+                                            fontSize={11}
                                             tickLine={false}
                                             axisLine={false}
                                             tickFormatter={(value) => `৳${value}`}
                                         />
                                         <Tooltip
                                             contentStyle={{
-                                                borderRadius: "8px",
+                                                borderRadius: "6px",
                                                 border: "1px solid hsl(var(--border))",
                                                 backgroundColor: "hsl(var(--card))",
-                                                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                                                fontSize: "12px",
+                                                padding: "6px 10px",
                                             }}
                                         />
                                         <Area
@@ -216,38 +218,40 @@ export default function AdminDashboard() {
                                 </ResponsiveContainer>
                             </div>
                         )}
-                    </CardContent>
+                    </div>
                 </Card>
 
-                <Card className="col-span-3 rounded-xl border border-border/60 bg-card/60 shadow-xs">
-                    <CardHeader>
-                        <CardTitle className="text-base font-bold">Recent Sales</CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                            Latest income transactions.
-                        </p>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-6">
-                            {recentSales.length === 0 ? (
-                                <p className="text-sm text-muted-foreground text-center py-8">No recent sales found.</p>
-                            ) : (
-                                recentSales.map((sale) => (
-                                    <div key={sale.id} className="flex items-center">
-                                        <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                                            ৳
+                <Card className="col-span-3 rounded-xl border border-border/60 bg-card/60 shadow-2xs p-3.5">
+                    <div className="mb-2">
+                        <h3 className="text-sm font-bold">Recent Sales</h3>
+                        <p className="text-[11px] text-muted-foreground">Latest income transactions</p>
+                    </div>
+                    <div>
+                        {recentSales.length === 0 ? (
+                            <div className="h-[210px] flex items-center justify-center border border-dashed border-border/40 rounded-lg">
+                                <p className="text-xs text-muted-foreground text-center">No recent sales found.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {recentSales.map((sale) => (
+                                    <div key={sale.id} className="flex items-center justify-between p-1.5 rounded-md hover:bg-muted/40 transition-colors">
+                                        <div className="flex items-center gap-2.5 min-w-0">
+                                            <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                                                ৳
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-semibold leading-none truncate">{sale.description || "Course Sale"}</p>
+                                                <p className="text-[10px] text-muted-foreground mt-0.5">
+                                                    {new Date(sale.created_at).toLocaleDateString()}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="ml-4 space-y-1 min-w-0 flex-1">
-                                            <p className="text-sm font-medium leading-none truncate">{sale.description || "Course Sale"}</p>
-                                            <p className="text-xs text-muted-foreground">
-                                                {new Date(sale.created_at).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                        <div className="ml-auto font-semibold text-sm shrink-0">+৳{sale.amount}</div>
+                                        <div className="font-bold text-xs text-emerald-500 shrink-0">+৳{sale.amount}</div>
                                     </div>
-                                ))
-                            )}
-                        </div>
-                    </CardContent>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </Card>
             </div>
         </div>

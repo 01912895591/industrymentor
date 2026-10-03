@@ -78,8 +78,8 @@ export function AdminSidebar({ onClose, className }: AdminSidebarProps = {}) {
           )}
         </Link>
       </div>
-      <div className="flex-1 px-4 py-6">
-        <nav className="flex flex-col gap-2">
+      <div className="flex-1 px-3 py-3 overflow-y-auto">
+        <nav className="flex flex-col gap-1">
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
@@ -88,37 +88,38 @@ export function AdminSidebar({ onClose, className }: AdminSidebarProps = {}) {
                 to={item.href}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300",
+                  "flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all duration-200",
                   isActive
-                    ? "bg-primary/20 text-primary shadow-sm border border-primary/20"
+                    ? "bg-primary/20 text-primary shadow-2xs border border-primary/20"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
-                <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground")} />
-                {item.label}
+                <item.icon className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           })}
 
-          <div className="mt-4 pt-4 border-t border-border/40">
+          <div className="mt-2 pt-2 border-t border-border/40">
             <Link
               to="/"
               onClick={onClose}
-              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-300"
+              className="flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
             >
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className="h-4 w-4 shrink-0" />
               View Site
             </Link>
           </div>
         </nav>
       </div>
-      <div className="border-t border-border/40 p-4">
+      <div className="border-t border-border/40 p-3">
         <Button
           variant="ghost"
+          size="sm"
           onClick={handleLogout}
-          className="w-full justify-start gap-3 rounded-xl text-red-500 hover:bg-red-500/10 hover:text-red-600 font-semibold"
+          className="w-full justify-start gap-2.5 rounded-lg text-red-500 hover:bg-red-500/10 hover:text-red-600 font-semibold text-xs sm:text-sm"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-4 w-4 shrink-0" />
           Logout
         </Button>
       </div>

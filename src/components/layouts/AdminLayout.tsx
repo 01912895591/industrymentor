@@ -44,7 +44,7 @@ export function AdminLayout() {
             </div>
 
             <main className="lg:pl-0 min-h-screen">
-                <div className="lg:pl-64 container mx-auto p-4 lg:p-8 max-w-7xl">
+                <div className="lg:pl-64 container mx-auto p-3.5 sm:p-4 lg:p-5 max-w-7xl">
                     <Outlet />
                 </div>
             </main>
