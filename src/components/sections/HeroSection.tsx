@@ -7,6 +7,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
 const PRIMARY_HERO_SLIDES: string[] = [
+  "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/course-cover-1791008434100.webp",
   "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772869711635.webp",
   "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772354426020.webp",
   "https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/hero-image-1772864274949.webp",
@@ -74,30 +75,56 @@ export function HeroSection() {
   useEffect(() => {
     const fetchHeroImages = async () => {
       try {
-        const { data, error } = await (supabase
+        // Fetch published course cover images
+        const { data: coursesData } = await (supabase
+          .from("courses")
+          .select("cover_image_path")
+          .eq("published", true)
+          .not("cover_image_path", "is", null)
+          .order("created_at", { ascending: false })) as any;
+
+        // Fetch site_settings hero images
+        const { data: settingsData } = await (supabase
           .from("site_settings" as any)
           .select("value")
           .eq("key", "hero_image_url")
           .single()) as any;
 
-        if (data?.value) {
-          let imgs: string[] = [];
-          if (Array.isArray(data.value) && data.value.length > 0) {
-            imgs = data.value.filter((url: any) => typeof url === "string" && !url.includes("hero-garment"));
-          } else if (typeof data.value === "string" && !data.value.includes("hero-garment")) {
-            imgs = [data.value];
-          }
+        const imgsSet = new Set<string>();
 
-          if (imgs.length > 0) {
-            // Prioritize the Garment Quality Inspector banner (matching the user's primary choice) as the first slide
-            const sorted = [...imgs].sort((a, b) => {
-              if (a.includes("1772869711635")) return -1;
-              if (b.includes("1772869711635")) return 1;
-              return 0;
+        // Always include the latest uploaded banner image first
+        imgsSet.add("https://fiirnhpsldouvnfvbtun.supabase.co/storage/v1/object/public/site_assets/course-cover-1791008434100.webp");
+
+        if (coursesData && Array.isArray(coursesData)) {
+          coursesData.forEach((c) => {
+            if (c.cover_image_path && typeof c.cover_image_path === "string" && !c.cover_image_path.includes("hero-garment")) {
+              imgsSet.add(c.cover_image_path);
+            }
+          });
+        }
+
+        if (settingsData?.value) {
+          if (Array.isArray(settingsData.value)) {
+            settingsData.value.forEach((url: any) => {
+              if (typeof url === "string" && !url.includes("hero-garment")) imgsSet.add(url);
             });
-
-            setHeroImages(sorted);
+          } else if (typeof settingsData.value === "string" && !settingsData.value.includes("hero-garment")) {
+            imgsSet.add(settingsData.value);
           }
+        }
+
+        PRIMARY_HERO_SLIDES.forEach((url) => imgsSet.add(url));
+
+        const allImages = Array.from(imgsSet);
+        if (allImages.length > 0) {
+          // Prioritize the new Elite-Performing Executive banner (1791008434100) as the 1st slide
+          const sorted = allImages.sort((a, b) => {
+            if (a.includes("1791008434100")) return -1;
+            if (b.includes("1791008434100")) return 1;
+            return 0;
+          });
+
+          setHeroImages(sorted);
         }
       } catch (error) {
         console.error("Error fetching hero images:", error);
