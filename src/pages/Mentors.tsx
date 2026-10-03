@@ -22,7 +22,7 @@ export default function Mentors() {
       const { data, error: fetchErr } = await (supabase as any)
         .from("mentors")
         .select("id, name, title, bio, initials, tags, linkedin_url, image_path, created_at")
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: false });
 
       if (fetchErr) throw fetchErr;
       setMentors(data || []);

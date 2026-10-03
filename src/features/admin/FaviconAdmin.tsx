@@ -53,16 +53,16 @@ export function FaviconAdmin() {
         setUploadingFavicon(true);
         try {
             if (currentFavicon) {
-                const oldPath = currentFavicon.split("/site-assets/")[1];
-                if (oldPath) await supabase.storage.from("site-assets").remove([oldPath]);
+                const oldPath = currentFavicon.split(/\/site[_-]assets\//)[1];
+                if (oldPath) await supabase.storage.from("site_assets").remove([oldPath]);
             }
 
             const fileExt = file.name.split(".").pop();
             const fileName = `favicon-${Date.now()}.${fileExt}`;
-            const { error: uploadError } = await supabase.storage.from("site-assets").upload(fileName, file, { upsert: true });
+            const { error: uploadError } = await supabase.storage.from("site_assets").upload(fileName, file, { upsert: true });
             if (uploadError) throw uploadError;
 
-            const { data: urlData } = supabase.storage.from("site-assets").getPublicUrl(fileName);
+            const { data: urlData } = supabase.storage.from("site_assets").getPublicUrl(fileName);
             const { error: updateError } = await (supabase as any).rpc("update_favicon", { icon_url: urlData.publicUrl });
             if (updateError) throw updateError;
 
@@ -96,16 +96,16 @@ export function FaviconAdmin() {
         setUploadingLogo(true);
         try {
             if (currentLogo) {
-                const oldPath = currentLogo.split("/site-assets/")[1];
-                if (oldPath) await supabase.storage.from("site-assets").remove([oldPath]);
+                const oldPath = currentLogo.split(/\/site[_-]assets\//)[1];
+                if (oldPath) await supabase.storage.from("site_assets").remove([oldPath]);
             }
 
             const fileExt = file.name.split(".").pop();
             const fileName = `logo-${Date.now()}.${fileExt}`;
-            const { error: uploadError } = await supabase.storage.from("site-assets").upload(fileName, file, { upsert: true });
+            const { error: uploadError } = await supabase.storage.from("site_assets").upload(fileName, file, { upsert: true });
             if (uploadError) throw uploadError;
 
-            const { data: urlData } = supabase.storage.from("site-assets").getPublicUrl(fileName);
+            const { data: urlData } = supabase.storage.from("site_assets").getPublicUrl(fileName);
             const { error: updateError } = await (supabase as any).rpc("update_logo", { new_logo_url: urlData.publicUrl });
             if (updateError) throw updateError;
 
@@ -125,8 +125,8 @@ export function FaviconAdmin() {
         if (!currentFavicon || !confirm("Remove current favicon?")) return;
         setDeletingFavicon(true);
         try {
-            const filePath = currentFavicon.split("/site-assets/")[1];
-            if (filePath) await supabase.storage.from("site-assets").remove([filePath]);
+            const filePath = currentFavicon.split(/\/site[_-]assets\//)[1];
+            if (filePath) await supabase.storage.from("site_assets").remove([filePath]);
             const { error } = await (supabase as any).rpc("update_favicon", { icon_url: null });
             if (error) throw error;
             setCurrentFavicon(null);
@@ -144,8 +144,8 @@ export function FaviconAdmin() {
         if (!currentLogo || !confirm("Remove current logo?")) return;
         setDeletingLogo(true);
         try {
-            const filePath = currentLogo.split("/site-assets/")[1];
-            if (filePath) await supabase.storage.from("site-assets").remove([filePath]);
+            const filePath = currentLogo.split(/\/site[_-]assets\//)[1];
+            if (filePath) await supabase.storage.from("site_assets").remove([filePath]);
             const { error } = await (supabase as any).rpc("update_logo", { new_logo_url: null });
             if (error) throw error;
             setCurrentLogo(null);

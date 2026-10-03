@@ -16,7 +16,7 @@ export function MentorsSection() {
         const { data, error } = await (supabase
           .from("mentors" as any) as any)
           .select("id, name, title, bio, initials, tags, linkedin_url, image_path, created_at")
-          .order("created_at", { ascending: true })
+          .order("created_at", { ascending: false })
           .limit(3);
 
         if (error) throw error;

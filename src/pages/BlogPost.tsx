@@ -13,11 +13,16 @@ export default function BlogPost() {
     useEffect(() => {
         const fetchBlog = async () => {
             try {
-                const { data, error } = await supabase
-                    .from("blogs")
-                    .select("*")
-                    .eq("slug", slug)
-                    .single();
+                if (!slug) return;
+                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+                let query = (supabase as any).from("blogs").select("*");
+                if (isUUID) {
+                    query = query.or(`id.eq.${slug},slug.eq.${slug}`);
+                } else {
+                    query = query.eq("slug", slug);
+                }
+
+                const { data, error } = await query.maybeSingle();
 
                 if (error) throw error;
                 setBlog(data);
